@@ -141,7 +141,7 @@ a, a > code {
 }
 .title-slide {
   background-color: var(--title-slide-background-color);
-  background-image: url("4");
+  background-image: url("https://github.com/vizdata-f21/slides/raw/main/vizdata-bg.jpeg");
   background-size: contain;
 }
 .title-slide .remark-slide-number {

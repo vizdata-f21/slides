@@ -36,7 +36,7 @@ style_duo_accent(
   text_font_google   = google_font("Atkinson Hyperlegible", "300", "300i"),
   code_font_google   = google_font("Source Code Pro"),
   title_slide_background_color = "#FFFFFF",
-  title_slide_background_image = url("https://raw.githubusercontent.com/vizdata-f21/slides/master/title-bg.jpeg"),
+  title_slide_background_image = "https://github.com/vizdata-f21/slides/raw/main/vizdata-bg.jpeg",
   title_slide_background_size = "contain",
   base_font_size = "24px",
   extra_css = list(
