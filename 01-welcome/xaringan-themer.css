@@ -287,3 +287,26 @@ h3 {
 .small {
   font-size: 90%;
 }
+.midi {
+  font-size: 150%;
+}
+.large {
+  font-size: 200%;
+}
+.xlarge {
+  font-size: 600%;
+}
+.hand {
+  font-family: 'Gochi Hand', cursive;
+  font-size: 125%;
+}
+.task {
+  padding-right: 10px;
+  padding-left: 10px;
+  padding-top: 3px;
+  padding-bottom: 3px;
+  margin-bottom: 6px;
+  margin-top: 6px;
+  border-left: solid 5px #F1DE67;
+  background-color: #F1DE6750;
+}
