@@ -90,7 +90,7 @@ class: middle, inverse
   - Wednesdays, 12:00 - 1:15 pm - Link Classroom 3
   - Fridays, 12:00 - 1:15 pm - Link Classroom 3
   
-* Labs (weekly) - 12:00 - 1:15 pm - Link Classroom 3
+* Labs (weekly) - Mondays, 12:00 - 1:15 pm - Link Classroom 3
 
 ---
 
