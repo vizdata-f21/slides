@@ -286,6 +286,14 @@ class: middle, inverse
 
 ---
 
+## COVID policies
+
+- Wear a mask at all times!
+
+- Read and follow university guidance
+
+---
+
 ## Late work policy
 
 - Reading quizzes: Late submissions not accepted
@@ -335,6 +343,12 @@ class: middle, inverse
 > - I will not lie, cheat, or steal in my academic endeavors;
 > - I will conduct myself honorably in all my endeavors; and
 > - I will act if the Standard is compromised.
+
+---
+
+class: middle
+
+.hand[.large[most importantly: ask if you're not sure if something violates a policy!]]
 
 ---
 
