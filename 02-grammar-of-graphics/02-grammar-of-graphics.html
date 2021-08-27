@@ -25,6 +25,31 @@ class: center, middle, inverse, title-slide
 
 class: middle, inverse
 
+# Announcements
+
+---
+
+## Announcements
+
+- If you cannot be in class any day due to COVID isolation, file an [incapacitation form](https://trinity.duke.edu/undergraduate/academic-policies/illness) regardless of due dates.
+
+- For those on the waitlist, we're not allowed to add seats to the class due to fire code.
+
+- Before Monday: Fill out "Getting to know you" survey.
+
+- Before Wednesday: Complete reading + first reading quiz (to be posted on course website).
+
+---
+
+## Dorianne Gray
+
+&lt;img src="images/dorianne-gray.jpeg" width="70%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+class: middle, inverse
+
 # Data visualization
 
 ---
@@ -112,67 +137,8 @@ class: middle, inverse
 
 ```r
 library(Tmisc)
-quartet
+quartet %&gt;% slice_head(n = 15)
 ```
-
-.midi[
-.pull-left[
-
-```
-##    set  x     y
-## 1    I 10  8.04
-## 2    I  8  6.95
-## 3    I 13  7.58
-## 4    I  9  8.81
-## 5    I 11  8.33
-## 6    I 14  9.96
-## 7    I  6  7.24
-## 8    I  4  4.26
-## 9    I 12 10.84
-## 10   I  7  4.82
-## 11   I  5  5.68
-## 12  II 10  9.14
-## 13  II  8  8.14
-## 14  II 13  8.74
-## 15  II  9  8.77
-## 16  II 11  9.26
-## 17  II 14  8.10
-## 18  II  6  6.13
-## 19  II  4  3.10
-## 20  II 12  9.13
-## 21  II  7  7.26
-## 22  II  5  4.74
-```
-] 
-.pull-right[
-
-```
-##    set  x     y
-## 23 III 10  7.46
-## 24 III  8  6.77
-## 25 III 13 12.74
-## 26 III  9  7.11
-## 27 III 11  7.81
-## 28 III 14  8.84
-## 29 III  6  6.08
-## 30 III  4  5.39
-## 31 III 12  8.15
-## 32 III  7  6.42
-## 33 III  5  5.73
-## 34  IV  8  6.58
-## 35  IV  8  5.76
-## 36  IV  8  7.71
-## 37  IV  8  8.84
-## 38  IV  8  8.47
-## 39  IV  8  7.04
-## 40  IV  8  5.25
-## 41  IV 19 12.50
-## 42  IV  8  5.56
-## 43  IV  8  7.91
-## 44  IV  8  6.89
-```
-]
-]
 
 ---
 
@@ -296,7 +262,7 @@ glimpse(penguins)
 
 .panelset[
 .panel[.panel-name[Plot]
-&lt;img src="02-grammar-of-graphics_files/figure-html/unnamed-chunk-11-1.png" width="70%" /&gt;
+&lt;img src="02-grammar-of-graphics_files/figure-html/unnamed-chunk-12-1.png" width="70%" /&gt;
 ]
 .panel[.panel-name[Code]
 
@@ -333,7 +299,7 @@ class: middle, inverse
 ```
 ]
 .pull-right[
-&lt;img src="02-grammar-of-graphics_files/figure-html/unnamed-chunk-12-1.png" width="100%" /&gt;
+&lt;img src="02-grammar-of-graphics_files/figure-html/unnamed-chunk-13-1.png" width="100%" /&gt;
 ]
 
 ---
@@ -351,7 +317,7 @@ ggplot(data = penguins,
 ```
 ]
 .pull-right[
-&lt;img src="02-grammar-of-graphics_files/figure-html/unnamed-chunk-13-1.png" width="100%" /&gt;
+&lt;img src="02-grammar-of-graphics_files/figure-html/unnamed-chunk-14-1.png" width="100%" /&gt;
 ]
 
 ---
@@ -371,7 +337,7 @@ ggplot(data = penguins,
 ```
 ]
 .pull-right[
-&lt;img src="02-grammar-of-graphics_files/figure-html/unnamed-chunk-14-1.png" width="100%" /&gt;
+&lt;img src="02-grammar-of-graphics_files/figure-html/unnamed-chunk-15-1.png" width="100%" /&gt;
 ]
 
 ---
@@ -393,7 +359,7 @@ ggplot(data = penguins,
 ```
 ]
 .pull-right[
-&lt;img src="02-grammar-of-graphics_files/figure-html/unnamed-chunk-15-1.png" width="100%" /&gt;
+&lt;img src="02-grammar-of-graphics_files/figure-html/unnamed-chunk-16-1.png" width="100%" /&gt;
 ]
 
 ---
@@ -417,7 +383,7 @@ ggplot(data = penguins,
 ```
 ]
 .pull-right[
-&lt;img src="02-grammar-of-graphics_files/figure-html/unnamed-chunk-16-1.png" width="100%" /&gt;
+&lt;img src="02-grammar-of-graphics_files/figure-html/unnamed-chunk-17-1.png" width="100%" /&gt;
 ]
 
 ---
@@ -443,7 +409,7 @@ ggplot(data = penguins,
 ```
 ]
 .pull-right[
-&lt;img src="02-grammar-of-graphics_files/figure-html/unnamed-chunk-17-1.png" width="100%" /&gt;
+&lt;img src="02-grammar-of-graphics_files/figure-html/unnamed-chunk-18-1.png" width="100%" /&gt;
 ]
 
 ---
@@ -471,7 +437,7 @@ ggplot(data = penguins,
 ```
 ]
 .pull-right[
-&lt;img src="02-grammar-of-graphics_files/figure-html/unnamed-chunk-18-1.png" width="100%" /&gt;
+&lt;img src="02-grammar-of-graphics_files/figure-html/unnamed-chunk-19-1.png" width="100%" /&gt;
 ]
 
 ---
@@ -501,7 +467,7 @@ ggplot(data = penguins,
 ```
 ]
 .pull-right[
-&lt;img src="02-grammar-of-graphics_files/figure-html/unnamed-chunk-19-1.png" width="100%" /&gt;
+&lt;img src="02-grammar-of-graphics_files/figure-html/unnamed-chunk-20-1.png" width="100%" /&gt;
 ]
 
 ---
@@ -533,7 +499,7 @@ ggplot(data = penguins,
 ```
 ]
 .pull-right[
-&lt;img src="02-grammar-of-graphics_files/figure-html/unnamed-chunk-20-1.png" width="100%" /&gt;
+&lt;img src="02-grammar-of-graphics_files/figure-html/unnamed-chunk-21-1.png" width="100%" /&gt;
 ]
 
 ---
@@ -567,7 +533,7 @@ ggplot(data = penguins,
 ```
 ]
 .pull-right[
-&lt;img src="02-grammar-of-graphics_files/figure-html/unnamed-chunk-21-1.png" width="100%" /&gt;
+&lt;img src="02-grammar-of-graphics_files/figure-html/unnamed-chunk-22-1.png" width="100%" /&gt;
 ]
 
 ---
@@ -603,14 +569,14 @@ ggplot(data = penguins,
 ```
 ]
 .pull-right[
-&lt;img src="02-grammar-of-graphics_files/figure-html/unnamed-chunk-22-1.png" width="100%" /&gt;
+&lt;img src="02-grammar-of-graphics_files/figure-html/unnamed-chunk-23-1.png" width="100%" /&gt;
 ]
 
 ---
 
 .panelset[
 .panel[.panel-name[Plot]
-&lt;img src="02-grammar-of-graphics_files/figure-html/unnamed-chunk-23-1.png" width="70%" /&gt;
+&lt;img src="02-grammar-of-graphics_files/figure-html/unnamed-chunk-24-1.png" width="70%" /&gt;
 ]
 .panel[.panel-name[Code]
 
@@ -715,7 +681,7 @@ ggplot(penguins,
 ```
 ]
 .pull-right[
-&lt;img src="02-grammar-of-graphics_files/figure-html/unnamed-chunk-24-1.png" width="100%" /&gt;
+&lt;img src="02-grammar-of-graphics_files/figure-html/unnamed-chunk-25-1.png" width="100%" /&gt;
 ]
 
 ---
@@ -737,7 +703,7 @@ ggplot(penguins,
 ```
 ]
 .pull-right[
-&lt;img src="02-grammar-of-graphics_files/figure-html/unnamed-chunk-25-1.png" width="100%" /&gt;
+&lt;img src="02-grammar-of-graphics_files/figure-html/unnamed-chunk-26-1.png" width="100%" /&gt;
 ]
 
 ---
@@ -759,7 +725,7 @@ ggplot(penguins,
 ```
 ]
 .pull-right[
-&lt;img src="02-grammar-of-graphics_files/figure-html/unnamed-chunk-26-1.png" width="100%" /&gt;
+&lt;img src="02-grammar-of-graphics_files/figure-html/unnamed-chunk-27-1.png" width="100%" /&gt;
 ]
 
 ---
@@ -780,7 +746,7 @@ ggplot(penguins,
 ```
 ]
 .pull-right[
-&lt;img src="02-grammar-of-graphics_files/figure-html/unnamed-chunk-27-1.png" width="100%" /&gt;
+&lt;img src="02-grammar-of-graphics_files/figure-html/unnamed-chunk-28-1.png" width="100%" /&gt;
 ]
 
 ---
@@ -802,7 +768,7 @@ ggplot(penguins,
 ```
 ]
 .pull-right[
-&lt;img src="02-grammar-of-graphics_files/figure-html/unnamed-chunk-28-1.png" width="100%" /&gt;
+&lt;img src="02-grammar-of-graphics_files/figure-html/unnamed-chunk-29-1.png" width="100%" /&gt;
 ]
 
 ---
@@ -820,7 +786,7 @@ ggplot(penguins,
   geom_point()
 ```
 
-&lt;img src="02-grammar-of-graphics_files/figure-html/unnamed-chunk-29-1.png" width="100%" /&gt;
+&lt;img src="02-grammar-of-graphics_files/figure-html/unnamed-chunk-30-1.png" width="100%" /&gt;
 ]
 .pull-right[
 **Setting**
@@ -833,7 +799,7 @@ ggplot(penguins,
 * geom_point(size = 2, alpha = 0.5)
 ```
 
-&lt;img src="02-grammar-of-graphics_files/figure-html/unnamed-chunk-30-1.png" width="100%" /&gt;
+&lt;img src="02-grammar-of-graphics_files/figure-html/unnamed-chunk-31-1.png" width="100%" /&gt;
 ]
 
 ---
@@ -863,7 +829,7 @@ class: middle, inverse
 
 .panelset[
 .panel[.panel-name[Plot]
-&lt;img src="02-grammar-of-graphics_files/figure-html/unnamed-chunk-31-1.png" width="70%" /&gt;
+&lt;img src="02-grammar-of-graphics_files/figure-html/unnamed-chunk-32-1.png" width="70%" /&gt;
 ]
 .panel[.panel-name[Code]
 
@@ -896,7 +862,7 @@ ggplot(penguins, aes(x = bill_depth_mm, y = bill_length_mm)) +
 * facet_grid(species ~ sex)
 ```
 
-&lt;img src="02-grammar-of-graphics_files/figure-html/unnamed-chunk-32-1.png" width="60%" /&gt;
+&lt;img src="02-grammar-of-graphics_files/figure-html/unnamed-chunk-33-1.png" width="60%" /&gt;
 
 ---
 
@@ -907,7 +873,7 @@ ggplot(penguins, aes(x = bill_depth_mm, y = bill_length_mm)) +
 * facet_grid(sex ~ species)
 ```
 
-&lt;img src="02-grammar-of-graphics_files/figure-html/unnamed-chunk-33-1.png" width="60%" /&gt;
+&lt;img src="02-grammar-of-graphics_files/figure-html/unnamed-chunk-34-1.png" width="60%" /&gt;
 
 ---
 
@@ -918,7 +884,7 @@ ggplot(penguins, aes(x = bill_depth_mm, y = bill_length_mm)) +
 * facet_wrap(~ species)
 ```
 
-&lt;img src="02-grammar-of-graphics_files/figure-html/unnamed-chunk-34-1.png" width="60%" /&gt;
+&lt;img src="02-grammar-of-graphics_files/figure-html/unnamed-chunk-35-1.png" width="60%" /&gt;
 
 ---
 
@@ -929,7 +895,7 @@ ggplot(penguins, aes(x = bill_depth_mm, y = bill_length_mm)) +
 * facet_grid(. ~ species)
 ```
 
-&lt;img src="02-grammar-of-graphics_files/figure-html/unnamed-chunk-35-1.png" width="60%" /&gt;
+&lt;img src="02-grammar-of-graphics_files/figure-html/unnamed-chunk-36-1.png" width="60%" /&gt;
 
 ---
 
@@ -940,7 +906,7 @@ ggplot(penguins, aes(x = bill_depth_mm, y = bill_length_mm)) +
 * facet_wrap(~ species, ncol = 2)
 ```
 
-&lt;img src="02-grammar-of-graphics_files/figure-html/unnamed-chunk-36-1.png" width="60%" /&gt;
+&lt;img src="02-grammar-of-graphics_files/figure-html/unnamed-chunk-37-1.png" width="60%" /&gt;
 
 ---
 
@@ -958,7 +924,7 @@ ggplot(penguins, aes(x = bill_depth_mm, y = bill_length_mm)) +
 
 .panelset[
 .panel[.panel-name[Plot]
-&lt;img src="02-grammar-of-graphics_files/figure-html/unnamed-chunk-37-1.png" width="60%" /&gt;
+&lt;img src="02-grammar-of-graphics_files/figure-html/unnamed-chunk-38-1.png" width="60%" /&gt;
 ]
 .panel[.panel-name[Code]
 
@@ -982,7 +948,7 @@ ggplot(
 
 .panelset[
 .panel[.panel-name[Plot]
-&lt;img src="02-grammar-of-graphics_files/figure-html/unnamed-chunk-38-1.png" width="60%" /&gt;
+&lt;img src="02-grammar-of-graphics_files/figure-html/unnamed-chunk-39-1.png" width="60%" /&gt;
 ]
 .panel[.panel-name[Code]
 
@@ -997,6 +963,238 @@ ggplot(
   facet_grid(species ~ sex) +
   scale_color_viridis_d() 
 ```
+]
+]
+
+---
+
+class: middle, inverse
+
+# Take a sad plot, and make it better
+
+---
+
+The American Association of 
+University Professors (AAUP) is a nonprofit membership association of faculty 
+and other academic professionals. 
+[This report](https://www.aaup.org/sites/default/files/files/AAUP_Report_InstrStaff-75-11_apr2013.pdf) 
+by the AAUP shows trends in instructional staff employees between 1975 
+and 2011, and contains an image very similar to the one given below.
+
+&lt;img src="images/staff-employment.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+
+Each row in this dataset represents a faculty type, and the columns are the years for which we have data. 
+The values are percentage of hires of that type of faculty for each year.
+
+
+```r
+staff &lt;- read_csv("data/instructional-staff.csv")
+staff
+```
+
+```
+## # A tibble: 5 × 12
+##   faculty_type    `1975` `1989` `1993` `1995` `1999` `2001` `2003` `2005` `2007`
+##   &lt;chr&gt;            &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;
+## 1 Full-Time Tenu…   29     27.6   25     24.8   21.8   20.3   19.3   17.8   17.2
+## 2 Full-Time Tenu…   16.1   11.4   10.2    9.6    8.9    9.2    8.8    8.2    8  
+## 3 Full-Time Non-…   10.3   14.1   13.6   13.6   15.2   15.5   15     14.8   14.9
+## 4 Part-Time Facu…   24     30.4   33.1   33.2   35.5   36     37     39.3   40.5
+## 5 Graduate Stude…   20.5   16.5   18.1   18.8   18.7   19     20     19.9   19.5
+## # … with 2 more variables: 2009 &lt;dbl&gt;, 2011 &lt;dbl&gt;
+```
+
+---
+
+## Recreate the visualization
+
+In order to recreate this visualization we need to first reshape the data to have one variable for faculty type and one variable for year. In other words, we will convert the data from the long format to wide format. 
+
+But before we do so... 
+
+.task[
+If the long data will have a row for each year/faculty type combination, and there are 5 faculty types and 11 years of data, how many rows will the data have?
+]
+
+---
+
+class: center, middle
+
+&lt;img src="images/pivot.gif" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## `pivot_*()` functions
+
+
+&lt;img src="images/tidyr-longer-wider.gif" width="60%" /&gt;
+
+---
+
+## `pivot_longer()`
+
+
+```r
+pivot_longer(data, cols, names_to = "name", values_to = "value")
+```
+
+- The first argument is `data` as usual.
+- The second argument, `cols`, is where you specify which columns to pivot 
+into longer format -- in this case all columns except for the `faculty_type` 
+- The third argument, `names_to`, is a string specifying the name of the column to create from the data stored in the column names of data -- in this case `year`
+- The fourth argument, `values_to`, is a string specifying the name of the column to create from the data stored in cell values, in this case `percentage`
+
+---
+
+## Pivot instructor data
+
+.midi[
+
+```r
+library(tidyverse)
+
+staff_long &lt;- staff %&gt;%
+  pivot_longer(cols = -faculty_type, names_to = "year", 
+               values_to = "percentage") %&gt;%
+  mutate(percentage = as.numeric(percentage))
+
+staff_long
+```
+
+```
+## # A tibble: 55 × 3
+##    faculty_type              year  percentage
+##    &lt;chr&gt;                     &lt;chr&gt;      &lt;dbl&gt;
+##  1 Full-Time Tenured Faculty 1975        29  
+##  2 Full-Time Tenured Faculty 1989        27.6
+##  3 Full-Time Tenured Faculty 1993        25  
+##  4 Full-Time Tenured Faculty 1995        24.8
+##  5 Full-Time Tenured Faculty 1999        21.8
+##  6 Full-Time Tenured Faculty 2001        20.3
+##  7 Full-Time Tenured Faculty 2003        19.3
+##  8 Full-Time Tenured Faculty 2005        17.8
+##  9 Full-Time Tenured Faculty 2007        17.2
+## 10 Full-Time Tenured Faculty 2009        16.8
+## # … with 45 more rows
+```
+]
+
+---
+
+.question[
+This doesn't look quite right, how would you fix it?
+]
+
+.small[
+
+```r
+staff_long %&gt;%
+  ggplot(aes(x = percentage, y = year, color = faculty_type)) +
+  geom_col(position = "dodge")
+```
+
+&lt;img src="02-grammar-of-graphics_files/figure-html/unnamed-chunk-45-1.png" width="60%" /&gt;
+]
+
+---
+
+.midi[
+
+```r
+staff_long %&gt;%
+  ggplot(aes(x = percentage, y = year, fill = faculty_type)) +
+  geom_col(position = "dodge")
+```
+
+&lt;img src="02-grammar-of-graphics_files/figure-html/unnamed-chunk-46-1.png" width="60%" /&gt;
+]
+
+---
+
+## Some improvement...
+
+.midi[
+
+```r
+staff_long %&gt;%
+  ggplot(aes(x = percentage, y = year, fill = faculty_type)) +
+  geom_col()
+```
+
+&lt;img src="02-grammar-of-graphics_files/figure-html/unnamed-chunk-47-1.png" width="60%" /&gt;
+]
+
+---
+
+## More improvement
+
+.midi[
+
+```r
+staff_long %&gt;%
+  ggplot(aes(x = year, y = percentage, group = faculty_type, 
+             color = faculty_type)) +
+  geom_line() +
+  theme_minimal()
+```
+
+&lt;img src="02-grammar-of-graphics_files/figure-html/unnamed-chunk-48-1.png" width="100%" /&gt;
+]
+
+---
+
+## Goal: even more improvement!
+
+.task[
+I want to achieve the following look but I have no idea how!
+]
+
+&lt;img src="images/sketch.png" width="70%" /&gt;
+
+---
+
+## Asking good questions
+
+- Describe what you want
+- Describe where you are
+- Create a minimal **repr**oducible **ex**ample: `reprex::reprex()`
+
+---
+
+.panelset[
+.panel[.panel-name[Plot]
+
+&lt;img src="02-grammar-of-graphics_files/figure-html/instructor-lines-1.png" width="100%" /&gt;
+
+]
+
+.panel[.panel-name[Code]
+
+
+```r
+library(scales)
+
+staff_long %&gt;%
+* mutate(
+*   part_time = if_else(faculty_type == "Part-Time Faculty",
+*                       "Part-Time Faculty", "Other Faculty"),
+*   year = as.numeric(year)
+*   ) %&gt;%
+  ggplot(aes(x = year, y = percentage/100, group = faculty_type, 
+             color = part_time)) +
+  geom_line() +
+* scale_color_manual(values = c("gray", "red")) +
+* scale_y_continuous(labels = label_percent(accuracy = 1)) +
+  theme_minimal() +
+  labs(
+    title = "Instructional staff employment trends",
+    x = "Year", y = "Percentage", color = NULL
+  ) +
+* theme(legend.position = "bottom")
+```
+
 ]
 ]
     </textarea>

@@ -86,6 +86,33 @@ style_duo_accent(
 
 class: middle, inverse
 
+# Announcements
+
+---
+
+## Announcements
+
+- If you cannot be in class any day due to COVID isolation, file an [incapacitation form](https://trinity.duke.edu/undergraduate/academic-policies/illness) regardless of due dates.
+
+- For those on the waitlist, we're not allowed to add seats to the class due to fire code.
+
+- Before Monday: Fill out "Getting to know you" survey.
+
+- Before Wednesday: Complete reading + first reading quiz (to be posted on course website).
+
+---
+
+## Dorianne Gray
+
+```{r echo=FALSE, out.width = "70%", fig.align = "center"}
+knitr::include_graphics("images/dorianne-gray.jpeg")
+```
+
+
+---
+
+class: middle, inverse
+
 # Data visualization
 
 ---
@@ -174,21 +201,8 @@ class: middle, inverse
 
 ```{r quartet-for-show, results = "hide"}
 library(Tmisc)
-quartet
+quartet %>% slice_head(n = 15)
 ```
-
-.midi[
-.pull-left[
-```{r quartet-view1, echo = FALSE}
-quartet[1:22,]
-```
-] 
-.pull-right[
-```{r quartet-view2, echo = FALSE}
-quartet[23:44,]
-```
-]
-]
 
 ---
 
@@ -995,7 +1009,7 @@ by the AAUP shows trends in instructional staff employees between 1975
 and 2011, and contains an image very similar to the one given below.
 
 ```{r echo=FALSE,out.width="80%",fig.align="center"}
-knitr::include_graphics("img/staff-employment.png")
+knitr::include_graphics("images/staff-employment.png")
 ```
 
 ---
@@ -1016,7 +1030,7 @@ In order to recreate this visualization we need to first reshape the data to hav
 
 But before we do so... 
 
-.question[
+.task[
 If the long data will have a row for each year/faculty type combination, and there are 5 faculty types and 11 years of data, how many rows will the data have?
 ]
 
@@ -1126,7 +1140,7 @@ staff_long %>%
 I want to achieve the following look but I have no idea how!
 ]
 
-```{r instructor-lines-for-show, echo = FALSE, out.width = "80%"}
+```{r instructor-lines-for-show, echo = FALSE, out.width = "70%"}
 knitr::include_graphics("images/sketch.png")
 ```
 
@@ -1144,6 +1158,8 @@ knitr::include_graphics("images/sketch.png")
 .panel[.panel-name[Plot]
 
 ```{r instructor-lines, echo = FALSE, fig.width = 7, out.width = "100%", fig.asp = 0.5}
+library(scales)
+
 staff_long %>%
   mutate( #<<
     part_time = if_else(faculty_type == "Part-Time Faculty", #<<
