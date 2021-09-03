@@ -660,56 +660,6 @@ countdown(minutes = 3, bottom = 0)
 
 ---
 
-## Activity: Spot the difference II
-
-.task[
-Do you expect the following plots to be the same or different? If different, how? Discuss in a pair (or group) without running the code and sketch the resulting plots based on what you think the code will produce. Click [here](https://app.sli.do/event/rxg9buzy) to submit summary of discussion.
-]
-
-```{r fig.show = "hide"}
-# Plot A
-ggplot(duke_forest, aes(x = area, y = price, color = decade_built_cat)) +
-  geom_point(alpha = 0.7) +
-  geom_smooth(method = "lm", se = FALSE, size = 0.5)
-
-# Plot B
-ggplot(duke_forest, aes(x = area, y = price)) +
-  geom_point(aes(color = decade_built_cat), alpha = 0.7) +
-  geom_smooth(method = "lm", se = FALSE, size = 0.5)
-```
-
-```{r echo = FALSE}
-countdown(minutes = 3, bottom = 0)
-```
-
----
-
-## Activity: Spot the difference III
-
-.task[
-Do you expect the following plots to be the same or different? If different, how? Discuss in a pair (or group) without running the code and sketch the resulting plots based on what you think the code will produce. Click [here](https://app.sli.do/event/rxg9buzy) to submit summary of discussion.
-]
-
-```{r fig.show = "hide"}
-# Plot A
-ggplot(duke_forest, aes(x = area, y = price)) +
-  geom_point(aes(color = decade_built_cat))
-
-# Plot B
-ggplot(duke_forest, aes(x = area, y = price)) +
-  geom_point(color = "blue")
-
-# Plot C
-ggplot(duke_forest, aes(x = area, y = price)) +
-  geom_point(color = "#a493ba")
-```
-
-```{r echo = FALSE}
-countdown(minutes = 3, bottom = 0)
-```
-
----
-
 ## Wrap up
 
 .task[

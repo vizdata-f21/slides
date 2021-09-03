@@ -3,7 +3,7 @@
   <head>
     <title>looking at data</title>
     <meta charset="utf-8" />
-    <meta name="date" content="2021-09-01" />
+    <meta name="date" content="2021-09-03" />
     <script src="03-look-at-data_files/header-attrs/header-attrs.js"></script>
     <link href="03-look-at-data_files/panelset/panelset.css" rel="stylesheet" />
     <script src="03-look-at-data_files/panelset/panelset.js"></script>
@@ -16,7 +16,7 @@
 class: center, middle, inverse, title-slide
 
 # looking at data
-### 2021-09-01
+### 2021-09-03
 
 ---
 
@@ -575,7 +575,7 @@ This is Minard’s visualization of Napoleon’s retreat. Discuss in a pair (or 
 countdown(minutes = 5, top = 0)
 ```
 
-<div class="countdown" id="timer_612f9e67" style="top:0;right:0;" data-warnwhen="0">
+<div class="countdown" id="timer_61321bf5" style="top:0;right:0;" data-warnwhen="0">
 <code class="countdown-time"><span class="countdown-digits minutes">05</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>
 
@@ -668,7 +668,7 @@ ggplot(mean_area_decade, aes(y = decade_built_cat, x = mean_area)) +
 ]
 ]
 
-<div class="countdown" id="timer_612f9e32" style="right:0;bottom:0;" data-warnwhen="0">
+<div class="countdown" id="timer_61321a70" style="right:0;bottom:0;" data-warnwhen="0">
 <code class="countdown-time"><span class="countdown-digits minutes">03</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>
 
@@ -681,64 +681,6 @@ ggplot(mean_area_decade, aes(y = decade_built_cat, x = mean_area)) +
 - Within each layer, you can add, override, or remove mappings.
 
 - If you only have one layer in the plot, the way you specify aesthetics doesn’t make any difference. However, the distinction is important when you start adding additional layers.
-
----
-
-## Activity: Spot the difference II
-
-.task[
-Do you expect the following plots to be the same or different? If different, how? Discuss in a pair (or group) without running the code and sketch the resulting plots based on what you think the code will produce. Click [here](https://app.sli.do/event/rxg9buzy) to submit summary of discussion.
-]
-
-
-```r
-# Plot A
-ggplot(duke_forest, aes(x = area, y = price, color = decade_built_cat)) +
-  geom_point(alpha = 0.7) +
-  geom_smooth(method = "lm", se = FALSE, size = 0.5)
-```
-
-```r
-# Plot B
-ggplot(duke_forest, aes(x = area, y = price)) +
-  geom_point(aes(color = decade_built_cat), alpha = 0.7) +
-  geom_smooth(method = "lm", se = FALSE, size = 0.5)
-```
-
-<div class="countdown" id="timer_612f9ef9" style="right:0;bottom:0;" data-warnwhen="0">
-<code class="countdown-time"><span class="countdown-digits minutes">03</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
-</div>
-
----
-
-## Activity: Spot the difference III
-
-.task[
-Do you expect the following plots to be the same or different? If different, how? Discuss in a pair (or group) without running the code and sketch the resulting plots based on what you think the code will produce. Click [here](https://app.sli.do/event/rxg9buzy) to submit summary of discussion.
-]
-
-
-```r
-# Plot A
-ggplot(duke_forest, aes(x = area, y = price)) +
-  geom_point(aes(color = decade_built_cat))
-```
-
-```r
-# Plot B
-ggplot(duke_forest, aes(x = area, y = price)) +
-  geom_point(color = "blue")
-```
-
-```r
-# Plot C
-ggplot(duke_forest, aes(x = area, y = price)) +
-  geom_point(color = "#a493ba")
-```
-
-<div class="countdown" id="timer_612f9e46" style="right:0;bottom:0;" data-warnwhen="0">
-<code class="countdown-time"><span class="countdown-digits minutes">03</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
-</div>
 
 ---
 
