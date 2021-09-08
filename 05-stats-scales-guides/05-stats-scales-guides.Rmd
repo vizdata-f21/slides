@@ -14,15 +14,6 @@ output:
 
 ```{r setup, include=FALSE}
 options(htmltools.dir.version = FALSE)
-knitr::opts_chunk$set(
-  fig.width = 8, fig.asp = 0.618, fig.retina = 3, dpi = 300,
-  out.width = "60%",
-  cache = FALSE,
-  echo = TRUE,
-  message = TRUE, 
-  warning = TRUE
-)
-
 xaringanExtra::use_panelset()
 library(countdown)
 ```
@@ -53,8 +44,10 @@ style_duo_accent(
                  "margin-block-end" = "0.4rem"),
     "h3" = list("margin-block-start" = "0.4rem", 
                  "margin-block-end" = "0.4rem"),
-    ".small" = list("font-size" = "90%"),
-    ".midi" = list("font-size" = "85%"),
+    ".small" = list("font-size" = "80%"),
+    ".midi" = list("font-size" = "90%"),
+    ".small .remark-code" = list("font-size" = "80%"),
+    ".midi .remark-code" = list("font-size" = "90%"),
     ".large" = list("font-size" = "200%"),
     ".xlarge" = list("font-size" = "600%"),
     ".hand" = list("font-family" = "'Gochi Hand', cursive",
@@ -91,49 +84,13 @@ class: middle, inverse
 
 ## Announcements
 
-- 
+- Code along session timing: no interest, some evening (Sun-Thur), during one of the OHs?
 
-- 
+- [Discussion forum](https://github.com/vizdata-f21/discussion/discussions): labels, answers, participation
 
----
+- HW next steps
 
-## Setup
-
-```{r}
-# load packages
-library(tidyverse)
-library(openintro)
-
-# set default theme for ggplot2
-ggplot2::theme_set(ggplot2::theme_minimal(base_size = 16))
-
-# set default figure parameters for knitr
-knitr::opts_chunk$set(
-  fig.width = 8,
-  fig.asp = 0.618,
-  fig.retina = 3,
-  dpi = 300,
-  out.width = "60%"
-)
-```
-
----
-
-## Data prep
-
-```{r}
-duke_forest <- duke_forest %>%
-  mutate(
-    decade_built = (year_built %/% 10) * 10,
-    decade_built_cat = case_when(
-      decade_built <= 1940 ~ "1940 or before",
-      decade_built >= 1990 ~ "1990 or after",
-      TRUE                 ~ as.character(decade_built)
-    ),
-    decade_built_cat = factor(decade_built_cat, ordered = TRUE)
-  )
-```
-
+- Any questions?
 
 ---
 
@@ -200,6 +157,83 @@ ggplot(mtcars, aes(x = mpg, y = disp)) +
 
 ---
 
+class: inverse, middle
+
+# Setup
+
+---
+
+## Packages + figures
+
+```{r}
+# load packages
+library(tidyverse)
+library(openintro)
+
+# set default theme for ggplot2
+ggplot2::theme_set(ggplot2::theme_minimal(base_size = 16))
+
+# set default figure parameters for knitr
+knitr::opts_chunk$set(
+  fig.width = 8,
+  fig.asp = 0.618,
+  fig.retina = 3,
+  dpi = 300,
+  out.width = "60%"
+)
+```
+
+---
+
+## Data prep
+
+```{r}
+duke_forest <- openintro::duke_forest %>%
+  mutate(
+    decade_built = (year_built %/% 10) * 10,
+    decade_built_cat = case_when(
+      decade_built <= 1940 ~ "1940 or before",
+      decade_built >= 1990 ~ "1990 or after",
+      TRUE                 ~ as.character(decade_built)
+    ),
+    decade_built_cat = factor(decade_built_cat, ordered = TRUE)
+  )
+```
+
+---
+
+## New data prep: `parking`
+
+.small[
+```{r}
+duke_forest %>%
+  distinct(parking) %>%
+  print(n = 20)
+```
+]
+
+---
+
+## Recode `parking`
+
+```{r}
+duke_forest <- duke_forest %>%
+  mutate(
+    parking = case_when(
+      parking == "0 spaces" ~ "Street",
+      str_detect(parking, "Carport") ~ "Carport",
+      str_detect(parking, "Garage") ~ "Garage",
+      str_detect(parking, "Covered") ~ "Covered",
+      TRUE ~ parking
+    )
+  )
+
+duke_forest %>% 
+  count(parking)
+```
+
+---
+
 class: middle, inverse
 
 .large[.hand[wrap up...]]
@@ -229,6 +263,7 @@ ggplot(duke_forest, aes(x = bed, y = bath)) +
 
 .panelset[
 .panel[.panel-name[Summarize]
+.small[
 ```{r}
 mean_price_bed_bath <- duke_forest %>%
   group_by(bed, bath) %>%
@@ -236,6 +271,7 @@ mean_price_bed_bath <- duke_forest %>%
 
 mean_price_bed_bath
 ```
+]
 ]
 .panel[.panel-name[Plot]
 ```{r}
@@ -272,7 +308,7 @@ class: middle, inverse
 
 ---
 
-## Stats // geoms
+## Stats < > geoms
 
 - Statistical transformation (**stat**) transforms the data, typically by summarizing
 - Many of ggplot2’s stats are used behind the scenes to generate many important geoms
@@ -302,9 +338,9 @@ knitr::include_graphics("images/summary-stats.png")
 ## Layering with stats
 
 ```{r}
-ggplot(duke_forest, aes(x = decade_built_cat, y = price)) + 
+ggplot(duke_forest, aes(x = parking, y = price)) + 
   geom_point(alpha = 0.5) + 
-  stat_summary(geom = "point", fun = "median", colour = "red", size = 5, pch = 4, stroke = 2)
+  stat_summary(geom = "point", fun = "median", colour = "red", size = 5, pch = 4, stroke = 2) #<<
 ```
 
 ---
@@ -312,21 +348,27 @@ ggplot(duke_forest, aes(x = decade_built_cat, y = price)) +
 ## Alternate: layering with stats
 
 ```{r}
-ggplot(duke_forest, aes(x = decade_built_cat, y = price)) + 
+ggplot(duke_forest, aes(x = parking, y = price)) + 
   geom_point(alpha = 0.5) + 
-  stat_summary(geom = "point", fun = "median", colour = "red", size = 5, pch = 4, stroke = 2)
+  geom_point(stat = "summary", fun = "median", colour = "red", size = 5, pch = 4, stroke = 2) #<<
 ```
 
 ---
 
 ## Statistical transformations
 
-```{r}
+.task[
+What can you say about the distribution of price from the following QQ plot?
+]
+
+.small[
+```{r out.width = "50%"}
 ggplot(duke_forest, aes(sample = price)) +
-  stat_qq() +
-  stat_qq_line() +
+  stat_qq() + #<<
+  stat_qq_line() + #<<
   labs(y = "price")
 ```
+]
 
 ---
 
@@ -336,7 +378,7 @@ class: middle, inverse
 
 ---
 
-## Scale
+## What is a scale?
 
 - Each scale is a function from a region in data space (the domain of the scale) to a region in aesthetic space (the range of the scale)
 
@@ -352,11 +394,11 @@ Every aesthetic in your plot is associated with exactly one scale:
 .panel[.panel-name[Code]
 ```{r fig.show = "hide"}
 # automatic scales
-ggplot(duke_forest, aes(x = area, y = price, color = decade_built_cat)) + 
+ggplot(duke_forest, aes(x = area, y = price, color = parking)) + 
   geom_point(alpha = 0.8)
 
 # manual scales
-ggplot(duke_forest, aes(x = area, y = price, color = decade_built_cat)) + 
+ggplot(duke_forest, aes(x = area, y = price, color = parking)) + 
   geom_point(alpha = 0.8) +
   scale_x_continuous() + 
   scale_y_continuous() + 
@@ -365,7 +407,7 @@ ggplot(duke_forest, aes(x = area, y = price, color = decade_built_cat)) +
 ]
 .panel[.panel-name[Plot]
 ```{r echo = FALSE}
-ggplot(duke_forest, aes(x = area, y = price, color = decade_built_cat)) + 
+ggplot(duke_forest, aes(x = area, y = price, color = parking)) + 
   geom_point(alpha = 0.8)
 ```
 ]
@@ -375,8 +417,10 @@ ggplot(duke_forest, aes(x = area, y = price, color = decade_built_cat)) +
 
 ## Anatomy of a scale function
 
+.large[
 .center[
 `scale_A_B()`
+]
 ]
 
 - Always starts with `scale`
@@ -393,8 +437,8 @@ What will the x-axis label of the following plot say?
 
 .panelset[
 .panel[.panel-name[Plots]
-```{r fig.show = "hide"}
-ggplot(duke_forest, aes(x = area, y = price, color = decade_built_cat)) + 
+```{r fig.show = "hide", message = FALSE}
+ggplot(duke_forest, aes(x = area, y = price, color = parking)) + 
   geom_point(alpha = 0.8) +
   scale_x_continuous(name = "Area") +
   scale_x_continuous(name = "Area (sq ft)") 
@@ -411,6 +455,17 @@ countdown(minutes = 2, bottom = 0)
 
 ---
 
+## "Address" messages
+
+```{r out.width = "50%"}
+ggplot(duke_forest, aes(x = area, y = price, color = parking)) + 
+  geom_point(alpha = 0.8) +
+  scale_x_continuous(name = "Area") +
+  scale_x_continuous(name = "Area (sq ft)") 
+```
+
+---
+
 ## Guess the output
 
 .task[
@@ -420,11 +475,11 @@ What happens if you pair a discrete variable with a continuous scale? What happe
 .panelset[
 .panel[.panel-name[Plots]
 ```{r eval = FALSE}
-ggplot(duke_forest, aes(x = decade_built_cat, y = price)) + 
+ggplot(duke_forest, aes(x = parking, y = price)) + 
   geom_point(alpha = 0.5) +
   scale_x_continuous()
 
-ggplot(duke_forest, aes(x = decade_built_cat, y = price)) + 
+ggplot(duke_forest, aes(x = parking, y = price)) + 
   geom_point(alpha = 0.5) +
   scale_y_discrete()
 ```
@@ -444,19 +499,20 @@ countdown(minutes = 3, bottom = 0)
 
 When working with continuous data, the default is to map linearly from the data space onto the aesthetic space, but this scale can be transformed
 
-.pull-left[
-```{r out.width = "100%", strip.white = FALSE}
+.panelset[
+.panel[.panel-name[Linear]
+```{r}
 ggplot(duke_forest, aes(x = area, y = price)) + 
   geom_point(alpha = 0.5)
-
 ```
 ]
-.pull-right[
-```{r out.width = "100%"}
+.panel[.panel-name[Transformed]
+```{r}
 ggplot(duke_forest, aes(x = area, y = price)) + 
   geom_point(alpha = 0.5) +
   scale_y_continuous(trans = "log10")
 ```
+]
 ]
 
 ---
@@ -484,14 +540,16 @@ ggplot(duke_forest, aes(x = area, y = price)) +
 
 .pull-left[
 ```{r out.width = "100%"}
-ggplot(duke_forest, aes(x = area, y = price)) + 
+ggplot(duke_forest, 
+       aes(x = area, y = price)) + 
   geom_point(alpha = 0.5) +
   scale_y_continuous(trans = "log10")
 ```
 ]
 .pull-right[
-```{r out.width = "100%", strip.white = FALSE}
-ggplot(duke_forest, aes(x = area, y = price)) + 
+```{r out.width = "100%"}
+ggplot(duke_forest, 
+       aes(x = area, y = price)) + 
   geom_point(alpha = 0.5) +
   scale_y_log10()
 ```
@@ -542,3 +600,184 @@ ggplot(duke_forest, aes(x = area, y = price)) +
 countdown(minutes = 5, bottom = 0, left = 0)
 ```
 
+---
+
+class: middle, inverse
+
+# Guides
+
+---
+
+## What is a guide?
+
+Guides are legends and axes:
+
+```{r echo = FALSE, fig.alt = "Common components of axes and legends", out.width = "80%"}
+knitr::include_graphics("images/scale-guides.png")
+```
+
+.foonote[
+Source: ggplot2: Elegant Graphics for Data Analysis, [Chp 15](https://ggplot2-book.org/scales-guides.html#scale-guide).
+]
+
+---
+
+## Customizing axes
+
+```{r}
+ggplot(duke_forest, aes(x = area, y = price)) + 
+  geom_point(alpha = 0.5) +
+  scale_x_continuous(
+    name = "Area (sq ft)" #<<
+  )
+```
+
+---
+
+## Customizing axes
+
+.task[
+Why does 7000 not appear on the x-axis?
+]
+
+.small[
+```{r out.width = "50%"}
+ggplot(duke_forest, aes(x = area, y = price)) + 
+  geom_point(alpha = 0.5) +
+  scale_x_continuous(
+    name = "Area (sq ft)",
+    breaks = seq(from = 1000, to = 7000, by = 1000) #<<
+  )
+```
+]
+
+---
+
+## Customizing axes
+
+.small[
+```{r out.width = "50%"}
+ggplot(duke_forest, aes(x = area, y = price)) + 
+  geom_point(alpha = 0.5) +
+  scale_x_continuous(
+    name = "Area (sq ft)",
+    breaks = seq(from = 1000, to = 7000, by = 1000),
+    limits = c(1000, 7000)  #<<
+  )
+```
+]
+
+---
+
+## Customizing axes
+
+.small[
+```{r out.width = "50%"}
+ggplot(duke_forest, aes(x = area, y = price)) + 
+  geom_point(alpha = 0.5) +
+  scale_x_continuous(
+    name = "Area (sq ft)",
+    breaks = seq(from = 1000, to = 7000, by = 1000),
+    limits = c(1000, 7000),
+    labels = c("1,000", "2,000", "3,000", "4,000", "5,000", "6,000", "7,000") #<<
+  )
+```
+]
+
+---
+
+## Customizing axes
+
+.small[
+```{r out.width = "50%"}
+library(scales)
+
+ggplot(duke_forest, aes(x = area, y = price)) + 
+  geom_point(alpha = 0.5) +
+  scale_x_continuous( #<<
+    name = "Area (sq ft)", #<<
+    breaks = seq(from = 1000, to = 7000, by = 1000), #<<
+    limits = c(1000, 7000), #<<
+    labels = label_number(big.mark = ",") #<<
+  ) #<<
+```
+]
+
+----
+
+## Customizing axes
+
+.small[
+```{r}
+ggplot(duke_forest, aes(x = area, y = price)) + 
+  geom_point(alpha = 0.5) +
+  scale_x_continuous(
+    name = "Area (sq ft)",
+    breaks = seq(from = 1000, to = 7000, by = 1000),
+    limits = c(1000, 7000),
+    labels = label_number(big.mark = ",")
+  ) +
+  scale_y_continuous( #<<
+    name = "Price (USD)", #<<
+    labels = label_dollar() #<<
+  ) #<<
+```
+]
+
+---
+
+## Aside: saving a plot
+
+```{r}
+set.seed(1234)
+
+p_area_price_parking <- ggplot(duke_forest, aes(x = area, y = price)) +
+  geom_jitter(aes(color = parking, shape = parking), size = 2)
+
+p_area_price_parking
+```
+
+---
+
+## Customizing axis and legend labels with `scale_*()`
+
+.small[
+```{r}
+p_area_price_parking +
+  scale_x_continuous(name = "Area (sq ft)") + #<<
+  scale_y_continuous(name = "Price (USD)") + #<<
+  scale_color_discrete(name = "Parking") + #<<
+  scale_shape_discrete(name = "Parking") #<<
+```
+]
+
+---
+
+## Customizing axis and legend labels with `labs()`
+
+.small[
+```{r}
+p_area_price_parking +
+  labs( #<<
+    x = "Area (sq ft)", #<<
+    y = "Price (USD)", #<<
+    color = "Parking", #<<
+    shape = "Parking", #<<
+  )
+```
+]
+
+---
+
+## Splitting legend labels
+
+.small[
+```{r}
+p_area_price_parking +
+  labs(
+    x = "Area (sq ft)",
+    y = "Price (USD)",
+    color = "Parking"
+  )
+```
+]
