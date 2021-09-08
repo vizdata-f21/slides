@@ -3,7 +3,7 @@
   <head>
     <title>deep dive: geoms</title>
     <meta charset="utf-8" />
-    <meta name="date" content="2021-09-03" />
+    <meta name="date" content="2021-09-08" />
     <script src="04-geoms_files/header-attrs/header-attrs.js"></script>
     <link href="04-geoms_files/panelset/panelset.css" rel="stylesheet" />
     <script src="04-geoms_files/panelset/panelset.js"></script>
@@ -16,7 +16,7 @@
 class: center, middle, inverse, title-slide
 
 # deep dive: geoms
-### 2021-09-03
+### 2021-09-08
 
 ---
 
@@ -244,7 +244,7 @@ ggplot(duke_forest, aes(x = area, y = price)) +
 ]
 ]
 
-<div class="countdown" id="timer_61324502" style="right:0;bottom:0;" data-warnwhen="0">
+<div class="countdown" id="timer_61389975" style="right:0;bottom:0;" data-warnwhen="0">
 <code class="countdown-time"><span class="countdown-digits minutes">05</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>
 
@@ -282,7 +282,7 @@ ggplot(duke_forest, aes(x = area, y = price)) +
 ]
 ]
 
-<div class="countdown" id="timer_6132468c" style="right:0;bottom:0;" data-warnwhen="0">
+<div class="countdown" id="timer_61389bca" style="right:0;bottom:0;" data-warnwhen="0">
 <code class="countdown-time"><span class="countdown-digits minutes">03</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>
 
@@ -527,7 +527,7 @@ ggplot(duke_forest, aes(x = price)) +
 ]
 ]
 
-<div class="countdown" id="timer_6132470e" style="right:0;bottom:0;" data-warnwhen="0">
+<div class="countdown" id="timer_61389b66" style="right:0;bottom:0;" data-warnwhen="0">
 <code class="countdown-time"><span class="countdown-digits minutes">03</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>
 
@@ -751,7 +751,7 @@ ggplot(duke_forest, aes(x = bed, y = price)) +
 ]
 ]
 
-<div class="countdown" id="timer_613244e6" style="right:0;bottom:0;" data-warnwhen="0">
+<div class="countdown" id="timer_61389886" style="right:0;bottom:0;" data-warnwhen="0">
 <code class="countdown-time"><span class="countdown-digits minutes">03</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>
 
@@ -896,97 +896,7 @@ ggplot(mean_price_year, aes(x = year_built, y = mean_price)) +
 ]
 ]
 
-<div class="countdown" id="timer_61324459" style="right:0;bottom:0;" data-warnwhen="0">
-<code class="countdown-time"><span class="countdown-digits minutes">03</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
-</div>
-
----
-
-## Three variables
-
-- `geom_contour()`: contours
-- `geom_tile()`: tile the plane with rectangles
-- `geom_raster()`: fast version of `geom_tile()` for equal sized tiles
-
----
-
-## `geom_tile()`
-
-
-```r
-ggplot(duke_forest, aes(x = bed, y = bath)) +
- geom_tile(aes(fill = price))
-```
-
-&lt;img src="04-geoms_files/figure-html/unnamed-chunk-51-1.png" width="60%" /&gt;
-
----
-
-## Another look at smooth-ish surface
-
-.panelset[
-.panel[.panel-name[Summarize]
-
-```r
-mean_price_bed_bath &lt;- duke_forest %&gt;%
-  group_by(bed, bath) %&gt;%
-  summarize(mean_price = mean(price), .groups = "drop")
-
-mean_price_bed_bath
-```
-
-```
-## # A tibble: 19 × 3
-##      bed  bath mean_price
-##    &lt;dbl&gt; &lt;dbl&gt;      &lt;dbl&gt;
-##  1     2   1      105000 
-##  2     2   2      436000 
-##  3     2   3      420000 
-##  4     3   1      174750 
-##  5     3   2      444917.
-##  6     3   2.5    447500 
-##  7     3   3      512682.
-##  8     3   4     1039500 
-##  9     4   2      477000 
-## 10     4   2.5    597000 
-## 11     4   3      523767.
-## 12     4   4      678539.
-## 13     4   4.5     95000 
-## 14     4   5      711250 
-## 15     5   3      519500 
-## 16     5   4      657800 
-## 17     5   5     1010000 
-## 18     5   6      915000 
-## 19     6   5     1250000
-```
-]
-.panel[.panel-name[Plot]
-
-```r
-ggplot(mean_price_bed_bath, aes(x = bed, y = bath)) +
-  geom_point(aes(color = mean_price), size = 10, pch = "square")
-```
-
-&lt;img src="04-geoms_files/figure-html/unnamed-chunk-53-1.png" width="60%" /&gt;
-]
-]
-
----
-
-## Activity: Pick a geom
-
-.task[
-For each of the following problems, suggest a useful geom:
-
-1. Display how the value of variable has changed over time
-1. Show the detailed distribution of a single continuous variable
-1. Focus attention on the overall relationship between two variables in a large dataset
-1. Label outlying points in a single variable
-]
-
-&lt;iframe src="https://app.sli.do/event/rxg9buzy" height="100%" width="100%" frameBorder="0" style="min-height: 560px;" title="Slido"&gt;&lt;/iframe&gt;
-
-<div class="countdown" id="timer_613247b4" style="right:0;bottom:0;" data-warnwhen="0">
+<div class="countdown" id="timer_613899fc" style="right:0;bottom:0;" data-warnwhen="0">
 <code class="countdown-time"><span class="countdown-digits minutes">03</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>
 
@@ -1043,7 +953,7 @@ ggplot(duke_forest, aes(x = area, y = price)) +
 
 .panel[.panel-name[Plot]
 
-&lt;img src="04-geoms_files/figure-html/unnamed-chunk-56-1.png" width="60%" /&gt;
+&lt;img src="04-geoms_files/figure-html/unnamed-chunk-52-1.png" width="60%" /&gt;
 
 ]
 ]
