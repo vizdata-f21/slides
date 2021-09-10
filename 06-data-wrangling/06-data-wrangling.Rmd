@@ -109,7 +109,7 @@ class: middle, inverse
 ## Setup
 
 .midi[
-```{r messafe = FALSE}
+```{r message = FALSE}
 # load packages
 library(tidyverse)
 library(glue)
