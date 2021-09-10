@@ -501,13 +501,13 @@ When working with continuous data, the default is to map linearly from the data 
 
 .panelset[
 .panel[.panel-name[Linear]
-```{r}
+```{r out.width = "45%"}
 ggplot(duke_forest, aes(x = area, y = price)) + 
   geom_point(alpha = 0.5)
 ```
 ]
 .panel[.panel-name[Transformed]
-```{r}
+```{r out.width = "45%"}
 ggplot(duke_forest, aes(x = area, y = price)) + 
   geom_point(alpha = 0.5) +
   scale_y_continuous(trans = "log10")
@@ -689,7 +689,7 @@ ggplot(duke_forest, aes(x = area, y = price)) +
 ## Customizing axes
 
 .small[
-```{r out.width = "50%"}
+```{r out.width = "50%", message = FALSE}
 library(scales)
 
 ggplot(duke_forest, aes(x = area, y = price)) + 

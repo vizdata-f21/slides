@@ -3,7 +3,7 @@
   <head>
     <title>deep dive: stats + scales + guides</title>
     <meta charset="utf-8" />
-    <meta name="date" content="2021-09-08" />
+    <meta name="date" content="2021-09-10" />
     <script src="05-stats-scales-guides_files/header-attrs/header-attrs.js"></script>
     <link href="05-stats-scales-guides_files/panelset/panelset.css" rel="stylesheet" />
     <script src="05-stats-scales-guides_files/panelset/panelset.js"></script>
@@ -16,7 +16,7 @@
 class: center, middle, inverse, title-slide
 
 # deep dive:<br>stats + scales + guides
-### 2021-09-08
+### 2021-09-10
 
 ---
 
@@ -353,7 +353,7 @@ For each of the following problems, suggest a useful geom:
 
 &lt;iframe src="https://app.sli.do/event/rxg9buzy" height="100%" width="100%" frameBorder="0" style="min-height: 560px;" title="Slido"&gt;&lt;/iframe&gt;
 
-<div class="countdown" id="timer_6138dbe1" style="right:0;bottom:0;" data-warnwhen="0">
+<div class="countdown" id="timer_613ae000" style="right:0;bottom:0;" data-warnwhen="0">
 <code class="countdown-time"><span class="countdown-digits minutes">03</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>
 
@@ -514,7 +514,7 @@ ggplot(duke_forest, aes(x = area, y = price, color = parking)) +
 ]
 ]
 
-<div class="countdown" id="timer_6138dd08" style="right:0;bottom:0;" data-warnwhen="0">
+<div class="countdown" id="timer_613adcec" style="right:0;bottom:0;" data-warnwhen="0">
 <code class="countdown-time"><span class="countdown-digits minutes">02</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>
 
@@ -563,7 +563,7 @@ ggplot(duke_forest, aes(x = parking, y = price)) +
 ]
 ]
 
-<div class="countdown" id="timer_6138de20" style="right:0;bottom:0;" data-warnwhen="0">
+<div class="countdown" id="timer_613add54" style="right:0;bottom:0;" data-warnwhen="0">
 <code class="countdown-time"><span class="countdown-digits minutes">03</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>
 
@@ -581,7 +581,7 @@ ggplot(duke_forest, aes(x = area, y = price)) +
   geom_point(alpha = 0.5)
 ```
 
-&lt;img src="05-stats-scales-guides_files/figure-html/unnamed-chunk-22-1.png" width="60%" /&gt;
+&lt;img src="05-stats-scales-guides_files/figure-html/unnamed-chunk-22-1.png" width="45%" /&gt;
 ]
 .panel[.panel-name[Transformed]
 
@@ -591,7 +591,7 @@ ggplot(duke_forest, aes(x = area, y = price)) +
   scale_y_continuous(trans = "log10")
 ```
 
-&lt;img src="05-stats-scales-guides_files/figure-html/unnamed-chunk-23-1.png" width="60%" /&gt;
+&lt;img src="05-stats-scales-guides_files/figure-html/unnamed-chunk-23-1.png" width="45%" /&gt;
 ]
 ]
 
@@ -682,7 +682,7 @@ ggplot(duke_forest, aes(x = area, y = price)) +
 ]
 ]
 
-<div class="countdown" id="timer_6138dbf9" style="bottom:0;left:0;" data-warnwhen="0">
+<div class="countdown" id="timer_613adead" style="bottom:0;left:0;" data-warnwhen="0">
 <code class="countdown-time"><span class="countdown-digits minutes">05</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>
 
@@ -788,26 +788,7 @@ ggplot(duke_forest, aes(x = area, y = price)) +
 
 ```r
 library(scales)
-```
 
-```
-## 
-## Attaching package: 'scales'
-```
-
-```
-## The following object is masked from 'package:purrr':
-## 
-##     discard
-```
-
-```
-## The following object is masked from 'package:readr':
-## 
-##     col_factor
-```
-
-```r
 ggplot(duke_forest, aes(x = area, y = price)) + 
   geom_point(alpha = 0.5) +
 * scale_x_continuous(
