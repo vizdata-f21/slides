@@ -44,8 +44,10 @@ style_duo_accent(
                  "margin-block-end" = "0.4rem"),
     "h3" = list("margin-block-start" = "0.4rem", 
                  "margin-block-end" = "0.4rem"),
+    ".tiny" = list("font-size" = "70%"),
     ".small" = list("font-size" = "80%"),
     ".midi" = list("font-size" = "90%"),
+    ".tiny .remark-code" = list("font-size" = "70%"),
     ".small .remark-code" = list("font-size" = "80%"),
     ".midi .remark-code" = list("font-size" = "90%"),
     ".large" = list("font-size" = "200%"),
@@ -183,7 +185,7 @@ Which of the following (if any) are unfamiliar to you?
 Let's recreate this visualization!
 ]
 
-```{r out.width = "95%", echo = FALSE, fig.asp = 0.5}
+```{r daily-stay-cost, out.width = "95%", echo = FALSE, fig.asp = 0.5}
 hotels %>%
   mutate(
     arrival_date = glue("{arrival_date_year}-{arrival_date_month}-{arrival_date_day_of_month}"),
@@ -214,13 +216,29 @@ hotels %>%
 
 ---
 
+class: middle
+
+## .hand[livecoding]
+
+(See next slide for code developed during live coding session)
+
+---
+
+.small[
+```{r ref.label = "daily-stay-cost", fig.show = "hide"}
+
+```
+]
+
+---
+
 .task[
 Come up with a plan for making the following visualization and write the pseudocode.
 ]
 
 .panelset[
 .panel[.panel-name[Plot]
-```{r out.width = "88%", echo = FALSE, fig.asp = 0.5, dev = "ragg_png"}
+```{r monthly-bookings, out.width = "88%", echo = FALSE, fig.asp = 0.5, dev = "ragg_png"}
 hotels %>%
   mutate(
     arrival_date_month = fct_relevel(arrival_date_month, month.name),
@@ -239,16 +257,12 @@ hotels %>%
     )
   ) %>%
   count(season_emoji, hotel, arrival_date_month) %>%
-  ggplot(aes(x = arrival_date_month, y = n, 
-             group = hotel, linetype = hotel)) +
+  ggplot(aes(x = arrival_date_month, y = n, group = hotel, linetype = hotel)) +
   geom_line(size = 0.8, color = "cornsilk4") +
-  geom_text(aes(label = season_emoji), size = 6,
-            show.legend = FALSE) +
+  geom_text(aes(label = season_emoji), size = 6, show.legend = FALSE) +
   scale_x_discrete(labels = month.abb) +
   labs(
-    x = "Arrival month",
-    y = "Number of bookings",
-    linetype = NULL,
+    x = "Arrival month", y = "Number of bookings", linetype = NULL,
     title = "Number of monthly bookings",
     subtitle = "July 2015 to August 2017",
     caption = "Source: Antonio, Almeida and Nunes (2019) | TidyTuesday"
@@ -256,8 +270,7 @@ hotels %>%
   coord_cartesian(clip = "off") +
   theme(
     legend.position = c(0.12, 0.9),
-    legend.box.background = element_rect(fill = "white", 
-                                         color = "white"),
+    legend.box.background = element_rect(fill = "white", color = "white"),
     plot.subtitle = element_text(color = "cornsilk4"),
     plot.caption = element_text(color = "cornsilk4")
   )
@@ -271,6 +284,22 @@ hotels %>%
 ```{r echo = FALSE}
 countdown(minutes = 5, top = "10%")
 ```
+
+---
+
+class: middle
+
+## .hand[livecoding]
+
+(See next slide for code developed during live coding session)
+
+---
+
+.tiny[
+```{r ref.label = "monthly-bookings", fig.show = "hide"}
+
+```
+]
 
 ---
 
@@ -366,7 +395,9 @@ hotels %>%
     )
 ```
 
----
+```{r echo = FALSE}
+knitr::knit_exit()
+```
 
 ## Setup for next example: `hotel_summary`
 
