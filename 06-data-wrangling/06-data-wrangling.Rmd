@@ -90,7 +90,11 @@ class: middle, inverse
 
 ## Announcements
 
-- 
+- Lab: Start work on Project 1
+
+- Reading quiz 2 next week
+
+- Homework 1 grading in process
 
 ---
 
@@ -108,7 +112,6 @@ class: middle, inverse
 ```{r messafe = FALSE}
 # load packages
 library(tidyverse)
-library(openintro)
 library(glue)
 library(lubridate)
 library(scales)
