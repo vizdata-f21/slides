@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>data wrangling</title>
+    <meta charset="utf-8" />
+    <meta name="date" content="2021-09-10" />
+    <script src="06-data-wrangling_files/header-attrs/header-attrs.js"></script>
+    <link href="06-data-wrangling_files/panelset/panelset.css" rel="stylesheet" />
+    <script src="06-data-wrangling_files/panelset/panelset.js"></script>
+    <link href="06-data-wrangling_files/countdown/countdown.css" rel="stylesheet" />
+    <script src="06-data-wrangling_files/countdown/countdown.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# data wrangling
+### 2021-09-10
+
+---
+
+
+
+
+
+
+class: middle, inverse
+
+# Announcements
+
+---
+
+## Announcements
+
+- 
+
+---
+
+## Agenda for today: Data wrangling
+
+- Transforming and reshaping a single data frame
+
+- Bringing together multiple data frames
+
+---
+
+## Setup
+
+.midi[
+
+```r
+# load packages
+library(tidyverse)
+library(openintro)
+library(glue)
+library(lubridate)
+library(scales)
+library(knitr)
+
+# set default theme for ggplot2
+ggplot2::theme_set(ggplot2::theme_minimal(base_size = 16))
+
+# set default figure parameters for knitr
+knitr::opts_chunk$set(
+  fig.width = 8,
+  fig.asp = 0.618,
+  fig.retina = 3,
+  dpi = 300,
+  out.width = "60%"
+)
+
+# dplyr print min and max
+options(dplyr.print_max = 6, dplyr.print_min = 6)
+```
+]
+
+---
+
+class: middle, inverse
+
+# Transforming and reshaping a single data frame
+
+---
+
+## Data: Hotel bookings
+
+- Data from two hotels: one resort and one city hotel
+- Observations: Each row represents a hotel booking
+
+
+```r
+hotels &lt;- read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-02-11/hotels.csv")
+```
+
+---
+
+class: middle
+
+# .hand[We...]
+
+.huge[.blue[have]] .hand[a single data frame]
+
+.huge[.yellow[want]] .hand[to slice it, and dice it, and juice it, and process it, so we can plot it]
+
+---
+
+## **dplyr** 101
+
+.task[
+Which of the following (if any) are unfamiliar to you?
+]
+
+- `distinct()`
+- `select()`, `relocate()`
+- `arrange()`, `arrange(desc())`
+- `slice()`, `slice_head()`, `slice_tail()`, `slice_sample()`
+- `filter()`
+- `mutate()`
+- `summarise()`, `count()`
+
+---
+
+.task[
+Let's recreate this visualization!
+]
+
+&lt;img src="06-data-wrangling_files/figure-html/unnamed-chunk-3-1.png" width="95%" /&gt;
+
+---
+
+.task[
+Come up with a plan for making the following visualization and write the pseudocode.
+]
+
+.panelset[
+.panel[.panel-name[Plot]
+&lt;img src="06-data-wrangling_files/figure-html/unnamed-chunk-4-1.png" width="88%" /&gt;
+]
+.panel[.panel-name[Discuss]
+&lt;iframe src="https://app.sli.do/event/rxg9buzy" height="100%" width="100%" frameBorder="0" style="min-height: 560px;" title="Slido"&gt;&lt;/iframe&gt;
+]
+]
+
+<div class="countdown" id="timer_613b7de8" style="top:10%;right:0;" data-warnwhen="0">
+<code class="countdown-time"><span class="countdown-digits minutes">05</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
+</div>
+
+---
+
+## A few takeaways
+
+- `forcats::fct_relevel()` in a `mutate()` is useful for custom ordering of levels of a factor variable
+
+--
+- `summarise()` after `group_by()` with multiple variables results in a message about the grouping structure of the resulting data frame -- the message can be supressed by defining `.groups` (e.g., `.groups = "drop"` or `.groups = "keep"`)
+
+--
+- `summarise()` also lets you get away with being sloppy and not naming your new column, but that's not recommended!
+
+---
+
+## Rowwise operations
+
+.task[
+We want to calculate the total number of guests for each booking. Why does the following not work?
+]
+
+
+```r
+hotels %&gt;%
+  select(adults, children, babies) %&gt;%
+  mutate(guests = sum(c(adults, children, babies)))
+```
+
+```
+## # A tibble: 119,390 × 4
+##   adults children babies guests
+##    &lt;dbl&gt;    &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;
+## 1      2        0      0     NA
+## 2      2        0      0     NA
+## 3      1        0      0     NA
+## 4      1        0      0     NA
+## 5      2        0      0     NA
+## 6      2        0      0     NA
+## # … with 119,384 more rows
+```
+
+---
+
+## Rowwise operations
+
+
+```r
+hotels %&gt;%
+  select(adults, children, babies) %&gt;%
+* rowwise() %&gt;%
+  mutate(guests = sum(c(adults, children, babies))) %&gt;%
+  filter(adults &gt; 0, children &gt; 0, babies &gt; 0) # to show sum works
+```
+
+```
+## # A tibble: 172 × 4
+## # Rowwise: 
+##   adults children babies guests
+##    &lt;dbl&gt;    &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;
+## 1      2        1      1      4
+## 2      2        1      1      4
+## 3      2        1      1      4
+## 4      2        1      1      4
+## 5      2        1      1      4
+## 6      2        1      1      4
+## # … with 166 more rows
+```
+
+---
+
+## Columnwise operations
+
+Use `across()` combined with `summarise()` to calculate summary statistics for multiple columns at once:
+
+
+```r
+hotels %&gt;%
+* summarise(across(.cols = starts_with("stays"),  mean))
+```
+
+```
+## # A tibble: 1 × 2
+##   stays_in_weekend_nights stays_in_week_nights
+##                     &lt;dbl&gt;                &lt;dbl&gt;
+## 1                   0.928                 2.50
+```
+
+```r
+hotels %&gt;%
+* summarise(across(.cols = starts_with("stays"),  list(mean, sd)))
+```
+
+```
+## # A tibble: 1 × 4
+##   stays_in_weekend_nights_1 stays_in_weekend_n… stays_in_week_ni… stays_in_week_ni…
+##                       &lt;dbl&gt;               &lt;dbl&gt;             &lt;dbl&gt;             &lt;dbl&gt;
+## 1                     0.928               0.999              2.50              1.91
+```
+
+---
+
+## Select helpers
+
+- `starts_with()`: Starts with a prefix
+- `ends_with()`: Ends with a suffix
+- `contains()`: Contains a literal string
+- `num_range()`: Matches a numerical range like x01, x02, x03
+- `one_of()`: Matches variable names in a character vector
+- `everything()`: Matches all variables
+- `last_col()`: Select last variable, possibly with an offset
+- `matches()`: Matches a regular expression (a sequence of symbols/characters expressing a string/pattern to be searched for within text)
+
+.footnote[
+See help for any of these functions for more info, e.g. `?everything`.
+]
+
+---
+
+## Columnwise operations
+
+
+```r
+hotels %&gt;%
+  group_by(hotel, is_canceled) %&gt;%
+  summarise(
+*   across(.cols = starts_with("stays"),  list(mean = mean, sd = sd), .names = "{.fn}_{.col}")
+    )
+```
+
+```
+## `summarise()` has grouped output by 'hotel'. You can override using the `.groups` argument.
+```
+
+```
+## # A tibble: 4 × 6
+## # Groups:   hotel [2]
+##   hotel        is_canceled mean_stays_in_week… sd_stays_in_weeke… mean_stays_in_we…
+##   &lt;chr&gt;              &lt;dbl&gt;               &lt;dbl&gt;              &lt;dbl&gt;             &lt;dbl&gt;
+## 1 City Hotel             0               0.801              0.862              2.12
+## 2 City Hotel             1               0.788              0.917              2.27
+## 3 Resort Hotel           0               1.13               1.14               3.01
+## 4 Resort Hotel           1               1.34               1.14               3.44
+## # … with 1 more variable: sd_stays_in_week_nights &lt;dbl&gt;
+```
+
+---
+
+## Columnwise operations
+
+
+```r
+hotels %&gt;%
+  group_by(hotel, is_canceled) %&gt;%
+  summarise(
+    across(.cols = starts_with("stays"),  list(mean = mean, sd = sd), .names = "{.fn}_{.col}"),
+*   .groups = "drop"
+    )
+```
+
+```
+## # A tibble: 4 × 6
+##   hotel        is_canceled mean_stays_in_week… sd_stays_in_weeke… mean_stays_in_we…
+##   &lt;chr&gt;              &lt;dbl&gt;               &lt;dbl&gt;              &lt;dbl&gt;             &lt;dbl&gt;
+## 1 City Hotel             0               0.801              0.862              2.12
+## 2 City Hotel             1               0.788              0.917              2.27
+## 3 Resort Hotel           0               1.13               1.14               3.01
+## 4 Resort Hotel           1               1.34               1.14               3.44
+## # … with 1 more variable: sd_stays_in_week_nights &lt;dbl&gt;
+```
+
+---
+
+## Setup for next example: `hotel_summary`
+
+
+```r
+hotels_summary &lt;- hotels %&gt;%
+  group_by(hotel, is_canceled) %&gt;%
+  summarise(
+    across(
+      .cols = starts_with("stays"),
+      list(mean = mean),
+      .names = "{.fn}_{.col}"
+    ),
+    .groups = "drop"
+  )
+
+hotels_summary
+```
+
+```
+## # A tibble: 4 × 4
+##   hotel        is_canceled mean_stays_in_weekend_nights mean_stays_in_week_nights
+##   &lt;chr&gt;              &lt;dbl&gt;                        &lt;dbl&gt;                     &lt;dbl&gt;
+## 1 City Hotel             0                        0.801                      2.12
+## 2 City Hotel             1                        0.788                      2.27
+## 3 Resort Hotel           0                        1.13                       3.01
+## 4 Resort Hotel           1                        1.34                       3.44
+```
+
+---
+
+.task[
+Which variables are plotted in the following visualization? Which aesthetics are they mapped to?
+]
+
+.panelset[
+.panel[.panel-name[Plot]
+&lt;img src="06-data-wrangling_files/figure-html/unnamed-chunk-12-1.png" width="88%" /&gt;
+]
+.panel[.panel-name[Discuss]
+&lt;iframe src="https://app.sli.do/event/rxg9buzy" height="100%" width="100%" frameBorder="0" style="min-height: 560px;" title="Slido"&gt;&lt;/iframe&gt;
+]
+]
+
+<div class="countdown" id="timer_613b7b47" style="top:10%;right:0;" data-warnwhen="0">
+<code class="countdown-time"><span class="countdown-digits minutes">05</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
+</div>
+
+---
+
+## `pivot_wider()` and `pivot_longer()`
+
+.pull-left[
+- From **tidyr**
+- Incredibly useful for reshaping for plotting
+- Lots of extra arguments to help with reshaping pain!
+- Refer to [pivoting vignette](https://tidyr.tidyverse.org/articles/pivot.html) when needed
+]
+.pull-right[
+&lt;img src="images/semi-join.gif" width="80%" /&gt;
+]
+
+---
+
+class: middle, inverse
+
+# Bringing together multiple data frames
+
+---
+
+class: middle
+
+# .hand[We...]
+
+.huge[.blue[have]] .hand[multiple data frames]
+
+.huge[.yellow[want]] .hand[to bring them together so we can plot them]
+
+---
+
+
+
+## Data: Women in science 
+
+Information on 10 women in science who changed the world
+
+.small[
+
+|name               |
+|:------------------|
+|Ada Lovelace       |
+|Marie Curie        |
+|Janaki Ammal       |
+|Chien-Shiung Wu    |
+|Katherine Johnson  |
+|Rosalind Franklin  |
+|Vera Rubin         |
+|Gladys West        |
+|Flossie Wong-Staal |
+|Jennifer Doudna    |
+]
+
+
+.footnote[
+Source: [Discover Magazine](https://www.discovermagazine.com/the-sciences/meet-10-women-in-science-who-changed-the-world)
+]
+
+---
+
+## Setup update
+
+We have only 10 observations, so let's print them all going forward:
+
+
+```r
+options(
+  dplyr.print_min = 10, 
+  dplyr.print_max = 10
+  )
+```
+
+---
+
+## Inputs
+
+.panelset[
+
+.panel[.panel-name[professions]
+
+```r
+professions
+```
+
+```
+## # A tibble: 10 × 2
+##    name               profession                        
+##    &lt;chr&gt;              &lt;chr&gt;                             
+##  1 Ada Lovelace       Mathematician                     
+##  2 Marie Curie        Physicist and Chemist             
+##  3 Janaki Ammal       Botanist                          
+##  4 Chien-Shiung Wu    Physicist                         
+##  5 Katherine Johnson  Mathematician                     
+##  6 Rosalind Franklin  Chemist                           
+##  7 Vera Rubin         Astronomer                        
+##  8 Gladys West        Mathematician                     
+##  9 Flossie Wong-Staal Virologist and Molecular Biologist
+## 10 Jennifer Doudna    Biochemist
+```
+]
+
+.panel[.panel-name[dates]
+
+```r
+dates
+```
+
+```
+## # A tibble: 8 × 3
+##   name               birth_year death_year
+##   &lt;chr&gt;                   &lt;dbl&gt;      &lt;dbl&gt;
+## 1 Janaki Ammal             1897       1984
+## 2 Chien-Shiung Wu          1912       1997
+## 3 Katherine Johnson        1918       2020
+## 4 Rosalind Franklin        1920       1958
+## 5 Vera Rubin               1928       2016
+## 6 Gladys West              1930         NA
+## 7 Flossie Wong-Staal       1947         NA
+## 8 Jennifer Doudna          1964         NA
+```
+]
+
+.panel[.panel-name[works]
+
+```r
+works
+```
+
+```
+## # A tibble: 9 × 2
+##   name               known_for                                                     
+##   &lt;chr&gt;              &lt;chr&gt;                                                         
+## 1 Ada Lovelace       first computer algorithm                                      
+## 2 Marie Curie        theory of radioactivity,  first woman Nobel Prize win         
+## 3 Janaki Ammal       hybrid species, biodiversity protection                       
+## 4 Chien-Shiung Wu    Wu experiment overturning theory of parity                    
+## 5 Katherine Johnson  orbital mechanics critical to sending first Americans into sp…
+## 6 Vera Rubin         existence of dark matter                                      
+## 7 Gladys West        mathematical modeling of the shape of the Earth               
+## 8 Flossie Wong-Staal first to clone HIV and map its genes, which led to test for v…
+## 9 Jennifer Doudna    one of the primary developers of CRISPR
+```
+]
+
+]
+
+---
+
+## Desired output
+
+
+```
+## # A tibble: 10 × 5
+##    name               profession       birth_year death_year known_for             
+##    &lt;chr&gt;              &lt;chr&gt;                 &lt;dbl&gt;      &lt;dbl&gt; &lt;chr&gt;                 
+##  1 Ada Lovelace       Mathematician            NA         NA first computer algori…
+##  2 Marie Curie        Physicist and C…         NA         NA theory of radioactivi…
+##  3 Janaki Ammal       Botanist               1897       1984 hybrid species, biodi…
+##  4 Chien-Shiung Wu    Physicist              1912       1997 Wu experiment overtur…
+##  5 Katherine Johnson  Mathematician          1918       2020 orbital mechanics cri…
+##  6 Rosalind Franklin  Chemist                1920       1958 &lt;NA&gt;                  
+##  7 Vera Rubin         Astronomer             1928       2016 existence of dark mat…
+##  8 Gladys West        Mathematician          1930         NA mathematical modeling…
+##  9 Flossie Wong-Staal Virologist and …       1947         NA first to clone HIV an…
+## 10 Jennifer Doudna    Biochemist             1964         NA one of the primary de…
+```
+
+---
+
+## Inputs, reminder
+
+.pull-left[
+
+```r
+names(professions)
+```
+
+```
+## [1] "name"       "profession"
+```
+
+```r
+names(dates)
+```
+
+```
+## [1] "name"       "birth_year" "death_year"
+```
+
+```r
+names(works)
+```
+
+```
+## [1] "name"      "known_for"
+```
+]
+.pull-right[
+
+```r
+nrow(professions)
+```
+
+```
+## [1] 10
+```
+
+```r
+nrow(dates)
+```
+
+```
+## [1] 8
+```
+
+```r
+nrow(works)
+```
+
+```
+## [1] 9
+```
+]
+
+---
+
+## Joining data frames
+
+
+```r
+something_join(x, y)
+```
+
+- `left_join()`: all rows from x
+- `right_join()`: all rows from y
+- `full_join()`: all rows from both x and y
+- `semi_join()`: all rows from x where there are matching values in y, keeping just columns from x
+- `inner_join()`: all rows from x where there are matching values in y, return 
+all combination of multiple matches in the case of multiple matches
+- `anti_join()`: return all rows from x where there are not matching values in y, never duplicate rows of x
+- ...
+ 
+---
+
+## Setup
+
+For the next few slides...
+
+.pull-left[
+
+
+```r
+x
+```
+
+```
+## # A tibble: 3 × 2
+##      id value_x
+##   &lt;dbl&gt; &lt;chr&gt;  
+## 1     1 x1     
+## 2     2 x2     
+## 3     3 x3
+```
+]
+.pull-right[
+
+
+```r
+y
+```
+
+```
+## # A tibble: 3 × 2
+##      id value_y
+##   &lt;dbl&gt; &lt;chr&gt;  
+## 1     1 y1     
+## 2     2 y2     
+## 3     4 y4
+```
+]
+
+---
+
+## `left_join()`
+
+.pull-left[
+&lt;img src="images/left-join.gif" width="80%" style="background-color: #FDF6E3" /&gt;
+]
+.pull-right[
+
+```r
+left_join(x, y)
+```
+
+```
+## Joining, by = "id"
+```
+
+```
+## # A tibble: 3 × 3
+##      id value_x value_y
+##   &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;  
+## 1     1 x1      y1     
+## 2     2 x2      y2     
+## 3     3 x3      &lt;NA&gt;
+```
+]
+
+---
+
+## `left_join()`
+
+
+```r
+professions %&gt;%
+* left_join(dates)
+```
+
+```
+## Joining, by = "name"
+```
+
+```
+## # A tibble: 10 × 4
+##    name               profession                         birth_year death_year
+##    &lt;chr&gt;              &lt;chr&gt;                                   &lt;dbl&gt;      &lt;dbl&gt;
+##  1 Ada Lovelace       Mathematician                              NA         NA
+##  2 Marie Curie        Physicist and Chemist                      NA         NA
+##  3 Janaki Ammal       Botanist                                 1897       1984
+##  4 Chien-Shiung Wu    Physicist                                1912       1997
+##  5 Katherine Johnson  Mathematician                            1918       2020
+##  6 Rosalind Franklin  Chemist                                  1920       1958
+##  7 Vera Rubin         Astronomer                               1928       2016
+##  8 Gladys West        Mathematician                            1930         NA
+##  9 Flossie Wong-Staal Virologist and Molecular Biologist       1947         NA
+## 10 Jennifer Doudna    Biochemist                               1964         NA
+```
+
+---
+
+## `right_join()`
+
+.pull-left[
+&lt;img src="images/right-join.gif" width="80%" style="background-color: #FDF6E3" /&gt;
+]
+.pull-right[
+
+```r
+right_join(x, y)
+```
+
+```
+## Joining, by = "id"
+```
+
+```
+## # A tibble: 3 × 3
+##      id value_x value_y
+##   &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;  
+## 1     1 x1      y1     
+## 2     2 x2      y2     
+## 3     4 &lt;NA&gt;    y4
+```
+]
+
+---
+
+## `right_join()`
+
+
+
+```r
+professions %&gt;%
+* right_join(dates)
+```
+
+```
+## Joining, by = "name"
+```
+
+```
+## # A tibble: 8 × 4
+##   name               profession                         birth_year death_year
+##   &lt;chr&gt;              &lt;chr&gt;                                   &lt;dbl&gt;      &lt;dbl&gt;
+## 1 Janaki Ammal       Botanist                                 1897       1984
+## 2 Chien-Shiung Wu    Physicist                                1912       1997
+## 3 Katherine Johnson  Mathematician                            1918       2020
+## 4 Rosalind Franklin  Chemist                                  1920       1958
+## 5 Vera Rubin         Astronomer                               1928       2016
+## 6 Gladys West        Mathematician                            1930         NA
+## 7 Flossie Wong-Staal Virologist and Molecular Biologist       1947         NA
+## 8 Jennifer Doudna    Biochemist                               1964         NA
+```
+
+---
+
+## `full_join()`
+
+.pull-left[
+&lt;img src="images/full-join.gif" width="80%" style="background-color: #FDF6E3" /&gt;
+]
+.pull-right[
+
+```r
+full_join(x, y)
+```
+
+```
+## Joining, by = "id"
+```
+
+```
+## # A tibble: 4 × 3
+##      id value_x value_y
+##   &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;  
+## 1     1 x1      y1     
+## 2     2 x2      y2     
+## 3     3 x3      &lt;NA&gt;   
+## 4     4 &lt;NA&gt;    y4
+```
+]
+
+---
+
+## `full_join()`
+
+
+```r
+dates %&gt;%
+* full_join(works)
+```
+
+```
+## Joining, by = "name"
+```
+
+```
+## # A tibble: 10 × 4
+##    name               birth_year death_year known_for                              
+##    &lt;chr&gt;                   &lt;dbl&gt;      &lt;dbl&gt; &lt;chr&gt;                                  
+##  1 Janaki Ammal             1897       1984 hybrid species, biodiversity protection
+##  2 Chien-Shiung Wu          1912       1997 Wu experiment overturning theory of pa…
+##  3 Katherine Johnson        1918       2020 orbital mechanics critical to sending …
+##  4 Rosalind Franklin        1920       1958 &lt;NA&gt;                                   
+##  5 Vera Rubin               1928       2016 existence of dark matter               
+##  6 Gladys West              1930         NA mathematical modeling of the shape of …
+##  7 Flossie Wong-Staal       1947         NA first to clone HIV and map its genes, …
+##  8 Jennifer Doudna          1964         NA one of the primary developers of CRISPR
+##  9 Ada Lovelace               NA         NA first computer algorithm               
+## 10 Marie Curie                NA         NA theory of radioactivity,  first woman …
+```
+
+---
+
+## `inner_join()`
+
+.pull-left[
+&lt;img src="images/inner-join.gif" width="80%" style="background-color: #FDF6E3" /&gt;
+]
+.pull-right[
+
+```r
+inner_join(x, y)
+```
+
+```
+## Joining, by = "id"
+```
+
+```
+## # A tibble: 2 × 3
+##      id value_x value_y
+##   &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;  
+## 1     1 x1      y1     
+## 2     2 x2      y2
+```
+]
+
+---
+
+## `inner_join()`
+
+
+```r
+dates %&gt;%
+* inner_join(works)
+```
+
+```
+## Joining, by = "name"
+```
+
+```
+## # A tibble: 7 × 4
+##   name               birth_year death_year known_for                               
+##   &lt;chr&gt;                   &lt;dbl&gt;      &lt;dbl&gt; &lt;chr&gt;                                   
+## 1 Janaki Ammal             1897       1984 hybrid species, biodiversity protection 
+## 2 Chien-Shiung Wu          1912       1997 Wu experiment overturning theory of par…
+## 3 Katherine Johnson        1918       2020 orbital mechanics critical to sending f…
+## 4 Vera Rubin               1928       2016 existence of dark matter                
+## 5 Gladys West              1930         NA mathematical modeling of the shape of t…
+## 6 Flossie Wong-Staal       1947         NA first to clone HIV and map its genes, w…
+## 7 Jennifer Doudna          1964         NA one of the primary developers of CRISPR
+```
+
+---
+
+## `semi_join()`
+
+.pull-left[
+&lt;img src="images/semi-join.gif" width="80%" style="background-color: #FDF6E3" /&gt;
+]
+.pull-right[
+
+```r
+semi_join(x, y)
+```
+
+```
+## Joining, by = "id"
+```
+
+```
+## # A tibble: 2 × 2
+##      id value_x
+##   &lt;dbl&gt; &lt;chr&gt;  
+## 1     1 x1     
+## 2     2 x2
+```
+]
+
+---
+
+## `semi_join()`
+
+
+```r
+dates %&gt;%
+* semi_join(works)
+```
+
+```
+## Joining, by = "name"
+```
+
+```
+## # A tibble: 7 × 3
+##   name               birth_year death_year
+##   &lt;chr&gt;                   &lt;dbl&gt;      &lt;dbl&gt;
+## 1 Janaki Ammal             1897       1984
+## 2 Chien-Shiung Wu          1912       1997
+## 3 Katherine Johnson        1918       2020
+## 4 Vera Rubin               1928       2016
+## 5 Gladys West              1930         NA
+## 6 Flossie Wong-Staal       1947         NA
+## 7 Jennifer Doudna          1964         NA
+```
+
+---
+
+## `anti_join()`
+
+.pull-left[
+&lt;img src="images/anti-join.gif" width="80%" style="background-color: #FDF6E3" /&gt;
+]
+.pull-right[
+
+```r
+anti_join(x, y)
+```
+
+```
+## Joining, by = "id"
+```
+
+```
+## # A tibble: 1 × 2
+##      id value_x
+##   &lt;dbl&gt; &lt;chr&gt;  
+## 1     3 x3
+```
+]
+
+---
+
+## `anti_join()`
+
+
+```r
+dates %&gt;%
+* anti_join(works)
+```
+
+```
+## Joining, by = "name"
+```
+
+```
+## # A tibble: 1 × 3
+##   name              birth_year death_year
+##   &lt;chr&gt;                  &lt;dbl&gt;      &lt;dbl&gt;
+## 1 Rosalind Franklin       1920       1958
+```
+
+---
+
+## Putting it altogether
+
+.midi[
+
+```r
+scientists &lt;- professions %&gt;%
+  left_join(dates) %&gt;%
+  left_join(works)
+```
+
+```
+## Joining, by = "name"
+## Joining, by = "name"
+```
+
+```r
+scientists
+```
+
+```
+## # A tibble: 10 × 5
+##    name               profession       birth_year death_year known_for             
+##    &lt;chr&gt;              &lt;chr&gt;                 &lt;dbl&gt;      &lt;dbl&gt; &lt;chr&gt;                 
+##  1 Ada Lovelace       Mathematician            NA         NA first computer algori…
+##  2 Marie Curie        Physicist and C…         NA         NA theory of radioactivi…
+##  3 Janaki Ammal       Botanist               1897       1984 hybrid species, biodi…
+##  4 Chien-Shiung Wu    Physicist              1912       1997 Wu experiment overtur…
+##  5 Katherine Johnson  Mathematician          1918       2020 orbital mechanics cri…
+##  6 Rosalind Franklin  Chemist                1920       1958 &lt;NA&gt;                  
+##  7 Vera Rubin         Astronomer             1928       2016 existence of dark mat…
+##  8 Gladys West        Mathematician          1930         NA mathematical modeling…
+##  9 Flossie Wong-Staal Virologist and …       1947         NA first to clone HIV an…
+## 10 Jennifer Doudna    Biochemist             1964         NA one of the primary de…
+```
+]
+
+---
+
+## `*_join()` functions
+
+- From **dplyr**
+- Incredibly useful for bringing datasets with common information (e.g., unique identifier) together
+- Use `by` argument when the names of the column containing the common information are not the same across datasets
+- Always check that the numbers of rows and columns of the result dataset makes sense
+- Refer to [two-table verbs vignette](https://dplyr.tidyverse.org/articles/two-table.html) when needed
+
+---
+
+## Visualizing joined data
+
+&lt;img src="06-data-wrangling_files/figure-html/unnamed-chunk-48-1.png" width="100%" /&gt;
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"slideNumberFormat": "%current%",
+"highlightStyle": "solarized-light",
+"highlightLines": true,
+"ratio": "16:9",
+"countIncrementalSlides": true
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
