@@ -18,7 +18,7 @@ xaringanExtra::use_panelset()
 library(countdown)
 ```
 
-```{r xaringan-themer, include = FALSE, warning = FALSE}
+```{r xaringan-themer, include = FALSE, warning = FALSE, fig.showtext = FALSE}
 library(xaringanthemer)
 style_duo_accent(
   primary_color = "#866fa3",
@@ -92,19 +92,18 @@ class: middle, inverse
 
 ## Announcements
 
-- Lab: Start work on Project 1
-
-- Reading quiz 2 next week
-
-- Homework 1 grading in process
+- 
 
 ---
 
-## Agenda for today: Data wrangling
+## Agenda for today:
 
-- Transforming and reshaping a single data frame
+- Wrap up: Data wrangling
+  
+  - Transforming and reshaping a single data frame
+  - Bringing together multiple data frames
 
-- Bringing together multiple data frames
+- Coordinates
 
 ---
 
@@ -180,7 +179,7 @@ Which variables are plotted in the following visualization? Which aesthetics are
 
 .panelset[
 .panel[.panel-name[Plot]
-```{r out.width = "88%", echo = FALSE, fig.asp = 0.5, fig.width = 8, dev = "ragg_png"}
+```{r out.width = "88%", echo = FALSE, fig.asp = 0.5, fig.width = 10}
 hotels_summary %>%
   mutate(is_canceled = if_else(is_canceled == 0, "Not canceled", "Canceled")) %>%
   pivot_longer(cols = starts_with("mean"),
@@ -257,9 +256,13 @@ dates <- read_csv("data/dates.csv")
 works <- read_csv("data/works.csv")
 ```
 
-## Data: Women in science 
+```{r echo=FALSE, message = FALSE}
+professions <- read_csv(here::here("07", "data/professions.csv"))
+dates <- read_csv(here::here("07", "data/dates.csv"))
+works <- read_csv(here::here("07", "data/works.csv"))
+```
 
-Information on 10 women in science who changed the world
+## Data: 10 women in science who changed the world
 
 .small[
 ```{r echo=FALSE}
@@ -559,7 +562,7 @@ scientists
 
 ## Visualizing joined data
 
-```{r echo = FALSE, out.width = "100%", fig.asp = 0.5, warning = FALSE, fig.width = 10, message = FALSE}
+```{r echo = FALSE, out.width = "100%", fig.asp = 0.55, warning = FALSE, fig.width = 12, message = FALSE}
 library(colorblindr) # clauswilke/colorblindr
 
 scientists %>%
@@ -593,18 +596,26 @@ scientists %>%
   scale_shape_manual(values = c("circle", NA)) +
   scale_linetype_manual(values = c("dashed", "solid")) + 
   scale_color_OkabeIto(darken = 0.4) +
-  geom_text(aes(x = 2021, y = name, label = known_for), nudge_x = 10, show.legend = FALSE, hjust = 0) +
+  scale_x_continuous(expand = c(0.01, 0), breaks = seq(1820, 2020, 50)) +
+  geom_text(aes(y = name, label = known_for), x = 2030, show.legend = FALSE, hjust = 0) +
+  geom_text(aes(label = profession), x = 1809, y = Inf, hjust = 1, vjust = 1, show.legend = FALSE) +
   coord_cartesian(clip = "off") +
-  theme(
-    plot.margin = unit(c(1,21,1,1), "lines"),
-    plot.title.position = "plot",
-    plot.caption.position = "plot"
-    ) +
   labs(
     x = "Year",
     y = NULL,
     title = "10 women in science who changed the world",
-    subtitle = "Works and lifespans (dashed line indicates still alive)",
     caption = "Source: Discover magazine"
-  )
+  ) +
+  facet_grid(profession ~ ., scales = "free_y", space = "free_y", switch = "x") +
+  theme(
+    plot.margin = unit(c(1,23,1,4), "lines"),
+    plot.title.position = "plot",
+    plot.caption.position = "plot",
+    plot.caption = element_text(hjust = 2), # manual hack
+    strip.background = element_blank(),
+    strip.text = element_blank(),
+    axis.title.x = element_text(hjust = 0),
+    panel.background =element_rect(fill = "#f0f0f0", color = "white"),
+    panel.grid.major = element_line(color = "white", size = 0.5)
+    )
 ```
