@@ -18,7 +18,7 @@ xaringanExtra::use_panelset()
 library(countdown)
 ```
 
-```{r xaringan-themer, include = FALSE, warning = FALSE}
+```{r xaringan-themer, include = FALSE, warning = FALSE, fig.showtext = FALSE}
 library(xaringanthemer)
 style_duo_accent(
   primary_color = "#866fa3",
