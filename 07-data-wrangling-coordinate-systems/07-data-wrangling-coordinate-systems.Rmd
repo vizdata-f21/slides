@@ -1,5 +1,5 @@
 ---
-title: "data wrangling +<br>deep dive:<br>coordinate systems"
+title: "data wrangling II +<br>deep dive:<br>coordinate systems"
 date: '`r Sys.Date()`'
 output:
   xaringan::moon_reader:
@@ -10,6 +10,7 @@ output:
       highlightLines: true
       ratio: 16:9
       countIncrementalSlides: true
+      beforeInit: "https://platform.twitter.com/widgets.js"
 ---
 
 ```{r setup, include=FALSE}
@@ -34,7 +35,7 @@ style_duo_accent(
   title_slide_background_image = "https://github.com/vizdata-f21/slides/raw/main/vizdata-bg.jpeg",
   title_slide_background_size = "contain",
   base_font_size = "24px",
-  header_h1_font_size = "2rem",
+  header_h1_font_size = "1.9rem",
   header_h2_font_size = "1.75rem",
   header_h3_font_size = "1.5rem",
   extra_css = list(
@@ -98,9 +99,8 @@ class: middle, inverse
   - Any questions about project?
 
 - RQ 2 review:
-  - Pivot and join functions: today
-  - Setting limits: today
-  - Visualizing various models: on Friday
+  - Today: pivot and join functions, setting limits / zooming in, pie charts
+  - Friday: Visualizing various models (i.e., `lm()` <-> `geom_smooth()`)
 
 ---
 
@@ -636,6 +636,20 @@ class: middle
 ## .hand[livecoding]
 
 (Full code to be added after live coding session)
+
+---
+
+<center>
+<blockquote class="twitter-tweet" width="400"><p lang="en" dir="ltr">TIL: debug = TRUE argument for element_text() in <a href="https://twitter.com/hashtag/ggplot2?src=hash&amp;ref_src=twsrc%5Etfw">#ggplot2</a> &quot;aids visual debugging by drawing a solid rectangle behind the complete text area, and a point where each label is anchored&quot; 🤯 <br><br>I don&#39;t know how I&#39;ve never seen this before, it&#39;s super helpful! <a href="https://t.co/87VVhMpeLm">pic.twitter.com/87VVhMpeLm</a></p>&mdash; Mine Çetinkaya-Rundel (@minebocek) <a href="https://twitter.com/minebocek/status/1437844443588136960?ref_src=twsrc%5Etfw">September 14, 2021</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+</center>
+
+---
+
+## Gantt charts
+
+<center>
+<blockquote class="twitter-tweet"><p lang="en" dir="ltr">Oh! Also, if this is for a blogpost could I recommend noting that the datviz you’ve made is called a Gantt chart? <br><br>In my experience that name isn’t very well known, but knowing it helps when googling how to customise these charts 😊</p>&mdash; Charlie 👩‍💻 (@charliejhadley) <a href="https://twitter.com/charliejhadley/status/1437849467793952775?ref_src=twsrc%5Etfw">September 14, 2021</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+</center>
 
 ---
 

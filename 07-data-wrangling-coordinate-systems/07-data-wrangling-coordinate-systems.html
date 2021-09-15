@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="" xml:lang="">
   <head>
-    <title>data wrangling + deep dive: coordinate systems</title>
+    <title>data wrangling II + deep dive: coordinate systems</title>
     <meta charset="utf-8" />
     <meta name="date" content="2021-09-15" />
     <script src="07-data-wrangling-coordinate-systems_files/header-attrs/header-attrs.js"></script>
@@ -15,8 +15,8 @@
     <textarea id="source">
 class: center, middle, inverse, title-slide
 
-# data wrangling +<br>deep dive:<br>coordinate systems
-### 2021-09-15<br>
+# data wrangling II +<br>deep dive:<br>coordinate systems
+### 2021-09-15
 
 ---
 
@@ -39,9 +39,8 @@ class: middle, inverse
   - Any questions about project?
 
 - RQ 2 review:
-  - Pivot and join functions: today
-  - Setting limits: today
-  - Visualizing various models: on Friday
+  - Today: pivot and join functions, setting limits / zooming in, pie charts
+  - Friday: Visualizing various models (i.e., `lm()` &lt;-&gt; `geom_smooth()`)
 
 ---
 
@@ -149,7 +148,7 @@ Which variables are plotted in the following visualization? Which aesthetics are
 ]
 ]
 
-<div class="countdown" id="timer_61417f40" style="top:10%;right:0;" data-warnwhen="0">
+<div class="countdown" id="timer_6141fed1" style="top:10%;right:0;" data-warnwhen="0">
 <code class="countdown-time"><span class="countdown-digits minutes">05</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>
 
@@ -822,6 +821,20 @@ class: middle
 
 ---
 
+&lt;center&gt;
+&lt;blockquote class="twitter-tweet" width="400"&gt;&lt;p lang="en" dir="ltr"&gt;TIL: debug = TRUE argument for element_text() in &lt;a href="https://twitter.com/hashtag/ggplot2?src=hash&amp;amp;ref_src=twsrc%5Etfw"&gt;#ggplot2&lt;/a&gt; &amp;quot;aids visual debugging by drawing a solid rectangle behind the complete text area, and a point where each label is anchored&amp;quot; 🤯 &lt;br&gt;&lt;br&gt;I don&amp;#39;t know how I&amp;#39;ve never seen this before, it&amp;#39;s super helpful! &lt;a href="https://t.co/87VVhMpeLm"&gt;pic.twitter.com/87VVhMpeLm&lt;/a&gt;&lt;/p&gt;&amp;mdash; Mine Çetinkaya-Rundel (@minebocek) &lt;a href="https://twitter.com/minebocek/status/1437844443588136960?ref_src=twsrc%5Etfw"&gt;September 14, 2021&lt;/a&gt;&lt;/blockquote&gt; &lt;script async src="https://platform.twitter.com/widgets.js" charset="utf-8"&gt;&lt;/script&gt;
+&lt;/center&gt;
+
+---
+
+## Gantt charts
+
+&lt;center&gt;
+&lt;blockquote class="twitter-tweet"&gt;&lt;p lang="en" dir="ltr"&gt;Oh! Also, if this is for a blogpost could I recommend noting that the datviz you’ve made is called a Gantt chart? &lt;br&gt;&lt;br&gt;In my experience that name isn’t very well known, but knowing it helps when googling how to customise these charts 😊&lt;/p&gt;&amp;mdash; Charlie 👩‍💻 (@charliejhadley) &lt;a href="https://twitter.com/charliejhadley/status/1437849467793952775?ref_src=twsrc%5Etfw"&gt;September 14, 2021&lt;/a&gt;&lt;/blockquote&gt; &lt;script async src="https://platform.twitter.com/widgets.js" charset="utf-8"&gt;&lt;/script&gt;
+&lt;/center&gt;
+
+---
+
 class: middle, inverse
 
 # Coordinate systems
@@ -1217,6 +1230,7 @@ ggplot(map_data("state"), aes(long, lat, group = group)) +
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="https://platform.twitter.com/widgets.js"></script>
 <script>var slideshow = remark.create({
 "slideNumberFormat": "%current%",
 "highlightStyle": "solarized-light",
