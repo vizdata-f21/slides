@@ -1,22 +1,22 @@
 <!DOCTYPE html>
 <html lang="" xml:lang="">
   <head>
-    <title>data wrangling</title>
+    <title>data wrangling + deep dive: coordinate systems</title>
     <meta charset="utf-8" />
-    <meta name="date" content="2021-09-14" />
-    <script src="07_files/header-attrs/header-attrs.js"></script>
-    <link href="07_files/panelset/panelset.css" rel="stylesheet" />
-    <script src="07_files/panelset/panelset.js"></script>
-    <link href="07_files/countdown/countdown.css" rel="stylesheet" />
-    <script src="07_files/countdown/countdown.js"></script>
+    <meta name="date" content="2021-09-15" />
+    <script src="07-data-wrangling-coordinate-systems_files/header-attrs/header-attrs.js"></script>
+    <link href="07-data-wrangling-coordinate-systems_files/panelset/panelset.css" rel="stylesheet" />
+    <script src="07-data-wrangling-coordinate-systems_files/panelset/panelset.js"></script>
+    <link href="07-data-wrangling-coordinate-systems_files/countdown/countdown.css" rel="stylesheet" />
+    <script src="07-data-wrangling-coordinate-systems_files/countdown/countdown.js"></script>
     <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
   </head>
   <body>
     <textarea id="source">
 class: center, middle, inverse, title-slide
 
-# data wrangling
-### 2021-09-14
+# data wrangling +<br>deep dive:<br>coordinate systems
+### 2021-09-15<br>
 
 ---
 
@@ -33,18 +33,26 @@ class: middle, inverse
 
 ## Announcements
 
-- 
+- Project:
+  - Take note of deadlines: [vizdata.org/project-1.html#due-dates](https://www.vizdata.org/project-1.html#due-dates)
+  - Proposals for peer review due due Fri, Sep 17 at 5pm
+  - Any questions about project?
+
+- RQ 2 review:
+  - Pivot and join functions: today
+  - Setting limits: today
+  - Visualizing various models: on Friday
 
 ---
 
-## Agenda for today:
+## Agenda for today
 
 - Wrap up: Data wrangling
   
   - Transforming and reshaping a single data frame
   - Bringing together multiple data frames
 
-- Coordinates
+- Coordinate systems
 
 ---
 
@@ -59,17 +67,18 @@ library(glue)
 library(lubridate)
 library(scales)
 library(knitr)
+library(palmerpenguins)
+library(openintro)
+library(ggrepel)
+library(waffle)
 
 # set default theme for ggplot2
 ggplot2::theme_set(ggplot2::theme_minimal(base_size = 16))
 
 # set default figure parameters for knitr
 knitr::opts_chunk$set(
-  fig.width = 8,
-  fig.asp = 0.618,
-  fig.retina = 3,
-  dpi = 300,
-  out.width = "60%"
+  fig.width = 8, fig.asp = 0.618, fig.retina = 3,
+  dpi = 300, out.width = "60%"
 )
 
 # dplyr print min and max
@@ -133,14 +142,14 @@ Which variables are plotted in the following visualization? Which aesthetics are
 
 .panelset[
 .panel[.panel-name[Plot]
-&lt;img src="07_files/figure-html/unnamed-chunk-4-1.png" width="88%" /&gt;
+&lt;img src="07-data-wrangling-coordinate-systems_files/figure-html/unnamed-chunk-4-1.png" width="88%" /&gt;
 ]
 .panel[.panel-name[Discuss]
 &lt;iframe src="https://app.sli.do/event/rxg9buzy" height="100%" width="100%" frameBorder="0" style="min-height: 560px;" title="Slido"&gt;&lt;/iframe&gt;
 ]
 ]
 
-<div class="countdown" id="timer_6141077a" style="top:10%;right:0;" data-warnwhen="0">
+<div class="countdown" id="timer_61417f40" style="top:10%;right:0;" data-warnwhen="0">
 <code class="countdown-time"><span class="countdown-digits minutes">05</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>
 
@@ -801,7 +810,410 @@ scientists
 
 ## Visualizing joined data
 
-&lt;img src="07_files/figure-html/unnamed-chunk-41-1.png" width="100%" /&gt;
+&lt;img src="07-data-wrangling-coordinate-systems_files/figure-html/unnamed-chunk-41-1.png" width="100%" /&gt;
+
+---
+
+class: middle
+
+## .hand[livecoding]
+
+(Full code to be added after live coding session)
+
+---
+
+class: middle, inverse
+
+# Coordinate systems
+
+---
+
+## Coordinate systems: purpose
+
+- Combine the two position aesthetics (`x` and `y`) to produce a 2d position on the plot:
+  - linear coordinate system: horizontal and vertical coordinates 
+  - polar coordinate system: angle and radius
+  - maps: latitude and longitude
+
+- Draw axes and panel backgrounds in coordination with the faceter coordinate systems
+
+---
+
+## Coordinate systems: types
+
+1. **Linear coordinate systems:** preserve the shape of geoms
+
+  - `coord_cartesian()`: the default Cartesian coordinate system, where the 2d position of an element is given by the combination of the x and y positions.
+  - `coord_flip()`: Cartesian coordinate system with x and y axes flipped *(won't be using much now that geoms can take aesthetic mappings in x and y axes)*
+  - `coord_fixed()`: Cartesian coordinate system with a fixed aspect ratio. *(useful only in limited circumstances)*
+
+--
+2. **Non-linear coordinate systems:** can change the shapes -- a straight line may no longer be straight. The closest distance between two points may no longer be a straight line.
+
+  - `coord_trans()`: Apply arbitrary transformations to x and y positions, after the data has been processed by the stat
+  - `coord_polar()`: Polar coordinates
+  - `coord_map()` / `coord_quickmap()` / `coord_sf()`: Map projections
+
+---
+
+## Setting limits: what the plots say
+
+.small[
+
+```r
+ggplot(penguins, aes(x = flipper_length_mm, y = body_mass_g, color = species)) +
+  geom_point() + geom_smooth() +
+  labs(title = "Plot 1")
+
+ggplot(penguins, aes(x = flipper_length_mm, y = body_mass_g, color = species)) +
+  geom_point() + geom_smooth() +
+* scale_x_continuous(limits = c(190, 220)) + scale_y_continuous(limits = c(4000, 5000)) +
+  labs(title = "Plot 2")
+
+ggplot(penguins, aes(x = flipper_length_mm, y = body_mass_g, color = species)) +
+  geom_point() + geom_smooth() +
+* xlim(190, 220) + ylim(4000, 5000) +
+  labs(title = "Plot 3")
+
+ggplot(penguins, aes(x = flipper_length_mm, y = body_mass_g, color = species)) +
+  geom_point() + geom_smooth() +
+* coord_cartesian(xlim = c(190,220), ylim = c(4000, 5000)) +
+  labs(title = "Plot 4")
+```
+
+&lt;img src="07-data-wrangling-coordinate-systems_files/figure-html/set-limits-1.png" width="25%" /&gt;&lt;img src="07-data-wrangling-coordinate-systems_files/figure-html/set-limits-2.png" width="25%" /&gt;&lt;img src="07-data-wrangling-coordinate-systems_files/figure-html/set-limits-3.png" width="25%" /&gt;&lt;img src="07-data-wrangling-coordinate-systems_files/figure-html/set-limits-4.png" width="25%" /&gt;
+]
+
+---
+
+## Setting limits: what the warnings say
+
+.tiny[
+
+```r
+ggplot(penguins, aes(x = flipper_length_mm, y = body_mass_g, color = species)) +
+  geom_point() + geom_smooth() +
+  labs(title = "Plot 1")
+```
+
+```
+## Warning: Removed 2 rows containing non-finite values (stat_smooth).
+```
+
+```
+## Warning: Removed 2 rows containing missing values (geom_point).
+```
+
+```r
+ggplot(penguins, aes(x = flipper_length_mm, y = body_mass_g, color = species)) +
+  geom_point() + geom_smooth() +
+* scale_x_continuous(limits = c(190, 220)) + scale_y_continuous(limits = c(4000, 5000)) +
+  labs(title = "Plot 2")
+```
+
+```
+## Warning: Removed 235 rows containing non-finite values (stat_smooth).
+```
+
+```
+## Warning: Removed 235 rows containing missing values (geom_point).
+```
+
+```r
+ggplot(penguins, aes(x = flipper_length_mm, y = body_mass_g, color = species)) +
+  geom_point() + geom_smooth() +
+* xlim(190, 220) + ylim(4000, 5000) +
+  labs(title = "Plot 3")
+```
+
+```
+## Warning: Removed 235 rows containing non-finite values (stat_smooth).
+## Removed 235 rows containing missing values (geom_point).
+```
+
+```r
+ggplot(penguins, aes(x = flipper_length_mm, y = body_mass_g, color = species)) +
+  geom_point() + geom_smooth() +
+* coord_cartesian(xlim = c(190,220), ylim = c(4000, 5000)) +
+  labs(title = "Plot 4")
+```
+
+```
+## Warning: Removed 2 rows containing non-finite values (stat_smooth).
+```
+
+```
+## Warning: Removed 2 rows containing missing values (geom_point).
+```
+]
+
+---
+
+## Setting limits
+
+- Setting scale limits: Any data outside the limits is thrown away
+  - `scale_*_continuous()`, `xlim` and `ylim` arguments
+  - `xlim()` and `ylim()`
+
+- Setting coordinate system limits: Use all the data, but only display a small region of the plot (zooming in)
+  - `coord_cartesian()`, `xlim` and `ylim` arguments
+
+---
+
+## Fixing aspect ratio with `coord_fixed()`
+
+Useful when having an aspect ratio of 1 makes sense, e.g. scores on two tests (reading and writing) on the same scale (0 to 100 points)
+
+.small[
+
+```r
+ggplot(hsb2, aes(x = read, y = write)) +
+  geom_point() + geom_smooth(method = "lm") +
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "gray") +
+  labs(title = "Not fixed")
+
+ggplot(hsb2, aes(x = read, y = write)) +
+  geom_point() + geom_smooth(method = "lm") +
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "gray") +
+* coord_fixed() +
+  labs(title = "Fixed")
+```
+
+&lt;img src="07-data-wrangling-coordinate-systems_files/figure-html/unnamed-chunk-43-1.png" width="40%" /&gt;&lt;img src="07-data-wrangling-coordinate-systems_files/figure-html/unnamed-chunk-43-2.png" width="40%" /&gt;
+]
+
+---
+
+## Transformations
+
+.small[
+
+```r
+ggplot(penguins, aes(x = bill_depth_mm, y = body_mass_g)) +
+  geom_point() + geom_smooth(method = "lm") +
+  labs(title = "Plot 1")
+
+ggplot(penguins, aes(x = bill_depth_mm, y = body_mass_g)) +
+  geom_point() + geom_smooth(method = "lm") +
+* scale_x_log10() + scale_y_log10() +
+  labs(title = "Plot 2")
+
+ggplot(penguins, aes(x = bill_depth_mm, y = body_mass_g)) +
+  geom_point() + geom_smooth(method = "lm") +
+* coord_trans(x = "log10", y = "log10") +
+  labs(title = "Plot 3")
+
+*ggplot(penguins, aes(x = log(bill_depth_mm, base = 10), y = log(body_mass_g, base = 10))) +
+  geom_point() + geom_smooth(method = "lm") +
+  labs(title = "Plot 4")
+```
+
+&lt;img src="07-data-wrangling-coordinate-systems_files/figure-html/transformations-1.png" width="25%" /&gt;&lt;img src="07-data-wrangling-coordinate-systems_files/figure-html/transformations-2.png" width="25%" /&gt;&lt;img src="07-data-wrangling-coordinate-systems_files/figure-html/transformations-3.png" width="25%" /&gt;&lt;img src="07-data-wrangling-coordinate-systems_files/figure-html/transformations-4.png" width="25%" /&gt;
+]
+
+---
+
+## Pie charts and bullseye charts with `coord_polar()`
+
+.small[
+
+```r
+ggplot(penguins, aes(x = 1, fill = species)) +
+  geom_bar() +
+  labs(title = "Stacked bar chart")
+
+ggplot(penguins, aes(x = 1, fill = species)) +
+  geom_bar() +
+* coord_polar(theta = "y") +
+  labs(title = "Pie chart")
+
+ggplot(penguins, aes(x = 1, fill = species)) +
+  geom_bar() +
+  coord_polar(theta = "x") +
+* labs(title = "Bullseye chart")
+```
+
+&lt;img src="07-data-wrangling-coordinate-systems_files/figure-html/unnamed-chunk-44-1.png" width="30%" /&gt;&lt;img src="07-data-wrangling-coordinate-systems_files/figure-html/unnamed-chunk-44-2.png" width="30%" /&gt;&lt;img src="07-data-wrangling-coordinate-systems_files/figure-html/unnamed-chunk-44-3.png" width="30%" /&gt;
+]
+
+---
+
+class: middle
+
+.large[.hand[aside: about pie charts...]]
+
+---
+
+## Pie charts
+
+.task[
+What do you know about pie charts and data visualization best practices? Love 'em or lose 'em?
+]
+
+&lt;img src="07-data-wrangling-coordinate-systems_files/figure-html/unnamed-chunk-45-1.png" width="45%" /&gt;&lt;img src="07-data-wrangling-coordinate-systems_files/figure-html/unnamed-chunk-45-2.png" width="45%" /&gt;
+
+---
+
+## Pie charts: when to love 'em, when to lose 'em
+
+.pull-left-narrow[
+❤️ For categorical variables with few levels, bar charts can work well
+]
+.pull-right-wide[
+&lt;img src="07-data-wrangling-coordinate-systems_files/figure-html/unnamed-chunk-46-1.png" width="50%" /&gt;&lt;img src="07-data-wrangling-coordinate-systems_files/figure-html/unnamed-chunk-46-2.png" width="50%" /&gt;
+]
+
+.pull-left-narrow[
+💔 For categorical variables with many levels, bar charts are difficult to read
+]
+.pull-right-wide[
+&lt;img src="07-data-wrangling-coordinate-systems_files/figure-html/unnamed-chunk-47-1.png" width="50%" /&gt;&lt;img src="07-data-wrangling-coordinate-systems_files/figure-html/unnamed-chunk-47-2.png" width="50%" /&gt;
+]
+
+---
+
+## Waffle charts
+
+- Like with pie charts, work best when the number of levels represented is low
+- Unlike pie charts, easier to compare proportions that represent non-simple fractions
+
+&lt;img src="07-data-wrangling-coordinate-systems_files/figure-html/unnamed-chunk-48-1.png" width="50%" /&gt;&lt;img src="07-data-wrangling-coordinate-systems_files/figure-html/unnamed-chunk-48-2.png" width="50%" /&gt;
+
+---
+
+## Waffle charts: making of
+
+.panelset[
+.panel[.panel-name[Code]
+
+```r
+penguins %&gt;%
+  count(species) %&gt;%
+  ggplot(aes(fill = species, values = n)) +
+  geom_waffle(colour = "white", flip = TRUE, make_proportional = TRUE) + #&lt;&lt;
+  labs(fill = NULL, title = "Penguin species")
+```
+
+]
+
+.panel[.panel-name[Plot]
+
+&lt;img src="07-data-wrangling-coordinate-systems_files/figure-html/unnamed-chunk-49-1.png" width="60%" /&gt;
+
+]
+]
+
+---
+
+## Waffle charts: enhanced theme
+
+.panelset[
+.panel[.panel-name[Code]
+
+```r
+penguins %&gt;%
+  count(species) %&gt;%
+  ggplot(aes(fill = species, values = n)) +
+  geom_waffle(colour = "white", flip = TRUE, make_proportional = TRUE) +
+  labs(fill = NULL, title = "Penguin species") +
+  theme_enhance_waffle() #&lt;&lt;
+```
+
+]
+
+.panel[.panel-name[Plot]
+
+&lt;img src="07-data-wrangling-coordinate-systems_files/figure-html/unnamed-chunk-50-1.png" width="60%" /&gt;
+
+]
+]
+
+---
+
+class: middle
+
+.large[.hand[back to coordinate systems...]]
+
+---
+
+## `coord_quickmap()`
+
+.pull-left-narrow[
+- Approximation that sets the aspect ratio to ensure that 1m of latitude and 1m of longitude are the same distance in the middle of the plot
+- Reasonable for smaller regions
+- Fast
+]
+.pull-right-wide[
+.panelset[
+.panel[.panel-name[Cartesian]
+
+```r
+ggplot(map_data("italy"), aes(long, lat, group = group)) +
+  geom_polygon(fill = "white", color = "#008c45") +
+  labs(x = NULL, y = NULL)
+```
+
+&lt;img src="07-data-wrangling-coordinate-systems_files/figure-html/unnamed-chunk-51-1.png" width="75%" /&gt;
+]
+.panel[.panel-name[Quickmap]
+
+```r
+ggplot(map_data("italy"), aes(long, lat, group = group)) +
+  geom_polygon(fill = "white", color = "#008c45") +
+  labs(x = NULL, y = NULL) +
+  coord_quickmap()
+```
+
+&lt;img src="07-data-wrangling-coordinate-systems_files/figure-html/unnamed-chunk-52-1.png" width="75%" /&gt;
+]
+]
+]
+
+---
+
+## `coord_map()`
+
+.pull-left-narrow[
+- Uses the [**mapproj**](https://cran.r-project.org/package=mapproj) package
+- Uses [Mercator projection](https://en.wikipedia.org/wiki/Mercator_projection) by default, with many other options via  `mapproj::mapproject() `
+- Slower than `coord_quickmap()`
+]
+.pull-right-wide[
+.panelset[
+.panel[.panel-name[Cartesian]
+
+```r
+ggplot(map_data("state"), aes(long, lat, group = group)) +
+  geom_polygon(fill = "white", color = "#3c3b6e") +
+  labs(x = NULL, y = NULL)
+```
+
+&lt;img src="07-data-wrangling-coordinate-systems_files/figure-html/unnamed-chunk-53-1.png" width="75%" /&gt;
+]
+.panel[.panel-name[Mercator]
+
+```r
+ggplot(map_data("state"), aes(long, lat, group = group)) +
+  geom_polygon(fill = "white", color = "#3c3b6e") +
+  labs(x = NULL, y = NULL) +
+  coord_map()
+```
+
+&lt;img src="07-data-wrangling-coordinate-systems_files/figure-html/unnamed-chunk-54-1.png" width="75%" /&gt;
+]
+.panel[.panel-name[Stereographic]
+
+```r
+ggplot(map_data("state"), aes(long, lat, group = group)) +
+  geom_polygon(fill = "white", color = "#3c3b6e") +
+  labs(x = NULL, y = NULL) +
+  coord_map(projection = "stereographic")
+```
+
+&lt;img src="07-data-wrangling-coordinate-systems_files/figure-html/unnamed-chunk-55-1.png" width="75%" /&gt;
+]
+]
+]
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
