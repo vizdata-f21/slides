@@ -1,5 +1,5 @@
 ---
-title: "data wrangling"
+title: "data wrangling I"
 date: "2021-09-10"
 output:
   xaringan::moon_reader:
@@ -86,7 +86,7 @@ style_duo_accent(
 
 class: middle, inverse
 
-# Announcements
+# Welcome
 
 ---
 
@@ -100,11 +100,11 @@ class: middle, inverse
 
 ---
 
-## Agenda for today: Data wrangling
+## Agenda for today: 
 
-- Transforming and reshaping a single data frame
+Review: Data wrangling
 
-- Bringing together multiple data frames
+Transforming and reshaping a single data frame
 
 ---
 
