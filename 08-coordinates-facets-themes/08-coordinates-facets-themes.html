@@ -3,7 +3,7 @@
   <head>
     <title>deep dive: coordinate systems facets + themes</title>
     <meta charset="utf-8" />
-    <meta name="date" content="2021-09-16" />
+    <meta name="date" content="2021-09-17" />
     <script src="08-coordinates-facets-themes_files/header-attrs/header-attrs.js"></script>
     <link href="08-coordinates-facets-themes_files/panelset/panelset.css" rel="stylesheet" />
     <script src="08-coordinates-facets-themes_files/panelset/panelset.js"></script>
@@ -14,7 +14,7 @@
 class: center, middle, inverse, title-slide
 
 # deep dive: coordinate systems<br>facets + themes
-### 2021-09-16
+### 2021-09-17
 
 ---
 
@@ -30,6 +30,12 @@ class: middle, inverse
 ---
 
 ## Announcements
+
+- HW 2 is posted
+
+- Project proposals due today at 5pm
+
+- Guest lecture on Wednesday -- come with questions!
 
 
 ---
@@ -474,9 +480,114 @@ class: middle, inverse
 
 ---
 
-.hand[to be added...]
+## `facet_*()`
 
-----
+.pull-left[
+- `facet_wrap()` 
+  - "wraps" a 1d ribbon of panels into 2d
+  - generally for faceting by a single variable
+- `facet_grid()` for faceting 
+  - produces a 2d grid of panels defined by variables which form the rows and columns
+  - generally for faceting by two variables
+- `facet_null()`: a single plot, the default
+]
+.pull-right[
+&lt;img src="images/grammar-of-graphics.png" width="60%" /&gt;
+]
+
+---
+
+## Free the scales!
+
+.small[
+
+```r
+p &lt;- ggplot(penguins, aes(x = flipper_length_mm, y = body_mass_g)) +
+  geom_point()
+
+p + 
+  facet_wrap(~species) + 
+  labs(title = "Same scales")
+p + 
+  facet_wrap(~species, scales = "free") +
+  labs(title = "Free scales")
+```
+
+&lt;img src="08-coordinates-facets-themes_files/figure-html/free-all-scales-1.png" width="50%" /&gt;&lt;img src="08-coordinates-facets-themes_files/figure-html/free-all-scales-2.png" width="50%" /&gt;
+]
+
+---
+
+## Free some scales
+
+.small[
+
+```r
+p +
+  facet_wrap(~species, scales = "free_x") +
+  labs(title = "Free x scale")
+p +
+  facet_wrap(~species, scales = "free_y") +
+  labs(title = "Free x scale")
+```
+
+&lt;img src="08-coordinates-facets-themes_files/figure-html/free-some-scales-1.png" width="50%" /&gt;&lt;img src="08-coordinates-facets-themes_files/figure-html/free-some-scales-2.png" width="50%" /&gt;
+]
+
+---
+
+.task[
+Freeing the y scale improves the display, but it's still not satisfying. What's wrong with it?
+]
+
+.small[
+
+```r
+ggplot(penguins, aes(y = species, x = body_mass_g, fill = species)) +
+  geom_boxplot(show.legend = FALSE) +
+  facet_grid(island ~ .) +
+  labs(title = "Same scale and spacing")
+
+ggplot(penguins, aes(y = species, x = body_mass_g, fill = species)) +
+  geom_boxplot(show.legend = FALSE) +
+  facet_grid(island ~ ., scales = "free_y") +
+  labs(title = "Free y scale, same spacing")
+```
+
+&lt;img src="08-coordinates-facets-themes_files/figure-html/free-scales-not-spaces-1.png" width="50%" /&gt;&lt;img src="08-coordinates-facets-themes_files/figure-html/free-scales-not-spaces-2.png" width="50%" /&gt;
+]
+
+---
+
+## Free spaces
+
+
+```r
+ggplot(penguins, aes(y = species, x = body_mass_g, fill = species)) +
+  geom_boxplot(show.legend = FALSE) +
+  facet_grid(island ~ ., scales = "free_y", space = "free") +
+  labs(title = "Free y scale and spacing")
+```
+
+&lt;img src="08-coordinates-facets-themes_files/figure-html/free-spaces-1.png" width="60%" /&gt;
+
+---
+
+## Highlighting across facets
+
+
+```r
+penguins_sans_species &lt;- penguins %&gt;% select(-species)
+
+ggplot(penguins, aes(x = flipper_length_mm, y = body_mass_g)) +
+  geom_point(data = penguins_sans_species, color = "gray") +
+  geom_point(aes(color = species)) +
+  facet_wrap(~species)
+```
+
+&lt;img src="08-coordinates-facets-themes_files/figure-html/unnamed-chunk-17-1.png" width="50%" /&gt;
+
+---
 
 class: middle, inverse
 
@@ -484,7 +595,62 @@ class: middle, inverse
 
 ---
 
-.hand[to be added...]
+## Complete themes
+
+
+```r
+p + theme_gray() + labs(title = "Gray")
+p + theme_void() + labs(title = "Void")
+p + theme_dark() + labs(title = "Dark")
+```
+
+&lt;img src="08-coordinates-facets-themes_files/figure-html/unnamed-chunk-18-1.png" width="33%" /&gt;&lt;img src="08-coordinates-facets-themes_files/figure-html/unnamed-chunk-18-2.png" width="33%" /&gt;&lt;img src="08-coordinates-facets-themes_files/figure-html/unnamed-chunk-18-3.png" width="33%" /&gt;
+
+---
+
+## Themes from ggthemes
+
+
+```r
+library(ggthemes)
+
+p + theme_fivethirtyeight() + labs(title = "FiveThirtyEight")
+p + theme_economist() + labs(title = "Economist")
+p + theme_wsj() + labs(title = "Wall Street Journal")
+```
+
+&lt;img src="08-coordinates-facets-themes_files/figure-html/unnamed-chunk-19-1.png" width="33%" /&gt;&lt;img src="08-coordinates-facets-themes_files/figure-html/unnamed-chunk-19-2.png" width="33%" /&gt;&lt;img src="08-coordinates-facets-themes_files/figure-html/unnamed-chunk-19-3.png" width="33%" /&gt;
+
+---
+
+## Themes and color scales from ggthemes
+
+
+```r
+p + 
+  aes(color = species) +
+  scale_color_wsj() +
+  theme_wsj() + 
+  labs(title = "Wall Street Journal")
+```
+
+&lt;img src="08-coordinates-facets-themes_files/figure-html/unnamed-chunk-20-1.png" width="60%" /&gt;
+
+---
+
+## Modifying theme elements
+
+
+```r
+p + 
+  labs(title = "Palmer penguins") +
+  theme(
+    plot.title = element_text(color = "red", face = "bold", family = "Comic Sans MS"),
+    plot.background = element_rect(color = "red", fill = "mistyrose")
+  )
+```
+
+&lt;img src="08-coordinates-facets-themes_files/figure-html/unnamed-chunk-21-1.png" width="60%" /&gt;
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
