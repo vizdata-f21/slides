@@ -93,16 +93,27 @@ class: middle, inverse
 
 ## Announcements
 
+- HW 1 feedback is posted
+  - Review issue posted on your repo
+  - Close it or if you have questions follow up on the issue and/or come to office hours
+  - Issue must be closed by the time you submit your next HW
+
 - HW 2 is posted
+  - Pay attention to code style
+  - Keep your work organized
+  - Label your chunks!
+  - Aside: What's a chunk option?
 
 - Project proposals due today at 5pm
 
 - Guest lecture on Wednesday -- come with questions!
 
-
 ---
 
+
 ## Agenda for today
+
+- Wrap up: Quiz 2 recap
 
 - Coordinate systems
 
@@ -123,6 +134,7 @@ library(openintro)
 library(palmerpenguins)
 library(ggrepel)
 library(waffle)
+library(broom)
 
 # set default theme for ggplot2
 ggplot2::theme_set(ggplot2::theme_minimal(base_size = 16))
@@ -137,6 +149,30 @@ knitr::opts_chunk$set(
 options(dplyr.print_max = 6, dplyr.print_min = 6)
 ```
 ]
+
+---
+
+## Quiz 2 recap
+
+.panelset[
+.panel[.panel-name[Plot]
+```{r warning = FALSE, message = FALSE}
+ggplot(penguins, aes(x = flipper_length_mm, y = body_mass_g, color = species)) +
+  geom_smooth(method = "lm", fullrange = TRUE, se = FALSE)
+```
+]
+.panel[.panel-name[Same slopes]
+```{r}
+lm(body_mass_g ~ flipper_length_mm + species, data = penguins) %>% tidy()
+```
+]
+.panel[.panel-name[Different slopes]
+```{r}
+lm(body_mass_g ~ flipper_length_mm * species, data = penguins) %>% tidy()
+```
+]
+]
+
 
 ---
 

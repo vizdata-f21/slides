@@ -31,16 +31,27 @@ class: middle, inverse
 
 ## Announcements
 
+- HW 1 feedback is posted
+  - Review issue posted on your repo
+  - Close it or if you have questions follow up on the issue and/or come to office hours
+  - Issue must be closed by the time you submit your next HW
+
 - HW 2 is posted
+  - Pay attention to code style
+  - Keep your work organized
+  - Label your chunks!
+  - Aside: What's a chunk option?
 
 - Project proposals due today at 5pm
 
 - Guest lecture on Wednesday -- come with questions!
 
-
 ---
 
+
 ## Agenda for today
+
+- Wrap up: Quiz 2 recap
 
 - Coordinate systems
 
@@ -62,6 +73,7 @@ library(openintro)
 library(palmerpenguins)
 library(ggrepel)
 library(waffle)
+library(broom)
 
 # set default theme for ggplot2
 ggplot2::theme_set(ggplot2::theme_minimal(base_size = 16))
@@ -76,6 +88,57 @@ knitr::opts_chunk$set(
 options(dplyr.print_max = 6, dplyr.print_min = 6)
 ```
 ]
+
+---
+
+## Quiz 2 recap
+
+.panelset[
+.panel[.panel-name[Plot]
+
+```r
+ggplot(penguins, aes(x = flipper_length_mm, y = body_mass_g, color = species)) +
+  geom_smooth(method = "lm", fullrange = TRUE, se = FALSE)
+```
+
+&lt;img src="08-coordinates-facets-themes_files/figure-html/unnamed-chunk-2-1.png" width="60%" /&gt;
+]
+.panel[.panel-name[Same slopes]
+
+```r
+lm(body_mass_g ~ flipper_length_mm + species, data = penguins) %&gt;% tidy()
+```
+
+```
+## # A tibble: 4 × 5
+##   term              estimate std.error statistic  p.value
+##   &lt;chr&gt;                &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 (Intercept)        -4031.     584.       -6.90 2.55e-11
+## 2 flipper_length_mm     40.7      3.07     13.3  1.40e-32
+## 3 speciesChinstrap    -207.      57.7      -3.58 3.98e- 4
+## 4 speciesGentoo        267.      95.3       2.80 5.39e- 3
+```
+]
+.panel[.panel-name[Different slopes]
+
+```r
+lm(body_mass_g ~ flipper_length_mm * species, data = penguins) %&gt;% tidy()
+```
+
+```
+## # A tibble: 6 × 5
+##   term                               estimate std.error statistic  p.value
+##   &lt;chr&gt;                                 &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 (Intercept)                        -2536.      879.      -2.88  4.19e- 3
+## 2 flipper_length_mm                     32.8       4.63     7.10  7.69e-12
+## 3 speciesChinstrap                    -501.     1523.      -0.329 7.42e- 1
+## 4 speciesGentoo                      -4251.     1427.      -2.98  3.11e- 3
+## 5 flipper_length_mm:speciesChinstrap     1.74      7.86     0.222 8.25e- 1
+## 6 flipper_length_mm:speciesGentoo       21.8       6.94     3.14  1.84e- 3
+```
+]
+]
+
 
 ---
 
@@ -236,7 +299,7 @@ ggplot(hsb2, aes(x = read, y = write)) +
   labs(title = "Fixed")
 ```
 
-&lt;img src="08-coordinates-facets-themes_files/figure-html/unnamed-chunk-3-1.png" width="40%" /&gt;&lt;img src="08-coordinates-facets-themes_files/figure-html/unnamed-chunk-3-2.png" width="40%" /&gt;
+&lt;img src="08-coordinates-facets-themes_files/figure-html/unnamed-chunk-6-1.png" width="40%" /&gt;&lt;img src="08-coordinates-facets-themes_files/figure-html/unnamed-chunk-6-2.png" width="40%" /&gt;
 ]
 
 ---
@@ -290,7 +353,7 @@ ggplot(penguins, aes(x = 1, fill = species)) +
 * labs(title = "Bullseye chart")
 ```
 
-&lt;img src="08-coordinates-facets-themes_files/figure-html/unnamed-chunk-4-1.png" width="30%" /&gt;&lt;img src="08-coordinates-facets-themes_files/figure-html/unnamed-chunk-4-2.png" width="30%" /&gt;&lt;img src="08-coordinates-facets-themes_files/figure-html/unnamed-chunk-4-3.png" width="30%" /&gt;
+&lt;img src="08-coordinates-facets-themes_files/figure-html/unnamed-chunk-7-1.png" width="30%" /&gt;&lt;img src="08-coordinates-facets-themes_files/figure-html/unnamed-chunk-7-2.png" width="30%" /&gt;&lt;img src="08-coordinates-facets-themes_files/figure-html/unnamed-chunk-7-3.png" width="30%" /&gt;
 ]
 
 ---
@@ -307,7 +370,7 @@ class: middle
 What do you know about pie charts and data visualization best practices? Love 'em or lose 'em?
 ]
 
-&lt;img src="08-coordinates-facets-themes_files/figure-html/unnamed-chunk-5-1.png" width="45%" /&gt;&lt;img src="08-coordinates-facets-themes_files/figure-html/unnamed-chunk-5-2.png" width="45%" /&gt;
+&lt;img src="08-coordinates-facets-themes_files/figure-html/unnamed-chunk-8-1.png" width="45%" /&gt;&lt;img src="08-coordinates-facets-themes_files/figure-html/unnamed-chunk-8-2.png" width="45%" /&gt;
 
 ---
 
@@ -317,14 +380,14 @@ What do you know about pie charts and data visualization best practices? Love 'e
 ❤️ For categorical variables with few levels, bar charts can work well
 ]
 .pull-right-wide[
-&lt;img src="08-coordinates-facets-themes_files/figure-html/unnamed-chunk-6-1.png" width="50%" /&gt;&lt;img src="08-coordinates-facets-themes_files/figure-html/unnamed-chunk-6-2.png" width="50%" /&gt;
+&lt;img src="08-coordinates-facets-themes_files/figure-html/unnamed-chunk-9-1.png" width="50%" /&gt;&lt;img src="08-coordinates-facets-themes_files/figure-html/unnamed-chunk-9-2.png" width="50%" /&gt;
 ]
 
 .pull-left-narrow[
 💔 For categorical variables with many levels, bar charts are difficult to read
 ]
 .pull-right-wide[
-&lt;img src="08-coordinates-facets-themes_files/figure-html/unnamed-chunk-7-1.png" width="50%" /&gt;&lt;img src="08-coordinates-facets-themes_files/figure-html/unnamed-chunk-7-2.png" width="50%" /&gt;
+&lt;img src="08-coordinates-facets-themes_files/figure-html/unnamed-chunk-10-1.png" width="50%" /&gt;&lt;img src="08-coordinates-facets-themes_files/figure-html/unnamed-chunk-10-2.png" width="50%" /&gt;
 ]
 
 ---
@@ -334,7 +397,7 @@ What do you know about pie charts and data visualization best practices? Love 'e
 - Like with pie charts, work best when the number of levels represented is low
 - Unlike pie charts, easier to compare proportions that represent non-simple fractions
 
-&lt;img src="08-coordinates-facets-themes_files/figure-html/unnamed-chunk-8-1.png" width="50%" /&gt;&lt;img src="08-coordinates-facets-themes_files/figure-html/unnamed-chunk-8-2.png" width="50%" /&gt;
+&lt;img src="08-coordinates-facets-themes_files/figure-html/unnamed-chunk-11-1.png" width="50%" /&gt;&lt;img src="08-coordinates-facets-themes_files/figure-html/unnamed-chunk-11-2.png" width="50%" /&gt;
 
 ---
 
@@ -355,7 +418,7 @@ penguins %&gt;%
 
 .panel[.panel-name[Plot]
 
-&lt;img src="08-coordinates-facets-themes_files/figure-html/unnamed-chunk-9-1.png" width="60%" /&gt;
+&lt;img src="08-coordinates-facets-themes_files/figure-html/unnamed-chunk-12-1.png" width="60%" /&gt;
 
 ]
 ]
@@ -380,7 +443,7 @@ penguins %&gt;%
 
 .panel[.panel-name[Plot]
 
-&lt;img src="08-coordinates-facets-themes_files/figure-html/unnamed-chunk-10-1.png" width="60%" /&gt;
+&lt;img src="08-coordinates-facets-themes_files/figure-html/unnamed-chunk-13-1.png" width="60%" /&gt;
 
 ]
 ]
@@ -410,7 +473,7 @@ ggplot(map_data("italy"), aes(long, lat, group = group)) +
   labs(x = NULL, y = NULL)
 ```
 
-&lt;img src="08-coordinates-facets-themes_files/figure-html/unnamed-chunk-11-1.png" width="75%" /&gt;
+&lt;img src="08-coordinates-facets-themes_files/figure-html/unnamed-chunk-14-1.png" width="75%" /&gt;
 ]
 .panel[.panel-name[Quickmap]
 
@@ -421,7 +484,7 @@ ggplot(map_data("italy"), aes(long, lat, group = group)) +
   coord_quickmap()
 ```
 
-&lt;img src="08-coordinates-facets-themes_files/figure-html/unnamed-chunk-12-1.png" width="75%" /&gt;
+&lt;img src="08-coordinates-facets-themes_files/figure-html/unnamed-chunk-15-1.png" width="75%" /&gt;
 ]
 ]
 ]
@@ -445,7 +508,7 @@ ggplot(map_data("state"), aes(long, lat, group = group)) +
   labs(x = NULL, y = NULL)
 ```
 
-&lt;img src="08-coordinates-facets-themes_files/figure-html/unnamed-chunk-13-1.png" width="75%" /&gt;
+&lt;img src="08-coordinates-facets-themes_files/figure-html/unnamed-chunk-16-1.png" width="75%" /&gt;
 ]
 .panel[.panel-name[Mercator]
 
@@ -456,7 +519,7 @@ ggplot(map_data("state"), aes(long, lat, group = group)) +
   coord_map()
 ```
 
-&lt;img src="08-coordinates-facets-themes_files/figure-html/unnamed-chunk-14-1.png" width="75%" /&gt;
+&lt;img src="08-coordinates-facets-themes_files/figure-html/unnamed-chunk-17-1.png" width="75%" /&gt;
 ]
 .panel[.panel-name[Stereographic]
 
@@ -467,7 +530,7 @@ ggplot(map_data("state"), aes(long, lat, group = group)) +
   coord_map(projection = "stereographic")
 ```
 
-&lt;img src="08-coordinates-facets-themes_files/figure-html/unnamed-chunk-15-1.png" width="75%" /&gt;
+&lt;img src="08-coordinates-facets-themes_files/figure-html/unnamed-chunk-18-1.png" width="75%" /&gt;
 ]
 ]
 ]
@@ -585,7 +648,7 @@ ggplot(penguins, aes(x = flipper_length_mm, y = body_mass_g)) +
   facet_wrap(~species)
 ```
 
-&lt;img src="08-coordinates-facets-themes_files/figure-html/unnamed-chunk-17-1.png" width="50%" /&gt;
+&lt;img src="08-coordinates-facets-themes_files/figure-html/unnamed-chunk-20-1.png" width="50%" /&gt;
 
 ---
 
@@ -604,7 +667,7 @@ p + theme_void() + labs(title = "Void")
 p + theme_dark() + labs(title = "Dark")
 ```
 
-&lt;img src="08-coordinates-facets-themes_files/figure-html/unnamed-chunk-18-1.png" width="33%" /&gt;&lt;img src="08-coordinates-facets-themes_files/figure-html/unnamed-chunk-18-2.png" width="33%" /&gt;&lt;img src="08-coordinates-facets-themes_files/figure-html/unnamed-chunk-18-3.png" width="33%" /&gt;
+&lt;img src="08-coordinates-facets-themes_files/figure-html/unnamed-chunk-21-1.png" width="33%" /&gt;&lt;img src="08-coordinates-facets-themes_files/figure-html/unnamed-chunk-21-2.png" width="33%" /&gt;&lt;img src="08-coordinates-facets-themes_files/figure-html/unnamed-chunk-21-3.png" width="33%" /&gt;
 
 ---
 
@@ -619,7 +682,7 @@ p + theme_economist() + labs(title = "Economist")
 p + theme_wsj() + labs(title = "Wall Street Journal")
 ```
 
-&lt;img src="08-coordinates-facets-themes_files/figure-html/unnamed-chunk-19-1.png" width="33%" /&gt;&lt;img src="08-coordinates-facets-themes_files/figure-html/unnamed-chunk-19-2.png" width="33%" /&gt;&lt;img src="08-coordinates-facets-themes_files/figure-html/unnamed-chunk-19-3.png" width="33%" /&gt;
+&lt;img src="08-coordinates-facets-themes_files/figure-html/unnamed-chunk-22-1.png" width="33%" /&gt;&lt;img src="08-coordinates-facets-themes_files/figure-html/unnamed-chunk-22-2.png" width="33%" /&gt;&lt;img src="08-coordinates-facets-themes_files/figure-html/unnamed-chunk-22-3.png" width="33%" /&gt;
 
 ---
 
@@ -634,7 +697,7 @@ p +
   labs(title = "Wall Street Journal")
 ```
 
-&lt;img src="08-coordinates-facets-themes_files/figure-html/unnamed-chunk-20-1.png" width="60%" /&gt;
+&lt;img src="08-coordinates-facets-themes_files/figure-html/unnamed-chunk-23-1.png" width="60%" /&gt;
 
 ---
 
@@ -650,7 +713,7 @@ p +
   )
 ```
 
-&lt;img src="08-coordinates-facets-themes_files/figure-html/unnamed-chunk-21-1.png" width="60%" /&gt;
+&lt;img src="08-coordinates-facets-themes_files/figure-html/unnamed-chunk-24-1.png" width="60%" /&gt;
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
