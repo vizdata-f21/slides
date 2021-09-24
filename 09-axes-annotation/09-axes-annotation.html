@@ -3,7 +3,7 @@
   <head>
     <title>deep dive: axes+annotation</title>
     <meta charset="utf-8" />
-    <meta name="date" content="2021-09-23" />
+    <meta name="date" content="2021-09-24" />
     <script src="09-axes-annotation_files/header-attrs/header-attrs.js"></script>
     <link href="09-axes-annotation_files/panelset/panelset.css" rel="stylesheet" />
     <script src="09-axes-annotation_files/panelset/panelset.js"></script>
@@ -14,7 +14,7 @@
 class: center, middle, inverse, title-slide
 
 # deep dive:<br>axes+annotation
-### 2021-09-23
+### 2021-09-24
 
 ---
 
@@ -329,10 +329,10 @@ rdu_flights_2020 &lt;- read_csv(here::here("09-axes-annotation", "data/rdu-fligh
 
 ```
 ## Rows: 33860 Columns: 19
-## ── Column specification ────────────────────────────────────────────────────────────────
+## ── Column specification ────────────────────────────────────────────────────────
 ## Delimiter: ","
 ## chr   (4): carrier, tailnum, origin, dest
-## dbl  (14): year, month, day, dep_time, sched_dep_time, dep_delay, arr_time, sched_ar...
+## dbl  (14): year, month, day, dep_time, sched_dep_time, dep_delay, arr_time, ...
 ## dttm  (1): time_hour
 ## 
 ## ℹ Use `spec()` to retrieve the full column specification for this data.
@@ -345,7 +345,7 @@ rdu_planes_2020 &lt;- read_csv(here::here("09-axes-annotation", "data/rdu-planes
 
 ```
 ## Rows: 3616 Columns: 9
-## ── Column specification ────────────────────────────────────────────────────────────────
+## ── Column specification ────────────────────────────────────────────────────────
 ## Delimiter: ","
 ## chr (5): tailnum, type, manufacturer, model, engine
 ## dbl (4): year, engines, seats, speed
