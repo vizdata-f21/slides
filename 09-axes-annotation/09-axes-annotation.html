@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>deep dive: axes+annotation</title>
+    <meta charset="utf-8" />
+    <meta name="date" content="2021-09-23" />
+    <script src="09-axes-annotation_files/header-attrs/header-attrs.js"></script>
+    <link href="09-axes-annotation_files/panelset/panelset.css" rel="stylesheet" />
+    <script src="09-axes-annotation_files/panelset/panelset.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# deep dive:<br>axes+annotation
+### 2021-09-23
+
+---
+
+
+
+
+
+
+class: middle, inverse
+
+# Welcome
+
+---
+
+## Announcements
+
+- Revised proposals for my review: due Fri, Sep 24 (today) at 5pm
+
+- Planning for project presentations
+
+- A couple surveys coming your way!
+
+---
+
+## Agenda for today
+
+- Wrap up: Colors
+
+- Axes
+
+- Annotation
+
+---
+
+## Setup
+
+.midi[
+
+```r
+# load packages
+library(tidyverse)
+library(colorspace)
+library(colorblindr) # install_github("wilkelab/colorblindr")
+library(ggtext)
+library(scales)
+library(fs)
+library(openintro)
+library(palmerpenguins)
+library(dsbox)
+
+# set default theme for ggplot2
+ggplot2::theme_set(ggplot2::theme_minimal(base_size = 16))
+
+# set default figure parameters for knitr
+knitr::opts_chunk$set(
+  fig.width = 8, fig.asp = 0.618, fig.retina = 3,
+  dpi = 300, out.width = "60%"
+)
+
+# dplyr print min and max
+options(dplyr.print_max = 6, dplyr.print_min = 6)
+```
+]
+
+---
+
+class: inverse, middle
+
+# Wrap up: Colors
+
+---
+
+## Color scales
+
+1. Distinguish categories (qualitative)
+
+2. Represent numeric values (sequential)
+
+3. Represent numeric values (diverging)
+
+4. Highlight
+
+---
+
+## The **colorspace** package
+
+Scale name: `scale_&lt;aesthetic&gt;_&lt;datatype&gt;_&lt;colorscale&gt;()`
+
+- `&lt;aesthetic&gt;`: name of the aesthetic (`fill`, `color`)
+- `&lt;datatype&gt;`: type of variable plotted (`discrete`, `continuous`, `binned`)
+- `&lt;colorscale&gt;`: type of the color scale (`qualitative`, `sequential`, `diverging`, `divergingx`)
+
+---
+
+## Qualitative palettes
+
+&lt;img src="09-axes-annotation_files/figure-html/unnamed-chunk-2-1.png" width="85%" /&gt;
+
+---
+
+## Sequential palettes
+
+&lt;img src="09-axes-annotation_files/figure-html/unnamed-chunk-3-1.png" width="85%" /&gt;
+
+---
+
+## Diverging palettes
+
+&lt;img src="09-axes-annotation_files/figure-html/unnamed-chunk-4-1.png" width="85%" /&gt;
+
+---
+
+## **ggplot2** + **colorspace**
+
+
+```r
+p &lt;- ggplot(penguins, aes(x = bill_length_mm, y = body_mass_g, color = species)) +
+  geom_point(size = 3) +
+  theme(legend.position = "top")
+```
+
+.pull-left[
+
+```r
+p +
+* scale_color_discrete_qualitative()
+```
+
+&lt;img src="09-axes-annotation_files/figure-html/unnamed-chunk-6-1.png" width="100%" /&gt;
+]
+.pull-right[
+
+```r
+p +
+* scale_color_discrete_sequential()
+```
+
+&lt;img src="09-axes-annotation_files/figure-html/unnamed-chunk-7-1.png" width="100%" /&gt;
+]
+
+---
+
+## Color palettes + accessibility
+
+At a minimum, use color palettes known to be colorblind friendly
+
+
+```r
+p +
+* scale_color_OkabeIto()
+```
+
+&lt;img src="09-axes-annotation_files/figure-html/unnamed-chunk-8-1.png" width="70%" /&gt;
+
+---
+
+## Color palettes + accessibility
+
+While not a perfect solution, simulating color blindness to check that your palette is color blind friendly is a good first step (e.g., [SimDaltonism](https://michelf.ca/projects/sim-daltonism/) is what I use)
+
+.panelset[
+.panel[.panel-name[Default]
+&lt;img src="09-axes-annotation_files/figure-html/unnamed-chunk-9-1.png" width="60%" /&gt;
+]
+.panel[.panel-name[OkabeIto]
+&lt;img src="09-axes-annotation_files/figure-html/unnamed-chunk-10-1.png" width="60%" /&gt;
+]
+]
+
+---
+
+## Custom palettes
+
+- Create your own palette with `colorspace::hclcolorpicker()`
+
+- Keep chroma low!
+
+---
+
+## Color inspiration
+
+- [Pantone colors of the year](https://www.pantone.com/color-of-the-year-archive), e.g. for 2021 Ultimate Gray and Illuminating
+
+- Generate a palette from an image, e.g., with [coolors.co/image-picker](https://coolors.co/image-picker)
+
+&lt;img src="images/nypl-palette.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Colors for highlighting
+
+Keep context in mind, e.g., here we're using the blue from the Connecticut flag
+
+&lt;img src="09-axes-annotation_files/figure-html/unnamed-chunk-12-1.png" width="80%" /&gt;
+
+
+---
+
+class: middle
+
+.hand[livecoding...]
+
+---
+
+class: inverse, middle
+
+# Axes
+
+---
+
+## Axis breaks
+
+.task[
+How can the following figure be improved with custom breaks in axes, if at all?
+]
+
+
+
+&lt;img src="09-axes-annotation_files/figure-html/unnamed-chunk-14-1.png" width="70%" /&gt;
+
+---
+
+## Context matters
+
+
+```r
+pac_plot +
+* scale_x_continuous(breaks = seq(from = 2000, to = 2020, by = 2))
+```
+
+&lt;img src="09-axes-annotation_files/figure-html/unnamed-chunk-15-1.png" width="70%" /&gt;
+
+---
+
+## Conciseness matters
+
+
+```r
+pac_plot +
+  scale_x_continuous(breaks = seq(2000, 2020, 4))
+```
+
+&lt;img src="09-axes-annotation_files/figure-html/unnamed-chunk-16-1.png" width="70%" /&gt;
+
+---
+
+## Precision matters
+
+
+```r
+pac_plot +
+  scale_x_continuous(breaks = seq(2000, 2020, 4)) +
+* labs(x = "Election year")
+```
+
+&lt;img src="09-axes-annotation_files/figure-html/unnamed-chunk-17-1.png" width="70%" /&gt;
+
+---
+
+class: inverse
+
+# Annotation
+
+---
+
+## `geom_text()`
+
+Can be useful when individual observations are identifiable, but can also get overwhelming...
+
+.task[
+How would you improve this visualization?
+]
+
+.panelset[
+.panel[.panel-name[Plots]
+.pull-left[
+&lt;img src="09-axes-annotation_files/figure-html/unnamed-chunk-18-1.png" width="100%" /&gt;
+]
+.pull-right[
+&lt;img src="09-axes-annotation_files/figure-html/unnamed-chunk-19-1.png" width="100%" /&gt;
+]
+]
+.panel[.panel-name[Discuss]
+&lt;iframe src="https://app.sli.do/event/rxg9buzy" height="100%" width="100%" frameBorder="0" style="min-height: 560px;" title="Slido"&gt;&lt;/iframe&gt;
+]
+]
+
+---
+
+class: middle
+
+.hand[livecoding...]
+
+---
+
+## Explanations -&gt; annotations
+
+**Rule of thumb:** If you feel the need to draw your audience's attention to a particular feature of the plot, experiment with doing so using annotation instead of in words.
+
+---
+
+## Rewind: Sizes of planes
+
+.task[
+How can we improve this visualization, in terms of color, axes, and annotation?
+]
+
+
+```r
+rdu_flights_2020 &lt;- read_csv(here::here("09-axes-annotation", "data/rdu-flights-2020.csv"))
+```
+
+```
+## Rows: 33860 Columns: 19
+## ── Column specification ────────────────────────────────────────────────────────────────
+## Delimiter: ","
+## chr   (4): carrier, tailnum, origin, dest
+## dbl  (14): year, month, day, dep_time, sched_dep_time, dep_delay, arr_time, sched_ar...
+## dttm  (1): time_hour
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+```
+
+```r
+rdu_planes_2020 &lt;- read_csv(here::here("09-axes-annotation", "data/rdu-planes-2020.csv"))
+```
+
+```
+## Rows: 3616 Columns: 9
+## ── Column specification ────────────────────────────────────────────────────────────────
+## Delimiter: ","
+## chr (5): tailnum, type, manufacturer, model, engine
+## dbl (4): year, engines, seats, speed
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+```
+
+```r
+rdu_flights_planes &lt;- rdu_flights_2020 %&gt;%
+  inner_join(rdu_planes_2020, by = "tailnum") %&gt;%
+  mutate(
+    size = case_when(
+      seats &lt;= 30 ~ "Small",
+      seats &gt;= 31 &amp; seats &lt;= 110 ~ "Medium",
+      seats &gt;= 111 &amp; seats &lt;= 210 ~ "Large",
+      seats &gt; 211 ~ "Jumbo"
+    ),
+    size = fct_relevel(size, "Small", "Medium", "Large", "Jumbo")
+  )
+
+rdu_flights_planes %&gt;%
+  count(hour, size) %&gt;%
+  ggplot(aes(x = hour, y = n, color = size)) +
+  geom_line() +
+  labs(
+    x = "Hour of day",
+    y = "Number of flights",
+    color = "Size of plane",
+    title = "Number of flights out of RDU in 2020",
+    subtitle = "By size of plane",
+    caption = "Source: FAA Aircraft Registry and\nBureau of Transportation Statistics"
+  )
+```
+
+&lt;img src="09-axes-annotation_files/figure-html/unnamed-chunk-20-1.png" width="60%" /&gt;
+
+---
+
+class: middle
+
+.hand[livecoding...]
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="https://platform.twitter.com/widgets.js"></script>
+<script>var slideshow = remark.create({
+"slideNumberFormat": "%current%",
+"highlightStyle": "solarized-light",
+"highlightLines": true,
+"ratio": "16:9",
+"countIncrementalSlides": true
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
