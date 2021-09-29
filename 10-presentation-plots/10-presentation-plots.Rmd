@@ -1,0 +1,548 @@
+---
+title: "presentation ready plots"
+date: '2021-09-29'
+output:
+  xaringan::moon_reader:
+    css: xaringan-themer.css
+    nature:
+      slideNumberFormat: "%current%"
+      highlightStyle: solarized-light
+      highlightLines: true
+      ratio: 16:9
+      countIncrementalSlides: true
+      beforeInit: "https://platform.twitter.com/widgets.js"
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+xaringanExtra::use_panelset()
+library(countdown)
+```
+
+```{r xaringan-themer, include = FALSE, warning = FALSE, fig.showtext = FALSE}
+library(xaringanthemer)
+style_duo_accent(
+  primary_color = "#866fa3",
+  secondary_color = "#F1DE67",
+  inverse_header_color = "#464a53",
+  black_color = "#464a53",
+  code_highlight_color = "#f1de67",
+  header_font_google = google_font("Atkinson Hyperlegible"),
+  text_font_google   = google_font("Atkinson Hyperlegible", "300", "300i"),
+  code_font_google   = google_font("Source Code Pro"),
+  code_font_size = "20px",
+  title_slide_background_color = "#FFFFFF",
+  title_slide_background_image = "https://github.com/vizdata-f21/slides/raw/main/vizdata-bg.jpeg",
+  title_slide_background_size = "contain",
+  base_font_size = "24px",
+  header_h1_font_size = "1.9rem",
+  header_h2_font_size = "1.75rem",
+  header_h3_font_size = "1.5rem",
+  extra_css = list(
+    "h1" = list("margin-block-start" = "0.4rem", 
+                 "margin-block-end" = "0.4rem"),
+    "h2" = list("margin-block-start" = "0.4rem", 
+                 "margin-block-end" = "0.4rem"),
+    "h3" = list("margin-block-start" = "0.4rem", 
+                 "margin-block-end" = "0.4rem"),
+    ".tiny" = list("font-size" = "70%"),
+    ".small" = list("font-size" = "80%"),
+    ".midi" = list("font-size" = "90%"),
+    ".tiny .remark-code" = list("font-size" = "70%"),
+    ".small .remark-code" = list("font-size" = "80%"),
+    ".midi .remark-code" = list("font-size" = "90%"),
+    ".large" = list("font-size" = "200%"),
+    ".huge" = list("font-size" = "400%",
+                     "font-family" = "'Montserrat', sans-serif",
+                     "font-weight" = "bold"),
+    ".hand" = list("font-family" = "'Gochi Hand', cursive",
+                   "font-size" = "125%"),
+    ".task" = list("padding-right"    = "10px",
+                   "padding-left"     = "10px",
+                   "padding-top"      = "3px",
+                   "padding-bottom"   = "3px",
+                   "margin-bottom"    = "6px",
+                   "margin-top"       = "6px",
+                   "border-left"      = "solid 5px #F1DE67",
+                   "background-color" = "#F1DE6750"),
+    ".pull-left" = list("width" = "49%",
+                        "float" = "left"),
+    ".pull-right" = list("width" = "49%",
+                         "float" = "right"),
+    ".pull-left-wide" = list("width" = "70%",
+                             "float" = "left"),
+    ".pull-right-narrow" = list("width" = "27%",
+                                "float" = "right"),
+    ".pull-left-narrow" = list("width" = "27%",
+                               "float" = "left"),
+    ".pull-right-wide" = list("width" = "70%",
+                              "float" = "right"),
+    ".blue" = list(color = "#2A9BB7"),
+    ".purple" = list(color = "#a493ba"),
+    ".yellow" = list(color = "#f1de67"),
+    ".gray" = list(color = "#464a53")
+    )
+  )
+```
+
+class: middle, inverse
+
+# Welcome
+
+---
+
+## Announcements
+
+- Project presentations on Friday
+  - Bring a laptop to fill out feedback forms
+  - One more team evaluation to be filled out promptly after class
+  - Presentation order, with latest start-by times:
+     - 12:05 - Ctrl+Alt+Elite
+     - 12:15 - Team 5 Look Alive
+     - 12:25 - Mr. Palmer's Penguins
+     - 12:35 - R-mageddon
+     - 12:45 - 7 Up
+     - 12:55 - The Outliers
+     - 13:05 - Dorian's Gs
+     - 13:15 - The Scatterplots
+
+- After fall break:
+  - Reading quiz 3 due Wed, Oct 6
+  - New teams!
+  - Take note of Project 2 presentation date: must be in class in person to present or present live via Zoom in the case of isolation
+
+---
+
+## Setup
+
+.midi[
+```{r message = FALSE, warning = FALSE}
+# load packages
+library(tidyverse)
+library(colorspace)
+library(ggtext)
+library(scales)
+
+# set default theme for ggplot2
+ggplot2::theme_set(ggplot2::theme_minimal(base_size = 16))
+
+# set default figure parameters for knitr
+knitr::opts_chunk$set(
+  fig.width = 8, fig.asp = 0.618, fig.retina = 3,
+  dpi = 300, out.width = "60%"
+)
+
+# dplyr print min and max
+options(dplyr.print_max = 6, dplyr.print_min = 6)
+```
+]
+
+---
+
+## Agenda for today
+
+- Midterm feedback summary
+
+- Wrap up: Annotation
+
+- Presentation ready plots
+
+---
+
+class: inverse, middle
+
+# Midterm feedback summary
+
+---
+
+## An opportunity to talk more dataviz?
+
+```{r}
+midterm_eval <- tibble::tribble(
+    ~class_pace,                ~class_time,
+  "About right",             "More lecture",
+  "About right",         "More live coding",
+  "About right",         "More live coding",
+  "About right",         "More live coding",
+  "About right",         "More live coding",
+  "About right",         "More live coding",
+  "About right",    "More working in teams",
+  "About right", "No change, keep it as is",
+  "About right", "No change, keep it as is",
+  "About right", "No change, keep it as is",
+     "Too fast",         "More live coding",
+     "Too fast", "No change, keep it as is",
+     "Too slow",         "More live coding"
+  )
+```
+
+---
+
+## Class pace 1
+
+.pull-left[
+```{r class-pace-1, fig.show = "hide"}
+ggplot(midterm_eval, aes(x = class_pace)) +
+  geom_bar()
+```
+]
+.pull-right[
+```{r ref.label = "class-pace-1", echo = FALSE, out.width = "100%"}
+```
+]
+
+---
+
+## Class pace 2
+
+.pull-left[
+```{r class-pace-2, fig.show = "hide"}
+ggplot(midterm_eval, aes(x = class_pace)) +
+  geom_bar() +
+  scale_y_continuous(breaks = seq(0, 10, 2)) #<<
+```
+]
+.pull-right[
+```{r ref.label = "class-pace-2", echo = FALSE, out.width = "100%"}
+```
+]
+
+---
+
+## Class pace 3
+
+.pull-left[
+```{r class-pace-3, fig.show = "hide"}
+ggplot(midterm_eval, 
+       aes(y = factor(1), #<<
+           fill = class_pace) #<<
+       ) +
+  geom_bar(position = "fill") #<<
+```
+]
+.pull-right[
+```{r ref.label = "class-pace-3", echo = FALSE, out.width = "100%"}
+```
+]
+
+---
+
+## Class pace 4
+
+.pull-left[
+```{r class-pace-4, fig.show = "hide"}
+midterm_eval %>%
+  mutate( #<<
+    class_pace = fct_relevel(class_pace, #<<
+                             "Too fast", #<<
+                             "About right", #<<
+                             "Too slow") #<<
+    ) %>% #<<
+  ggplot(aes(y = factor(1), fill = class_pace)) +
+  geom_bar(position = "fill") 
+```
+]
+.pull-right[
+```{r ref.label = "class-pace-4", echo = FALSE, out.width = "100%"}
+```
+]
+
+---
+
+## Class pace 5
+
+.pull-left[
+```{r class-pace-5, fig.show = "hide"}
+midterm_eval %>%
+  mutate(class_pace = fct_relevel(class_pace, "Too fast", "About right", "Too slow")) %>% 
+  ggplot(
+    aes(y = "Class pace", #<<
+        fill = class_pace)
+    ) +
+  geom_bar(position = "fill") 
+```
+]
+.pull-right[
+```{r ref.label = "class-pace-5", echo = FALSE, out.width = "100%"}
+```
+]
+
+---
+
+## Class pace 6
+
+.pull-left[
+```{r class-pace-6, fig.show = "hide"}
+midterm_eval %>%
+  mutate(class_pace = fct_relevel(class_pace, "Too fast", "About right", "Too slow")) %>% 
+  ggplot(aes(y = "Class pace", fill = class_pace)) +
+  geom_bar(position = "fill") +
+  labs( #<<
+    x = "Percentage", #<<
+    y = NULL, #<<
+    fill = NULL #<<
+    ) #<<
+```
+]
+.pull-right[
+```{r ref.label = "class-pace-6", echo = FALSE, out.width = "100%"}
+```
+]
+
+---
+
+## Class pace 7
+
+.pull-left[
+```{r class-pace-7, fig.show = "hide"}
+midterm_eval %>%
+  mutate(class_pace = fct_relevel(class_pace, "Too fast", "About right", "Too slow")) %>% 
+  ggplot(aes(y = "Class pace", fill = class_pace)) +
+  geom_bar(position = "fill") +
+  labs(x = "Percentage", y = NULL, fill = NULL) +
+  theme(legend.position = "bottom") #<<
+```
+]
+.pull-right[
+```{r ref.label = "class-pace-7", echo = FALSE, out.width = "100%"}
+```
+]
+
+---
+
+## Class pace 8
+
+.pull-left[
+```{r class-pace-8, fig.show = "hide"}
+midterm_eval %>%
+  mutate(class_pace = fct_relevel(class_pace, "Too fast", "About right", "Too slow")) %>% 
+  ggplot(aes(y = "Class pace", fill = class_pace)) +
+  geom_bar(position = "fill") +
+  labs(x = "Percentage", y = NULL, fill = NULL) +
+  theme(legend.position = "bottom") +
+  scale_fill_discrete( #<<
+    guide = guide_legend(reverse = TRUE) #<<
+    ) #<<
+```
+]
+.pull-right[
+```{r ref.label = "class-pace-8", echo = FALSE, out.width = "100%"}
+```
+]
+
+---
+
+## Class pace 9
+
+.pull-left[
+```{r class-pace-9, fig.show = "hide"}
+midterm_eval %>%
+  mutate(class_pace = fct_relevel(class_pace, "Too fast", "About right", "Too slow")) %>% 
+  ggplot(aes(y = "Class pace", fill = class_pace)) +
+  geom_bar(position = "fill") +
+  labs(x = "Percentage", y = NULL, fill = NULL) +
+  theme(legend.position = "bottom") +
+  scale_fill_discrete(guide = guide_legend(reverse = TRUE)) +
+  scale_x_continuous( #<<
+    labels = label_percent() #<<
+    ) #<<
+```
+]
+.pull-right[
+```{r ref.label = "class-pace-9", echo = FALSE, out.width = "100%"}
+```
+]
+
+---
+
+## Class pace 10
+
+.pull-left[
+```{r class-pace-10, fig.show = "hide"}
+midterm_eval %>%
+  mutate(class_pace = fct_relevel(class_pace, "Too fast", "About right", "Too slow")) %>% 
+  ggplot(aes(y = "Class pace", fill = class_pace)) +
+  geom_bar(position = "fill") +
+  labs(x = "Percentage", y = NULL, fill = NULL) +
+  theme(legend.position = "bottom") +
+  scale_fill_discrete_diverging( #<<
+    guide = guide_legend(reverse = TRUE)
+    ) + 
+  scale_x_continuous(labels = label_percent())
+```
+]
+.pull-right[
+```{r ref.label = "class-pace-10", echo = FALSE, out.width = "100%"}
+```
+]
+
+---
+
+## Class pace 11
+
+.pull-left[
+```{r class-pace-11, fig.show = "hide"}
+midterm_eval %>%
+  mutate(class_pace = fct_relevel(class_pace, "Too fast", "About right", "Too slow")) %>% 
+  ggplot(aes(y = "Class pace", fill = class_pace)) +
+  geom_bar(position = "fill") +
+  labs(x = "Percentage", y = NULL, fill = NULL) +
+  theme(legend.position = "bottom") +
+  scale_fill_discrete_diverging(guide = guide_legend(reverse = TRUE)) +
+  scale_x_continuous(
+    labels = label_percent(), 
+    position = "top" #<<
+    )
+```
+]
+.pull-right[
+```{r ref.label = "class-pace-11", echo = FALSE, out.width = "100%"}
+```
+]
+
+---
+
+## Class pace 12
+
+No change in code, only adjust `fig.asp` to 0.4.
+
+.pull-left[
+```{r class-pace-12, fig.show = "hide"}
+midterm_eval %>%
+  mutate(class_pace = fct_relevel(class_pace, "Too fast", "About right", "Too slow")) %>% 
+  ggplot(aes(y = "Class pace", fill = class_pace)) +
+  geom_bar(position = "fill") +
+  labs(x = "Percentage", y = NULL, fill = NULL) +
+  theme(legend.position = "bottom") +
+  scale_fill_discrete_diverging(guide = guide_legend(reverse = TRUE)) +
+  scale_x_continuous(labels = label_percent(), position = "top" )
+```
+]
+.pull-right[
+```{r ref.label = "class-pace-12", echo = FALSE, out.width = "100%", fig.asp = 0.4}
+```
+]
+
+---
+
+## Class time
+
+.panelset.sideways[
+```{r panelset = c(source = "Code", output = "Plot"), out.width = "100%", fig.asp = 0.4}
+midterm_eval %>%
+  mutate(
+    class_time = str_remove(class_time, ", keep it as is"),
+    class_time = fct_relevel(class_time, "More lecture", "No change", "More live coding", "More working in teams")
+    ) %>%
+  ggplot(aes(y = "Class time", fill = class_time)) +
+  geom_bar(position = "fill") +
+  labs(
+    x = "Percentage",
+    y = NULL,
+    fill = NULL
+  ) +
+  theme(
+    legend.position = "bottom",
+    legend.direction = "vertical"
+    ) +
+  scale_fill_manual(
+    values = c("#BCC1D4", "#E2E2E2", "#D6BCC0", "#8E063B"), 
+    guide = guide_legend(nrow = 2, reverse = TRUE)
+    ) +
+  scale_x_continuous(labels = label_percent(), position = "top")
+```
+]
+
+---
+
+## Other feedback
+
+- Need more practice:
+  - Scaling
+  - Data cleaning/transformation
+  - Planning a unique visualization
+
+--
+- Time spend: 
+  - ~6 hrs/week on average out of class
+  - 3.75 hrs/week in class
+  - Total: ~9.75 hrs/week
+
+--
+- Misc:
+  - Grading: 
+    - HW: Randomly assign to graders (TAs) for each assignment
+    - Project: Averaged across all graders (TAs + prof)
+  - Release assignments earlier
+  - Tips for creating a web (GitHub) portfolio
+
+---
+
+class: inverse, middle
+
+# Wrap up: Annotation
+
+---
+
+## Explanations -> annotations
+
+**Rule of thumb:** If you feel the need to draw your audience's attention to a particular feature of the plot, experiment with doing so using annotation instead of in words.
+
+---
+
+## Rewind: Sizes of planes
+
+```{r include = FALSE}
+rdu_flights_2020 <- read_csv(here::here("10-presentation-plots", "data/rdu-flights-2020.csv"))
+rdu_planes_2020 <- read_csv(here::here("10-presentation-plots", "data/rdu-planes-2020.csv"))
+```
+
+```{r eval = FALSE}
+rdu_flights_2020 <- read_csv(here::here("data/rdu-flights-2020.csv"))
+rdu_planes_2020 <- read_csv(here::here("data/rdu-planes-2020.csv"))
+```
+
+```{r}
+rdu_flights_planes <- rdu_flights_2020 %>%
+  inner_join(rdu_planes_2020, by = "tailnum") %>%
+  mutate(
+    size = case_when(
+      seats <= 30 ~ "Small",
+      seats >= 31 & seats <= 110 ~ "Medium",
+      seats >= 111 & seats <= 210 ~ "Large",
+      seats > 211 ~ "Jumbo"
+    ),
+    size = fct_relevel(size, "Small", "Medium", "Large", "Jumbo")
+  )
+```
+
+---
+
+.task[
+How can we improve this visualization, in terms of color, axes, and annotation?
+]
+
+.panelset.sideways[
+```{r panelset = c(source = "Code", output = "Plot"), out.width = "100%"}
+rdu_flights_planes %>%
+  count(hour, size) %>%
+  ggplot(aes(x = hour, y = n, color = size)) +
+  geom_line() +
+  labs(
+    x = "Hour of day",
+    y = "Number of flights",
+    color = "Size of plane",
+    title = "Number of flights out of RDU in 2020",
+    subtitle = "By size of plane",
+    caption = "Source: FAA Aircraft Registry and\nBureau of Transportation Statistics"
+  )
+```
+]
+
+---
+
+class: middle
+
+.hand[livecoding...]
+
+---

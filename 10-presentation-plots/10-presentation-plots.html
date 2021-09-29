@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>presentation ready plots</title>
+    <meta charset="utf-8" />
+    <meta name="date" content="2021-09-29" />
+    <script src="10-presentation-plots_files/header-attrs/header-attrs.js"></script>
+    <link href="10-presentation-plots_files/panelset/panelset.css" rel="stylesheet" />
+    <script src="10-presentation-plots_files/panelset/panelset.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# presentation ready plots
+### 2021-09-29
+
+---
+
+
+
+
+
+
+class: middle, inverse
+
+# Welcome
+
+---
+
+## Announcements
+
+- Project presentations on Friday
+  - Bring a laptop to fill out feedback forms
+  - One more team evaluation to be filled out promptly after class
+  - Presentation order, with latest start-by times:
+     - 12:05 - Ctrl+Alt+Elite
+     - 12:15 - Team 5 Look Alive
+     - 12:25 - Mr. Palmer's Penguins
+     - 12:35 - R-mageddon
+     - 12:45 - 7 Up
+     - 12:55 - The Outliers
+     - 13:05 - Dorian's Gs
+     - 13:15 - The Scatterplots
+
+- After fall break:
+  - Reading quiz 3 due Wed, Oct 6
+  - New teams!
+  - Take note of Project 2 presentation date: must be in class in person to present or present live via Zoom in the case of isolation
+
+---
+
+## Setup
+
+.midi[
+
+```r
+# load packages
+library(tidyverse)
+library(colorspace)
+library(ggtext)
+library(scales)
+
+# set default theme for ggplot2
+ggplot2::theme_set(ggplot2::theme_minimal(base_size = 16))
+
+# set default figure parameters for knitr
+knitr::opts_chunk$set(
+  fig.width = 8, fig.asp = 0.618, fig.retina = 3,
+  dpi = 300, out.width = "60%"
+)
+
+# dplyr print min and max
+options(dplyr.print_max = 6, dplyr.print_min = 6)
+```
+]
+
+---
+
+## Agenda for today
+
+- Midterm feedback summary
+
+- Wrap up: Annotation
+
+- Presentation ready plots
+
+---
+
+class: inverse, middle
+
+# Midterm feedback summary
+
+---
+
+## An opportunity to talk more dataviz?
+
+
+```r
+midterm_eval &lt;- tibble::tribble(
+    ~class_pace,                ~class_time,
+  "About right",             "More lecture",
+  "About right",         "More live coding",
+  "About right",         "More live coding",
+  "About right",         "More live coding",
+  "About right",         "More live coding",
+  "About right",         "More live coding",
+  "About right",    "More working in teams",
+  "About right", "No change, keep it as is",
+  "About right", "No change, keep it as is",
+  "About right", "No change, keep it as is",
+     "Too fast",         "More live coding",
+     "Too fast", "No change, keep it as is",
+     "Too slow",         "More live coding"
+  )
+```
+
+---
+
+## Class pace 1
+
+.pull-left[
+
+```r
+ggplot(midterm_eval, aes(x = class_pace)) +
+  geom_bar()
+```
+]
+.pull-right[
+&lt;img src="10-presentation-plots_files/figure-html/unnamed-chunk-3-1.png" width="100%" /&gt;
+]
+
+---
+
+## Class pace 2
+
+.pull-left[
+
+```r
+ggplot(midterm_eval, aes(x = class_pace)) +
+  geom_bar() +
+* scale_y_continuous(breaks = seq(0, 10, 2))
+```
+]
+.pull-right[
+&lt;img src="10-presentation-plots_files/figure-html/unnamed-chunk-4-1.png" width="100%" /&gt;
+]
+
+---
+
+## Class pace 3
+
+.pull-left[
+
+```r
+ggplot(midterm_eval, 
+*      aes(y = factor(1),
+*          fill = class_pace)
+       ) +
+* geom_bar(position = "fill")
+```
+]
+.pull-right[
+&lt;img src="10-presentation-plots_files/figure-html/unnamed-chunk-5-1.png" width="100%" /&gt;
+]
+
+---
+
+## Class pace 4
+
+.pull-left[
+
+```r
+midterm_eval %&gt;%
+* mutate(
+*   class_pace = fct_relevel(class_pace,
+*                            "Too fast",
+*                            "About right",
+*                            "Too slow")
+*   ) %&gt;%
+  ggplot(aes(y = factor(1), fill = class_pace)) +
+  geom_bar(position = "fill") 
+```
+]
+.pull-right[
+&lt;img src="10-presentation-plots_files/figure-html/unnamed-chunk-6-1.png" width="100%" /&gt;
+]
+
+---
+
+## Class pace 5
+
+.pull-left[
+
+```r
+midterm_eval %&gt;%
+  mutate(class_pace = fct_relevel(class_pace, "Too fast", "About right", "Too slow")) %&gt;% 
+  ggplot(
+*   aes(y = "Class pace",
+        fill = class_pace)
+    ) +
+  geom_bar(position = "fill") 
+```
+]
+.pull-right[
+&lt;img src="10-presentation-plots_files/figure-html/unnamed-chunk-7-1.png" width="100%" /&gt;
+]
+
+---
+
+## Class pace 6
+
+.pull-left[
+
+```r
+midterm_eval %&gt;%
+  mutate(class_pace = fct_relevel(class_pace, "Too fast", "About right", "Too slow")) %&gt;% 
+  ggplot(aes(y = "Class pace", fill = class_pace)) +
+  geom_bar(position = "fill") +
+* labs(
+*   x = "Percentage",
+*   y = NULL,
+*   fill = NULL
+*   )
+```
+]
+.pull-right[
+&lt;img src="10-presentation-plots_files/figure-html/unnamed-chunk-8-1.png" width="100%" /&gt;
+]
+
+---
+
+## Class pace 7
+
+.pull-left[
+
+```r
+midterm_eval %&gt;%
+  mutate(class_pace = fct_relevel(class_pace, "Too fast", "About right", "Too slow")) %&gt;% 
+  ggplot(aes(y = "Class pace", fill = class_pace)) +
+  geom_bar(position = "fill") +
+  labs(x = "Percentage", y = NULL, fill = NULL) +
+* theme(legend.position = "bottom")
+```
+]
+.pull-right[
+&lt;img src="10-presentation-plots_files/figure-html/unnamed-chunk-9-1.png" width="100%" /&gt;
+]
+
+---
+
+## Class pace 8
+
+.pull-left[
+
+```r
+midterm_eval %&gt;%
+  mutate(class_pace = fct_relevel(class_pace, "Too fast", "About right", "Too slow")) %&gt;% 
+  ggplot(aes(y = "Class pace", fill = class_pace)) +
+  geom_bar(position = "fill") +
+  labs(x = "Percentage", y = NULL, fill = NULL) +
+  theme(legend.position = "bottom") +
+* scale_fill_discrete(
+*   guide = guide_legend(reverse = TRUE)
+*   )
+```
+]
+.pull-right[
+&lt;img src="10-presentation-plots_files/figure-html/unnamed-chunk-10-1.png" width="100%" /&gt;
+]
+
+---
+
+## Class pace 9
+
+.pull-left[
+
+```r
+midterm_eval %&gt;%
+  mutate(class_pace = fct_relevel(class_pace, "Too fast", "About right", "Too slow")) %&gt;% 
+  ggplot(aes(y = "Class pace", fill = class_pace)) +
+  geom_bar(position = "fill") +
+  labs(x = "Percentage", y = NULL, fill = NULL) +
+  theme(legend.position = "bottom") +
+  scale_fill_discrete(guide = guide_legend(reverse = TRUE)) +
+* scale_x_continuous(
+*   labels = label_percent()
+*   )
+```
+]
+.pull-right[
+&lt;img src="10-presentation-plots_files/figure-html/unnamed-chunk-11-1.png" width="100%" /&gt;
+]
+
+---
+
+## Class pace 10
+
+.pull-left[
+
+```r
+midterm_eval %&gt;%
+  mutate(class_pace = fct_relevel(class_pace, "Too fast", "About right", "Too slow")) %&gt;% 
+  ggplot(aes(y = "Class pace", fill = class_pace)) +
+  geom_bar(position = "fill") +
+  labs(x = "Percentage", y = NULL, fill = NULL) +
+  theme(legend.position = "bottom") +
+* scale_fill_discrete_diverging(
+    guide = guide_legend(reverse = TRUE)
+    ) + 
+  scale_x_continuous(labels = label_percent())
+```
+]
+.pull-right[
+&lt;img src="10-presentation-plots_files/figure-html/unnamed-chunk-12-1.png" width="100%" /&gt;
+]
+
+---
+
+## Class pace 11
+
+.pull-left[
+
+```r
+midterm_eval %&gt;%
+  mutate(class_pace = fct_relevel(class_pace, "Too fast", "About right", "Too slow")) %&gt;% 
+  ggplot(aes(y = "Class pace", fill = class_pace)) +
+  geom_bar(position = "fill") +
+  labs(x = "Percentage", y = NULL, fill = NULL) +
+  theme(legend.position = "bottom") +
+  scale_fill_discrete_diverging(guide = guide_legend(reverse = TRUE)) +
+  scale_x_continuous(
+    labels = label_percent(), 
+*   position = "top"
+    )
+```
+]
+.pull-right[
+&lt;img src="10-presentation-plots_files/figure-html/unnamed-chunk-13-1.png" width="100%" /&gt;
+]
+
+---
+
+## Class pace 12
+
+No change in code, only adjust `fig.asp` to 0.4.
+
+.pull-left[
+
+```r
+midterm_eval %&gt;%
+  mutate(class_pace = fct_relevel(class_pace, "Too fast", "About right", "Too slow")) %&gt;% 
+  ggplot(aes(y = "Class pace", fill = class_pace)) +
+  geom_bar(position = "fill") +
+  labs(x = "Percentage", y = NULL, fill = NULL) +
+  theme(legend.position = "bottom") +
+  scale_fill_discrete_diverging(guide = guide_legend(reverse = TRUE)) +
+  scale_x_continuous(labels = label_percent(), position = "top" )
+```
+]
+.pull-right[
+&lt;img src="10-presentation-plots_files/figure-html/unnamed-chunk-14-1.png" width="100%" /&gt;
+]
+
+---
+
+## Class time
+
+.panelset.sideways[
+.panel[.panel-name[Code]
+
+```r
+midterm_eval %&gt;%
+  mutate(
+    class_time = str_remove(class_time, ", keep it as is"),
+    class_time = fct_relevel(class_time, "More lecture", "No change", "More live coding", "More working in teams")
+    ) %&gt;%
+  ggplot(aes(y = "Class time", fill = class_time)) +
+  geom_bar(position = "fill") +
+  labs(
+    x = "Percentage",
+    y = NULL,
+    fill = NULL
+  ) +
+  theme(
+    legend.position = "bottom",
+    legend.direction = "vertical"
+    ) +
+  scale_fill_manual(
+    values = c("#BCC1D4", "#E2E2E2", "#D6BCC0", "#8E063B"), 
+    guide = guide_legend(nrow = 2, reverse = TRUE)
+    ) +
+  scale_x_continuous(labels = label_percent(), position = "top")
+```
+
+]
+
+.panel[.panel-name[Plot]
+
+&lt;img src="10-presentation-plots_files/figure-html/unnamed-chunk-15-1.png" width="100%" /&gt;
+
+]
+]
+
+---
+
+## Other feedback
+
+- Need more practice:
+  - Scaling
+  - Data cleaning/transformation
+  - Planning a unique visualization
+
+--
+- Time spend: 
+  - ~6 hrs/week on average out of class
+  - 3.75 hrs/week in class
+  - Total: ~9.75 hrs/week
+
+--
+- Misc:
+  - Grading: 
+    - HW: Randomly assign to graders (TAs) for each assignment
+    - Project: Averaged across all graders (TAs + prof)
+  - Release assignments earlier
+  - Tips for creating a web (GitHub) portfolio
+
+---
+
+class: inverse, middle
+
+# Wrap up: Annotation
+
+---
+
+## Explanations -&gt; annotations
+
+**Rule of thumb:** If you feel the need to draw your audience's attention to a particular feature of the plot, experiment with doing so using annotation instead of in words.
+
+---
+
+## Rewind: Sizes of planes
+
+
+
+
+```r
+rdu_flights_2020 &lt;- read_csv(here::here("data/rdu-flights-2020.csv"))
+rdu_planes_2020 &lt;- read_csv(here::here("data/rdu-planes-2020.csv"))
+```
+
+
+```r
+rdu_flights_planes &lt;- rdu_flights_2020 %&gt;%
+  inner_join(rdu_planes_2020, by = "tailnum") %&gt;%
+  mutate(
+    size = case_when(
+      seats &lt;= 30 ~ "Small",
+      seats &gt;= 31 &amp; seats &lt;= 110 ~ "Medium",
+      seats &gt;= 111 &amp; seats &lt;= 210 ~ "Large",
+      seats &gt; 211 ~ "Jumbo"
+    ),
+    size = fct_relevel(size, "Small", "Medium", "Large", "Jumbo")
+  )
+```
+
+---
+
+.task[
+How can we improve this visualization, in terms of color, axes, and annotation?
+]
+
+.panelset.sideways[
+.panel[.panel-name[Code]
+
+```r
+rdu_flights_planes %&gt;%
+  count(hour, size) %&gt;%
+  ggplot(aes(x = hour, y = n, color = size)) +
+  geom_line() +
+  labs(
+    x = "Hour of day",
+    y = "Number of flights",
+    color = "Size of plane",
+    title = "Number of flights out of RDU in 2020",
+    subtitle = "By size of plane",
+    caption = "Source: FAA Aircraft Registry and\nBureau of Transportation Statistics"
+  )
+```
+
+]
+
+.panel[.panel-name[Plot]
+
+&lt;img src="10-presentation-plots_files/figure-html/unnamed-chunk-19-1.png" width="100%" /&gt;
+
+]
+]
+
+---
+
+class: middle
+
+.hand[livecoding...]
+
+---
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="https://platform.twitter.com/widgets.js"></script>
+<script>var slideshow = remark.create({
+"slideNumberFormat": "%current%",
+"highlightStyle": "solarized-light",
+"highlightLines": true,
+"ratio": "16:9",
+"countIncrementalSlides": true
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
