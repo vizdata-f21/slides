@@ -324,6 +324,16 @@ h3 {
   border-left: solid 5px #F1DE67;
   background-color: #F1DE6750;
 }
+.note {
+  padding-right: 10px;
+  padding-left: 10px;
+  padding-top: 3px;
+  padding-bottom: 3px;
+  margin-bottom: 6px;
+  margin-top: 6px;
+  border-left: solid 5px #866fa3;
+  background-color: #866fa350;
+}
 .pull-left {
   width: 49%;
   float: left;

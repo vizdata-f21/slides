@@ -29,25 +29,36 @@ class: middle, inverse
 
 ---
 
-## Announcements
+## Announcements I
 
-- Project presentations on Friday
-  - Bring a laptop to fill out feedback forms
-  - One more team evaluation to be filled out promptly after class
-  - Presentation order, with latest start-by times:
-     - 12:05 - Ctrl+Alt+Elite
-     - 12:15 - Team 5 Look Alive
-     - 12:25 - Mr. Palmer's Penguins
-     - 12:35 - R-mageddon
-     - 12:45 - 7 Up
-     - 12:55 - The Outliers
-     - 13:05 - Dorian's Gs
-     - 13:15 - The Scatterplots
+Project presentations on Friday
+
+- Bring a laptop to fill out feedback forms
+- One more team evaluation to be filled out promptly after class
+- Presentation order, with latest start-by times:
+  - 12:05 - Ctrl+Alt+Elite
+  - 12:15 - Team 5 Look Alive
+  - 12:25 - Mr. Palmer's Penguins
+  - 12:35 - R-mageddon
+  - 12:45 - 7 Up
+  - 12:55 - The Outliers
+  - 13:05 - Dorian's Gs
+  - 13:15 - The Scatterplots
+
+.note[
+We might go over by 10 mins max on Friday. I promise to give you back your 10 minutes today or another day. Let me know if this presents a big issue for getting to your next class.
+]
+
+---
+
+## Announcements II
 
 - After fall break:
   - Reading quiz 3 due Wed, Oct 6
   - New teams!
   - Take note of Project 2 presentation date: must be in class in person to present or present live via Zoom in the case of isolation
+
+- If you have topics you'd like to see covered in the second half of the class that are already on the [schedule](https://www.vizdata.org/schedule.html), let me know! We might be able to shuffle things around / squeeze them in.
 
 ---
 
@@ -61,6 +72,7 @@ library(tidyverse)
 library(colorspace)
 library(ggtext)
 library(scales)
+library(ggrepel)
 
 # set default theme for ggplot2
 ggplot2::theme_set(ggplot2::theme_minimal(base_size = 16))
@@ -84,7 +96,9 @@ options(dplyr.print_max = 6, dplyr.print_min = 6)
 
 - Wrap up: Annotation
 
-- Presentation ready plots
+- Telling a story
+
+- Plots on slides
 
 ---
 
@@ -472,6 +486,9 @@ How can we improve this visualization, in terms of color, axes, and annotation?
 ]
 
 .panelset.sideways[
+.panel[.panel-name[Plot]
+&lt;img src="10-presentation-plots_files/figure-html/planes-1.png" width="100%" /&gt;
+]
 .panel[.panel-name[Code]
 
 ```r
@@ -488,13 +505,9 @@ rdu_flights_planes %&gt;%
     caption = "Source: FAA Aircraft Registry and\nBureau of Transportation Statistics"
   )
 ```
-
 ]
-
-.panel[.panel-name[Plot]
-
-&lt;img src="10-presentation-plots_files/figure-html/unnamed-chunk-19-1.png" width="100%" /&gt;
-
+.panel[.panel-name[Discuss]
+&lt;iframe src="https://app.sli.do/event/rxg9buzy" height="100%" width="100%" frameBorder="0" style="min-height: 560px;" title="Slido"&gt;&lt;/iframe&gt;
 ]
 ]
 
@@ -502,9 +515,110 @@ rdu_flights_planes %&gt;%
 
 class: middle
 
-.hand[livecoding...]
+.large[.hand[livecoding...]]
+
+&lt;br&gt;
+
+&gt; Code along at `vizdata-f21/exercise-03`, then `rdu-flights`
 
 ---
+
+class: middle
+
+# Telling a story
+
+---
+
+## Multiple ways of telling a story
+
+- Sequential plots: Motivation, then resolution
+
+- A single plot: Resolution, and hidden in it motivation
+
+&lt;br&gt;
+
+.note[
+**Project note:** you're asked to create two plots per question. One possible approach: Start with a plot showing the raw data, and show derived quantities (e.g. percent increases, averages, coefficients of fitted models) in the subsequent plot.
+]
+
+---
+
+## Simplicity vs. complexity
+
+&gt; When you’re trying to show too much data at once you may end up not showing anything.
+
+- Never assume your audience can rapidly process complex visual displays
+
+- Don't add variables to your plot that are tangential to your story
+
+- Don't jump straight to a highly complex figure; first show an easily digestible subset (e.g., show one facet first)
+
+- Aim for memorable, but clear
+
+&lt;br&gt;
+
+.note[
+**Project note:** Make sure to leave time to iterate on your plots after you practice your presentation. If certain plots are getting too wordy to explain, take time to simplify them!
+]
+
+---
+
+## Consistency vs. repetitiveness
+
+&gt; Be consistent but don’t be repetitive.
+
+- Use consistent features throughout plots (e.g., same color represents same level on all plots)
+
+- Aim to use a different type of visualization for each distinct analysis
+
+&lt;br&gt;
+
+.note[
+**Project note:** If possible, ask a friend who is not in the class to listen to your presentation and then ask them what they remember. Then, ask yourself: is that what you wanted them to remember?
+]
+
+---
+
+class: middle
+
+# Plots on slides
+
+---
+
+## Fitting your figures on a slide
+
+- Use a setup chunk for consistent `dpi`, `fig.asp`, `out.width` etc.
+
+- But, remember that you might want different `fig.asp` and `out.width` for faceted plots
+
+- For a "zoomed out" look, increase `fig.width`
+
+.pull-left[
+&lt;img src="10-presentation-plots_files/figure-html/unnamed-chunk-20-1.png" width="100%" /&gt;
+]
+.pull-right[
+&lt;img src="10-presentation-plots_files/figure-html/unnamed-chunk-21-1.png" width="100%" /&gt;
+]
+
+---
+
+## Multiple figures on a slide
+
+- Use `.pull-left` and `.pull-right` environments (example in slide template)
+
+- Use `out.width= "50%"` in a chunk that creates two plots to have each span half the slide and be placed next to each other (or `out.width = "33%"` for three plots, etc.)
+
+- Use the [**patchwork**](https://patchwork.data-imaginist.com/) package (details on this later in the semester, but feel free to look into it yourself!)
+
+- Possibly, use pivoting to reshape your data and then use facets
+
+---
+
+## Like something you saw in my slides?
+
+&lt;br&gt;
+
+Look into the source code at https://github.com/vizdata-f21/slides.
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
