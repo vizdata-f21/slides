@@ -1,6 +1,6 @@
 ---
 title: "visualizing<br>time series data"
-date: '2021-20-06'
+date: '2021-10-06'
 output:
   xaringan::moon_reader:
     css: xaringan-themer.css
