@@ -125,6 +125,7 @@ library(geosphere)
 library(rnaturalearth)
 library(rnaturalearthdata)
 library(ggspatial)
+library(dsbox)
 
 # set default theme for ggplot2
 ggplot2::theme_set(ggplot2::theme_minimal(base_size = 16))
@@ -777,3 +778,175 @@ ggplot(data = world) +
     style = north_arrow_fancy_orienteering) +
   coord_sf(xlim = c(24, 45), ylim = c(32, 43))
 ```
+
+---
+
+
+class: middle, center
+
+# Fisheries of the world
+
+---
+
+Fisheries and Aquaculture Department of the Food and Agriculture Organization of the United Nations collects data on fisheries production of countries. The (not-so-great) visualization belows shows the distribution of fishery harvest of countries for 2018, by capture and aquaculture.  
+
+<br>
+
+.pull-left[
+```{r echo=FALSE, out.width="100%", fig.align="center"}
+knitr::include_graphics("images/fisheries-data.png")
+```
+]
+.pull-right[
+- Countries whose total harvest was less than 100,000 tons are not 
+included in the visualization.
+- Source: [Fishing industry by country](https://en.wikipedia.org/wiki/Fishing_industry_by_country)
+]
+
+---
+
+.question[
+What are some ways you would improve this visualization?
+]
+
+```{r echo=FALSE, out.width="80%", fig.align="center"}
+knitr::include_graphics("images/fisheries.png")
+```
+
+---
+
+## Get the data
+
+From the **dsbox** package
+
+```{r}
+names(fisheries)
+```
+
+---
+
+## Inspect the data
+
+.midi[
+```{r}
+fisheries
+```
+]
+
+---
+
+## Data prep
+
+Filter out countries whose total harvest was less than 100,000 tons since they 
+are not included in the visualization:
+
+.pull-left[
+```{r}
+fisheries <- fisheries %>%
+  mutate(total = capture + aquaculture) %>%
+  filter(total > 100000)
+```
+]
+.pull-right[
+```{r}
+fisheries
+```
+]
+
+---
+
+## Mapping the fisheries data
+
+- Obtain country boundaries and store as a data frame
+- Join the fisheries and country boundaries data frames
+- Plot the country boundaries, and fill by fisheries harvest data
+
+---
+
+## `map_data()`
+
+The `map_data()` function easily turns data from the maps package in to a data frame suitable for plotting with ggplot2:
+
+```{r}
+map_data("world")
+```
+
+---
+
+## A few fixes for better matching
+
+.question[
+What does the following code do?
+]
+
+```{r}
+world_map <- map_data("world") %>%
+  mutate(region = case_when(
+    subregion == "Hong Kong" ~ "Hong Kong",
+    TRUE                     ~ region
+    )
+  )
+```
+
+---
+
+## Map the world
+
+.midi[
+```{r fig.height=5, fig.width=12}
+ggplot(world_map, aes(x = long, y = lat, group = group)) +
+  geom_polygon(fill = "gray") +
+  theme_minimal()
+```
+]
+
+---
+
+## Join fisheries and world map
+
+.pull-left[
+```{r}
+fisheries %>% select(country)
+```
+]
+.pull-right[
+```{r}
+world_map %>% select(region)
+```
+]
+
+---
+
+## Join fisheries and world map
+
+```{r}
+fisheries_map <- left_join(fisheries, world_map, 
+                           by = c("country" = "region"))
+```
+
+```{r}
+glimpse(fisheries_map)
+```
+
+---
+
+## Mapping fisheries
+
+.question[
+What is missing/misleading about the following map?
+]
+
+.midi[
+```{r fig.height=4.5, fig.width=12}
+ggplot(fisheries_map, mapping = aes(x = long, y = lat, group = group)) +
+  geom_polygon(aes(fill = capture)) +
+  scale_fill_viridis_c() +
+  theme_minimal()
+```
+]
+
+---
+
+.hand[
+livecoding
+]
