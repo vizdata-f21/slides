@@ -868,24 +868,7 @@ fisheries
 The `map_data()` function easily turns data from the maps package in to a data frame suitable for plotting with ggplot2:
 
 ```{r}
-map_data("world")
-```
-
----
-
-## A few fixes for better matching
-
-.question[
-What does the following code do?
-]
-
-```{r}
-world_map <- map_data("world") %>%
-  mutate(region = case_when(
-    subregion == "Hong Kong" ~ "Hong Kong",
-    TRUE                     ~ region
-    )
-  )
+world_map <- map_data("world") %>% as_tibble()
 ```
 
 ---
