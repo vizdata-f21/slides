@@ -115,19 +115,23 @@ class: middle, inverse
 ```{r message = FALSE, warning = FALSE}
 # load packages
 library(tidyverse)
-library(fs)
+library(sf)
 library(lubridate)
 library(colorblindr)
 library(gghighlight)
 library(highcharter)
+library(fs)
+library(geosphere)
+library(rnaturalearth)
+library(rnaturalearthdata)
+library(ggspatial)
 
 # set default theme for ggplot2
 ggplot2::theme_set(ggplot2::theme_minimal(base_size = 16))
 
 # set default figure parameters for knitr
 knitr::opts_chunk$set(
-  fig.width = 8, fig.asp = 0.618, fig.retina = 3,
-  dpi = 300, out.width = "60%"
+  fig.width = 8, fig.asp = 0.618, fig.retina = 3, dpi = 300, out.width = "60%"
 )
 
 # dplyr print min and max
@@ -255,7 +259,7 @@ sf
 ## Visualizing annual trends
 
 .panelset.sideways[
-```{r panelset = c(source = "Code", output = "Plot"), out.width = "90%"}
+```{r panelset = c(source = "Code", output = "Plot"), out.width = "100%"}
 ggplot(sf, aes(x = fake_date, y = aqi_value, 
                group = year, color = factor(year))) +
   geom_line() +
@@ -279,6 +283,8 @@ ggplot(sf, aes(x = fake_date, y = aqi_value,
 
 ## Highlighting
 
+Highlight a given year
+
 .panelset.sideways[
 ```{r panelset = c(source = "Code", output = "Plot"), out.width = "100%", message = FALSE, warning = FALSE}
 ggplot(sf, aes(x = fake_date, y = aqi_value, group = year)) +
@@ -301,9 +307,107 @@ ggplot(sf, aes(x = fake_date, y = aqi_value, group = year)) +
 
 ---
 
-class: middle
+## Highlighting
 
-# Interactive plots
+Customizing highlighting style
+
+.panelset.sideways[
+```{r panelset = c(source = "Code", output = "Plot"), out.width = "100%", message = FALSE, warning = FALSE}
+ggplot(sf, aes(x = fake_date, y = aqi_value, group = year)) +
+  geom_line(color = "firebrick4", size = 1) + #<<
+  gghighlight(
+    year == 2018, label_key = year, 
+    unhighlighted_params = list(size = 0.2, color = "darkgray") #<<
+    ) + 
+  scale_x_date(date_labels = "%b") +
+  labs(
+    x = NULL, y = "AQI", color = "Year",
+    title = "Ozone and PM2.5 Daily AQI Values",
+    subtitle = "San Francisco-Oakland-Hayward, CA",
+    caption = "\nSource: EPA Daily Air Quality Tracker"
+  ) +
+  theme(
+    plot.title.position = "plot",
+    panel.grid.minor.y = element_blank(),
+    panel.grid.minor.x = element_blank()
+  )
+```
+]
+
+---
+
+## Highlighting
+
+Customizing labels
+
+.small[
+.panelset.sideways[
+```{r panelset = c(source = "Code", output = "Plot"), out.width = "100%", message = FALSE, warning = FALSE}
+ggplot(sf, aes(x = fake_date, y = aqi_value, group = year)) +
+  geom_line(color = "firebrick4", size = 1) +
+  gghighlight(
+    year == 2018, label_key = year, 
+    unhighlighted_params = list(size = 0.2, color = "darkgray"),
+    use_direct_label = FALSE #<<
+    ) + 
+  annotate( #<<
+    "label", x = ymd("2000-12-15"), y = 225, #<<
+    label = "2018", fill = "firebrick4", color = "white" #<<
+    ) + #<<
+  scale_x_date(date_labels = "%b") +
+  labs(
+    x = NULL, y = "AQI", color = "Year",
+    title = "Ozone and PM2.5 Daily AQI Values",
+    subtitle = "San Francisco-Oakland-Hayward, CA",
+    caption = "\nSource: EPA Daily Air Quality Tracker"
+  ) +
+  theme(
+    plot.title.position = "plot",
+    panel.grid.minor.y = element_blank(),
+    panel.grid.minor.x = element_blank()
+  )
+```
+]
+]
+
+---
+
+## Highlighting
+
+Highlight any years where the average AQI is over 50
+
+.midi[
+.panelset.sideways[
+```{r panelset = c(source = "Code", output = "Plot"), out.width = "100%", message = FALSE, warning = FALSE}
+ggplot(sf, aes(x = fake_date, y = aqi_value, group = year, color = factor(year))) +
+  geom_line(show.legend = FALSE) +
+  gghighlight(
+    mean(aqi_value) > 50, #<<
+    label_key = year, use_direct_label = FALSE
+    ) + 
+  scale_x_date(date_labels = "%b") +
+  scale_color_OkabeIto(darken = 0.5) +
+  labs(
+    x = NULL, y = "AQI", color = "Year",
+    title = "Ozone and PM2.5 Daily AQI Values",
+    subtitle = "San Francisco-Oakland-Hayward, CA",
+    caption = "\nSource: EPA Daily Air Quality Tracker"
+  ) +
+  theme(
+    plot.title.position = "plot",
+    panel.grid.minor.y = element_blank(),
+    panel.grid.minor.x = element_blank()
+  ) +
+  facet_wrap(~ year) #<<
+```
+]
+]
+
+---
+
+class: middle, inverse
+
+# Wrap up: Interactive plots
 
 ---
 
@@ -332,3 +436,344 @@ highchart(type = "stock") %>%
   hc_rangeSelector(enabled = FALSE)
 ```
 ]
+
+---
+
+class: middle, inverse
+
+# Geospatial data in the real world
+
+---
+
+## Visualizing geographic areas
+
+Without any projection, on the cartesian coordinate system
+
+```{r}
+world_map <- ggplot(map_data("world"), aes(long, lat, group = group)) +
+  geom_polygon(fill = "white", color = "#3c3b6e", size = 0.3) +
+  labs(x = NULL, y = NULL)
+
+world_map
+```
+
+---
+
+## Mercator projection
+
+Meridians are equally spaced and vertical, parallels are horizontal lines whose spacing increases the further we move away from the equator
+
+```{r}
+world_map +
+  coord_map(projection = "mercator") #<<
+```
+
+---
+
+## Mercator projection
+
+.hand[without the weird straight lines through the earth!]
+
+```{r out.width = "55%"}
+world_map +
+  coord_map(
+    projection = "mercator", 
+    xlim = c(-180, 180) #<<
+    )
+```
+
+---
+
+## Sinusoidal projection
+
+Parallels are equally spaced
+
+```{r}
+world_map +
+  coord_map(projection = "sinusoidal", xlim = c(-180, 180)) #<<
+```
+
+---
+
+## Orthographic projection
+
+Viewed from infinity
+
+```{r}
+world_map +
+  coord_map(projection = "orthographic") #<<
+```
+
+---
+
+## Mollweide projection
+
+Equal-area, hemisphere is a circle
+
+```{r}
+world_map +
+  coord_map(projection = "mollweide", xlim = c(-180, 180)) #<<
+```
+
+---
+
+## Visualizing distances
+
+.task[
+Draw a line between Istanbul and Los Angeles.
+]
+
+```{r}
+cities <- tribble(
+  ~city,         ~long,    ~lat,
+  "istanbul",    28.9784,  41.0082,
+  "los angeles", -118.243, 34.0522,
+)
+```
+
+```{r echo = FALSE, out.width = "50%"}
+world_map +
+  geom_point(
+    data = cities, aes(x = long, y = lat, group = NULL),
+    size = 2, color = "red"
+  )
+```
+
+
+---
+
+## Visualizing distances
+
+As if the earth is flat
+
+.panelset.sideways[
+```{r panelset = c(source = "Code", output = "Plot"), out.width = "100%"}
+world_map +
+  geom_point(
+    data = cities, aes(x = long, y = lat, group = NULL),
+    size = 2, color = "red"
+  ) +
+  geom_line(
+    data = cities, aes(x = long, y = lat, group = NULL),
+    size = 1, color = "red"
+  )
+```
+]
+
+---
+
+## Visualizing distances
+
+Based on a spherical model of the earth
+
+```{r ist-la-intermediate, include = FALSE}
+gc <- geosphere::gcIntermediate(
+  p1 = cities %>% filter(city == "istanbul")    %>% select(-city), 
+  p2 = cities %>% filter(city == "los angeles") %>% select(-city), 
+  n = 100, 
+  addStartEnd = TRUE
+  ) %>%
+  as_tibble()
+```
+
+```{r both-distances, echo = FALSE}
+world_map +
+  geom_point(
+    data = cities, aes(x = long, y = lat, group = NULL),
+    size = 2, color = "red"
+  ) +
+  geom_line(
+    data = cities, aes(x = long, y = lat, group = NULL),
+    size = 1, color = "red"
+  ) +
+  geom_line(
+    data = gc, aes(x = lon, y = lat, group = NULL),
+    size = 1, color = "red", linetype = "dashed"
+  )
+```
+
+---
+
+## Intermediate points on the great circle
+
+```{r ref.label = "ist-la-intermediate"}
+```
+
+```{r}
+gc
+```
+
+---
+
+## Plotting both distances
+
+.panelset.sideways[
+```{r ref.label = "both-distances", panelset = c(source = "Code", output = "Plot"), out.width = "100%"}
+```
+]
+
+---
+
+## Dateline
+
+.task[
+How long does it take to fly from the Western most point in the US to the Eastern most point?
+]
+
+```{r echo = FALSE, message = FALSE, warning = FALSE, out.width = "80%"}
+ak <- st_read("data/ak/states.shp", quiet = TRUE, stringsAsFactors = FALSE)
+
+par(mar = c(3, 3, 1, 1))
+
+ak_geom <- st_geometry(ak)
+
+west_hem <- st_polygon(list(matrix(c(-180, 90, -180, -90, 0, -90, 0, 90, -180, 90), ncol = 2, byrow = TRUE))) %>%
+  st_sfc() %>%
+  st_set_crs("+proj=longlat +datum=WGS84")
+
+east_hem <- st_polygon(list(matrix(c(180, 90, 180, -90, 0, -90, 0, 90, 180, 90), ncol = 2, byrow = TRUE))) %>%
+  st_sfc() %>%
+  st_set_crs("+proj=longlat +datum=WGS84")
+
+ak_west <- st_intersection(ak_geom, west_hem)
+ak_east <- st_intersection(ak_geom, east_hem)
+
+ak_east_shift <- (ak_east - c(360, 0)) %>% st_set_crs("+proj=longlat +datum=WGS84")
+
+ak_shift <- st_union(ak_east_shift, ak_west)
+
+plot(ak_shift, axes = TRUE, col = "black", border = NA, xlim = c(-190, -130))
+points(c(-360 + 179.776, -179.146), c(51.952, 51.273), col = "red")
+abline(v = -180, col = "blue", lty = 2)
+```
+
+---
+
+class: middle, inverse
+
+# Using **sf**
+
+---
+
+## Simple Features for R
+
+```{r echo = FALSE, fig.alt = "Simple features for R", out.width = "60%"}
+knitr::include_graphics("images/sf.jpeg")
+```
+
+.footnote[
+Illustration by Allison Horst
+]
+
+---
+
+## Simple features
+
+```{r echo = FALSE, fig.alt = "Simple features", out.width = "70%"}
+knitr::include_graphics("images/simple-features.png")
+```
+
+.footnote[
+Source: [Simple Features for R](https://r-spatial.github.io/sf/articles/sf1.html#sf-objects-with-simple-features-1)
+]
+
+---
+
+## The sf package
+
+.pull-left[
+A package that provides simple features access for R
+
+- represents simple features as records in a `data.frame` or `tibble` with a `geometry` list-column
+- represents natively in R all 17 simple feature types for all dimensions
+- ...
+
+<br>
+
+Learn more at [r-spatial.github.io/sf](https://r-spatial.github.io/sf).
+]
+.pull-right[
+```{r echo = FALSE, fig.alt = "Hex logo for sf", out.width = "50%"}
+knitr::include_graphics("images/sf-hex.gif")
+```
+]
+
+---
+
+## Get world data
+
+Using the **rnaturalearth** package
+
+```{r}
+world <- ne_countries(scale = "medium", returnclass = "sf")
+class(world)
+```
+
+---
+
+## sf geometry
+
+.small[
+```{r}
+world %>% select(geometry)
+```
+]
+
+---
+
+## Map the world with sf
+
+```{r}
+ggplot(data = world) +
+  geom_sf() #<<
+```
+
+---
+
+## Plays nicely with ggplot2
+
+```{r}
+ggplot(data = world) +
+  geom_sf(fill = "cornsilk", size = 0.2) +
+  labs(x = "Longitude", y = "Latitude", title = "World map") +
+  theme(panel.background = element_rect("lightblue"))
+```
+
+---
+
+## Plays nicely with ggplot2
+
+```{r}
+ggplot(data = world) +
+  geom_sf(aes(fill = pop_est)) +
+  scale_fill_viridis_c(option = "plasma", trans = "sqrt")
+```
+
+---
+
+## Projections with sf
+
+```{r}
+ggplot(data = world) +
+    geom_sf() +
+    coord_sf( #<<
+      crs = "+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000 +ellps=GRS80 +units=m +no_defs " #<<
+      ) #<<
+```
+
+---
+
+## Scale bar and North arrow
+
+Using the **ggspatial** package
+
+```{r}
+ggplot(data = world) +
+  geom_sf(fill = "cornsilk") +
+  annotation_scale(location = "bl", width_hint = 0.4) +
+  annotation_north_arrow(
+    location = "bl", which_north = "true", 
+    pad_x = unit(0.5, "in"), pad_y = unit(0.3, "in"),
+    style = north_arrow_fancy_orienteering) +
+  coord_sf(xlim = c(24, 45), ylim = c(32, 43))
+```
