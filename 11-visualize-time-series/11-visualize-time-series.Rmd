@@ -140,9 +140,6 @@ library(tidyverse)
 library(fs)
 library(lubridate)
 library(broom)
-library(colorblindr)
-library(gghighlight)
-library(highcharter)
 
 # set default theme for ggplot2
 ggplot2::theme_set(ggplot2::theme_minimal(base_size = 16))
@@ -333,10 +330,7 @@ glimpse(dch_2021)
 ```{r}
 dch_2021 <- dch_2021 %>%
   janitor::clean_names() %>%
-  mutate(
-    date = mdy(date),
-    aqi_value = as.numeric(aqi_value)
-  )
+  mutate(date = mdy(date))
 
 dch_2021
 ```
@@ -371,6 +365,85 @@ How would you improve this visualization?
 class: middle
 
 .large[.hand[livecoding]]
+
+(See next slide for code developed during live coding session)
+
+---
+
+class: middle
+
+.hand[to be used in the upcoming plots]
+
+```{r}
+aqi_levels <- aqi_levels %>%
+  mutate(aqi_mid = ((aqi_min + aqi_max) / 2))
+```
+
+---
+
+.small[
+.panelset.sideways[
+```{r panelset = c(source = "Code", output = "Plot"), out.width = "100%", fig.asp = 0.8}
+dch_2021 %>%
+  filter(!is.na(aqi_value)) %>%
+  ggplot(aes(x = date, y = aqi_value, group = 1)) +
+  geom_rect(data = aqi_levels,
+            aes(ymin = aqi_min, ymax = aqi_max,
+                xmin = as.Date(-Inf), xmax = as.Date(Inf),
+                fill = color, y = NULL, x = NULL)) +
+  geom_line(size = 1) +
+  scale_fill_identity() +
+  scale_x_date(name = NULL, date_labels = "%b",
+               limits = c(ymd("2021-01-01"), ymd("2022-01-01"))) +
+  geom_text(data = aqi_levels,
+            aes(x = ymd("2021-12-31"), y = aqi_mid, label = level),
+            hjust = 1, size = 6, fontface = "bold", color = "white") +
+  annotate(geom = "text",
+           x = c(ymd("2021-01-01"), ymd("2022-01-01")), y = -60,
+           label = c("2021", "2022"), size = 4) +
+  coord_cartesian(clip = "off", ylim = c(0, 400)) +
+  labs(x = NULL, y = "AQI",
+       title = "Ozone and PM2.5 Daily AQI Values",
+       subtitle = "Durham-Chapel Hill, NC",
+       caption = "\nSource: EPA Daily Air Quality Tracker") +
+  theme(plot.title.position = "plot",
+        panel.grid.minor.y = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        plot.margin = unit(c(1, 1, 3, 1), "lines"))
+```
+]
+]
+
+---
+
+.small[
+.panelset.sideways[
+```{r panelset = c(source = "Code", output = "Plot"), out.width = "100%", fig.asp = 0.8}
+dch_2021 %>%
+  filter(!is.na(aqi_value)) %>%
+  ggplot(aes(x = date, y = aqi_value, group = 1)) +
+  geom_line(size = 1) +
+  scale_x_date(name = NULL, date_labels = "%b",
+               limits = c(ymd("2021-01-01"), ymd("2022-01-01"))) +
+  scale_y_continuous(breaks = c(0, 50, 100, 150, 200, 300, 400)) +
+  geom_text(data = aqi_levels,
+            aes(x = ymd("2021-12-31"), y = aqi_mid, label = level, color = color),
+            hjust = 1, size = 6, fontface = "bold") +
+  scale_color_identity() +
+  annotate(geom = "text",
+           x = c(ymd("2021-01-01"), ymd("2022-01-01")), y = -60,
+           label = c("2021", "2022"), size = 4) +
+  coord_cartesian(clip = "off", ylim = c(0, 400)) +
+  labs(x = NULL, y = "AQI",
+       title = "Ozone and PM2.5 Daily AQI Values",
+       subtitle = "Durham-Chapel Hill, NC",
+       caption = "\nSource: EPA Daily Air Quality Tracker") +
+  theme(plot.title.position = "plot",
+        panel.grid.minor.y = element_blank(),
+        panel.grid.minor.x = element_blank()) 
+```
+]
+]
 
 ---
 
@@ -503,7 +576,6 @@ dch <- dch %>%
   janitor::clean_names() %>%
   mutate(
     date = mdy(date),
-    aqi_value = as.numeric(aqi_value),
     good_aqi = if_else(aqi_value <= 50, 1, 0)
   ) %>%
   filter(!is.na(aqi_value)) %>%
@@ -633,7 +705,6 @@ sf <- sf %>%
   janitor::clean_names() %>%
   mutate(
     date = mdy(date),
-    aqi_value = as.numeric(aqi_value),
     good_aqi = if_else(aqi_value <= 50, 1, 0)
   ) %>%
   filter(!is.na(aqi_value)) %>%
@@ -733,110 +804,4 @@ sf_aug %>%
 
 .note[
 Interested in learning more? Take STA 344 - Spatio-temporal analysis!
-]
-
----
-
-class: middle
-
-# Plotting multiple trends at once
-
----
-
-## Visualizing annual trends
-
-```{r}
-sf <- sf %>%
-  mutate(
-    year = year(date), 
-    month = month(date),
-    day = day(date),
-    fake_date = ymd(as.Date(paste0(2000, "-", month, "-", day))),
-    .after = date
-    )
-
-sf
-```
-
----
-
-## Visualizing annual trends
-
-.panelset.sideways[
-```{r panelset = c(source = "Code", output = "Plot"), out.width = "90%"}
-ggplot(sf, aes(x = fake_date, y = aqi_value, 
-               group = year, color = factor(year))) +
-  geom_line() +
-  scale_x_date(date_labels = "%b") +
-  scale_color_OkabeIto() +
-  labs(
-    x = NULL, y = "AQI", color = "Year",
-    title = "Ozone and PM2.5 Daily AQI Values",
-    subtitle = "San Francisco-Oakland-Hayward, CA",
-    caption = "\nSource: EPA Daily Air Quality Tracker"
-  ) +
-  theme(
-    plot.title.position = "plot",
-    panel.grid.minor.y = element_blank(),
-    panel.grid.minor.x = element_blank()
-  )
-```
-]
-
----
-
-## Highlighting
-
-.panelset.sideways[
-```{r panelset = c(source = "Code", output = "Plot"), out.width = "90%", message = FALSE}
-ggplot(sf, aes(x = fake_date, y = aqi_value, group = year)) +
-  geom_line() +
-  gghighlight(year == 2018, label_key = year) +
-  scale_x_date(date_labels = "%b") +
-  labs(
-    x = NULL, y = "AQI", color = "Year",
-    title = "Ozone and PM2.5 Daily AQI Values",
-    subtitle = "San Francisco-Oakland-Hayward, CA",
-    caption = "\nSource: EPA Daily Air Quality Tracker"
-  ) +
-  theme(
-    plot.title.position = "plot",
-    panel.grid.minor.y = element_blank(),
-    panel.grid.minor.x = element_blank()
-  )
-```
-]
-
----
-
-class: middle
-
-# Interactive plots
-
----
-
-## Interactive plots
-
-Using the **highcharter** package
-
-.panelset.sideways[
-```{r panelset = c(source = "Code", output = "Plot"), out.width = "90%"}
-highchart(type = "stock") %>%
-  hc_add_series(
-    data = dch, 
-    hcaes(x = date, y = aqi_value), 
-    type = "line",
-    color = "#4E72E3",
-    showInLegend = FALSE
-    ) %>%
-  hc_title(
-    text = "Ozone and PM2.5 Daily AQI Values",
-    align = "left"
-    ) %>%
-  hc_subtitle(
-    text = "Durham-Chapel Hill, NC",
-    align = "left"
-    ) %>%
-  hc_rangeSelector(enabled = FALSE)
-```
 ]
