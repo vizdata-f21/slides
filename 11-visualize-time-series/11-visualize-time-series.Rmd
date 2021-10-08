@@ -662,7 +662,7 @@ dch_aug %>%
     date_labels = "%Y"
     ) +
   labs(
-    x = NULL, y = "Number of days",
+    x = NULL, y = "Number of days (detrended)",
     title = "Cumulative number of good AQI days (AQI < 50)",
     subtitle = "Durham-Chapel Hill, NC",
     caption = "\nSource: EPA Daily Air Quality Tracker"
@@ -781,7 +781,7 @@ sf_aug %>%
     date_labels = "%Y"
     ) +
   labs(
-    x = NULL, y = "Number of days",
+    x = NULL, y = "Number of days (detrended)",
     title = "Cumulative number of good AQI days (AQI < 50)",
     subtitle = "San Francisco-Oakland-Hayward, CA",
     caption = "\nSource: EPA Daily Air Quality Tracker"
