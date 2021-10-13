@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>visualizing spatial data II</title>
+    <meta charset="utf-8" />
+    <meta name="date" content="2021-10-13" />
+    <script src="13-visualize-spatial-II_files/header-attrs/header-attrs.js"></script>
+    <link href="13-visualize-spatial-II_files/panelset/panelset.css" rel="stylesheet" />
+    <script src="13-visualize-spatial-II_files/panelset/panelset.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# visualizing<br>spatial data II
+### 2021-10-13
+
+---
+
+
+
+
+
+
+class: middle, inverse
+
+# Welcome
+
+---
+
+## Announcements
+
+- 
+
+---
+
+## Setup
+
+.midi[
+
+```r
+# load packages
+library(tidyverse)
+library(scales)
+library(geofacet)
+library(lubridate)
+
+# set default theme for ggplot2
+ggplot2::theme_set(ggplot2::theme_minimal(base_size = 16))
+
+# set default figure parameters for knitr
+knitr::opts_chunk$set(
+  fig.width = 8, fig.asp = 0.618, fig.retina = 3, dpi = 300, out.width = "60%"
+)
+
+# dplyr print min and max
+options(dplyr.print_max = 6, dplyr.print_min = 6)
+```
+]
+
+---
+
+class: middle, inverse
+
+# Fisheries of the world
+
+---
+
+Fisheries and Aquaculture Department of the Food and Agriculture Organization of the United Nations collects data on fisheries production of countries. The (not-so-great) visualization below shows the distribution of fishery harvest of countries for 2018, by capture and aquaculture.  
+
+&lt;br&gt;
+
+.pull-left[
+&lt;img src="images/fisheries-data.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+.pull-right[
+- Countries whose total harvest was less than 100,000 tons are not 
+included in the visualization.
+- Source: [Fishing industry by country](https://en.wikipedia.org/wiki/Fishing_industry_by_country)
+]
+
+---
+
+.question[
+What are some ways you would improve this visualization?
+]
+
+&lt;img src="images/fisheries.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Get the data
+
+
+
+
+```r
+fisheries &lt;- read_csv("data/fisheries.csv")
+```
+
+
+---
+
+## Inspect the data
+
+.midi[
+
+```r
+fisheries
+```
+
+```
+## # A tibble: 216 × 3
+##   country        capture aquaculture
+##   &lt;chr&gt;            &lt;dbl&gt;       &lt;dbl&gt;
+## 1 China         17800000    63700000
+## 2 Indonesia      6584419    16600000
+## 3 India          5082332     5703002
+## 4 Vietnam        2785940     3634531
+## 5 United States  4931017      444369
+## 6 Russia         4773413      173840
+## # … with 210 more rows
+```
+]
+
+---
+
+## Data prep
+
+Calculate total fishing
+
+.pull-left[
+
+```r
+fisheries &lt;- fisheries %&gt;%
+  mutate(total = capture + aquaculture)
+```
+]
+.pull-right[
+
+```r
+fisheries
+```
+
+```
+## # A tibble: 216 × 4
+##   country        capture aquaculture    total
+##   &lt;chr&gt;            &lt;dbl&gt;       &lt;dbl&gt;    &lt;dbl&gt;
+## 1 China         17800000    63700000 81500000
+## 2 Indonesia      6584419    16600000 23184419
+## 3 India          5082332     5703002 10785334
+## 4 Vietnam        2785940     3634531  6420471
+## 5 United States  4931017      444369  5375386
+## 6 Russia         4773413      173840  4947253
+## # … with 210 more rows
+```
+]
+
+---
+
+## Mapping the fisheries data
+
+- Obtain country boundaries and store as a data frame
+- Join the fisheries and country boundaries data frames
+- Plot the country boundaries, and fill by fisheries harvest data
+
+---
+
+## `map_data()`
+
+The `map_data()` function easily turns data from the maps package in to a data frame suitable for plotting with ggplot2:
+
+
+```r
+world_map &lt;- map_data("world") %&gt;% as_tibble()
+```
+
+---
+
+## Mapping the world
+
+.midi[
+
+```r
+ggplot(world_map, aes(x = long, y = lat, group = group)) +
+  geom_polygon(fill = "gray") +
+  coord_quickmap()
+```
+
+&lt;img src="13-visualize-spatial-II_files/figure-html/unnamed-chunk-10-1.png" width="70%" /&gt;
+]
+
+---
+
+## Join fisheries and world map
+
+.pull-left[
+
+```r
+fisheries %&gt;% select(country)
+```
+
+```
+## # A tibble: 216 × 1
+##   country      
+##   &lt;chr&gt;        
+## 1 China        
+## 2 Indonesia    
+## 3 India        
+## 4 Vietnam      
+## 5 United States
+## 6 Russia       
+## # … with 210 more rows
+```
+]
+.pull-right[
+
+```r
+world_map %&gt;% select(region)
+```
+
+```
+## # A tibble: 99,338 × 1
+##   region
+##   &lt;chr&gt; 
+## 1 Aruba 
+## 2 Aruba 
+## 3 Aruba 
+## 4 Aruba 
+## 5 Aruba 
+## 6 Aruba 
+## # … with 99,332 more rows
+```
+]
+
+---
+
+## Join fisheries and world map
+
+
+```r
+fisheries_map &lt;- left_join(fisheries, world_map, by = c("country" = "region"))
+```
+
+
+```r
+glimpse(fisheries_map)
+```
+
+```
+## Rows: 85,970
+## Columns: 9
+## $ country     &lt;chr&gt; "China", "China", "China", "China", "China", "China", "Chi…
+## $ capture     &lt;dbl&gt; 17800000, 17800000, 17800000, 17800000, 17800000, 17800000…
+## $ aquaculture &lt;dbl&gt; 63700000, 63700000, 63700000, 63700000, 63700000, 63700000…
+## $ total       &lt;dbl&gt; 81500000, 81500000, 81500000, 81500000, 81500000, 81500000…
+## $ long        &lt;dbl&gt; 110.8888, 110.9383, 110.9707, 110.9977, 111.0137, 110.9127…
+## $ lat         &lt;dbl&gt; 19.99194, 19.94756, 19.88330, 19.76470, 19.65547, 19.58608…
+## $ group       &lt;dbl&gt; 418, 418, 418, 418, 418, 418, 418, 418, 418, 418, 418, 418…
+## $ order       &lt;int&gt; 28698, 28699, 28700, 28701, 28702, 28703, 28704, 28705, 28…
+## $ subregion   &lt;chr&gt; "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1"…
+```
+
+---
+
+## Mapping fisheries
+
+.task[
+What is missing/misleading about the following map?
+]
+
+.midi[
+
+```r
+ggplot(fisheries_map, mapping = aes(x = long, y = lat, group = group)) +
+  geom_polygon(aes(fill = capture)) +
+  scale_fill_viridis_c() +
+  coord_quickmap()
+```
+
+&lt;img src="13-visualize-spatial-II_files/figure-html/unnamed-chunk-15-1.png" width="65%" /&gt;
+]
+
+---
+
+class: middle
+
+.hand[
+livecoding
+]
+
+---
+
+background-color: #114E8B
+
+&lt;img src="13-visualize-spatial-II_files/figure-html/unnamed-chunk-16-1.png" width="95%" /&gt;
+
+
+---
+
+## Highlights from livecoding
+
+- When working through non-matching unique identifiers in a join, you might need to clean the data in both data frames being merged, depending on the context
+
+- Two ways to surface polygons with `NA`s:
+  - `left_join()` map to data, layering with map at the bottom, data on top
+  - `left_join()` data to map, set `na.value` in `scale_fill_*()` to desired color
+
+- Use `na.value = "red"` (or some other color that will stand out) to easily spot polygons with `NA`s
+
+---
+
+class: middle, inverse
+
+# Geofaceting
+
+---
+
+
+
+&lt;img src="13-visualize-spatial-II_files/figure-html/geofacet-state-1.png" width="90%" /&gt;
+
+---
+
+## Daily US vaccine data by state
+
+
+
+.small[
+
+```r
+us_state_vaccinations &lt;- read_csv(here::here("data/us_state_vaccinations.csv"))
+```
+
+
+```r
+us_state_vaccinations
+```
+
+```
+## # A tibble: 17,501 × 14
+##   date       location total_vaccinations total_distributed people_vaccinated
+##   &lt;date&gt;     &lt;chr&gt;                 &lt;dbl&gt;             &lt;dbl&gt;             &lt;dbl&gt;
+## 1 2021-01-12 Alabama               78134            377025             70861
+## 2 2021-01-13 Alabama               84040            378975             74792
+## 3 2021-01-14 Alabama               92300            435350             80480
+## 4 2021-01-15 Alabama              100567            444650             86956
+## 5 2021-01-16 Alabama                  NA                NA                NA
+## 6 2021-01-17 Alabama                  NA                NA                NA
+## # … with 17,495 more rows, and 9 more variables:
+## #   people_fully_vaccinated_per_hundred &lt;dbl&gt;,
+## #   total_vaccinations_per_hundred &lt;dbl&gt;, people_fully_vaccinated &lt;dbl&gt;,
+## #   people_vaccinated_per_hundred &lt;dbl&gt;, distributed_per_hundred &lt;dbl&gt;,
+## #   daily_vaccinations_raw &lt;dbl&gt;, daily_vaccinations &lt;dbl&gt;,
+## #   daily_vaccinations_per_million &lt;dbl&gt;, share_doses_used &lt;dbl&gt;
+```
+
+]
+
+.footnote[
+Source: https://ourworldindata.org/us-states-vaccinations
+]
+
+---
+
+## Facet by location
+
+.panelset.sideways[
+.panel[.panel-name[Code]
+
+```r
+ggplot(
+  us_state_vaccinations,
+  aes(x = date, y = people_fully_vaccinated_per_hundred)
+) +
+  geom_area() +
+  facet_wrap(~location)
+```
+
+
+
+]
+
+.panel[.panel-name[Plot]
+
+```
+## Warning: Removed 1802 rows containing missing values (position_stack).
+```
+
+&lt;img src="13-visualize-spatial-II_files/figure-html/unnamed-chunk-21-1.png" width="100%" /&gt;
+
+]
+]
+
+---
+
+## Data cleaning
+
+
+```r
+us_state_vaccinations &lt;- us_state_vaccinations %&gt;%
+  mutate(location = if_else(location == "New York State", "New York", location)) %&gt;%
+  filter(location %in% c(state.name, "District of Columbia"))
+```
+
+---
+
+## Geofacet by state
+
+Using `geofacet::facet_geo()`:
+
+.panelset.sideways[
+.panel[.panel-name[Code]
+
+```r
+ggplot(us_state_vaccinations, 
+       aes(x = date, y = people_fully_vaccinated_per_hundred)) +
+  geom_area() +
+* facet_geo(~ location) +
+  labs(
+    x = NULL, y = NULL,
+    title = "Covid-19 vaccination rate in the US",
+    subtitle = "Daily number of people fully vaccinated, per hundred",
+    caption = "Source: Our World in Data"
+  )
+```
+
+
+
+]
+
+.panel[.panel-name[Plot]
+
+```
+## Warning: Removed 567 rows containing missing values (position_stack).
+```
+
+&lt;img src="13-visualize-spatial-II_files/figure-html/unnamed-chunk-23-1.png" width="95%" /&gt;
+
+]
+]
+
+---
+
+## Geofacet by state, with improvements
+
+.panelset.sideways[
+.panel[.panel-name[Plot]
+&lt;img src="13-visualize-spatial-II_files/figure-html/unnamed-chunk-24-1.png" width="100%" /&gt;
+]
+.panel[.panel-name[Code]
+.midi[
+
+```r
+ggplot(us_state_vaccinations, aes(x = date, y = people_fully_vaccinated_per_hundred, group = location)) +
+  geom_area() +
+  facet_geo(~location) +
+* scale_y_continuous(
+*   limits = c(0, 100),
+*   breaks = c(0, 50, 100),
+*   minor_breaks = c(25, 75)
+*   ) +
+* scale_x_date(breaks = c(ymd("2021-01-01", "2021-05-01", "2021-09-01")), date_labels = "%b") +
+  labs(
+    x = NULL, y = NULL,
+    title = "Covid-19 vaccination rate in the US",
+    subtitle = "Daily number of people fully vaccinated, per hundred",
+    caption = "Source: Our World in Data"
+  ) +
+  theme(
+*   strip.text.x = element_text(size = 7),
+*   axis.text = element_text(size = 8),
+    plot.title.position = "plot"
+  )
+```
+]
+]
+]
+
+---
+
+## Bring in 2020 Presidential election results
+
+
+
+
+```r
+election_2020 &lt;- read_csv(here::here("data/us-election-2020.csv"))
+```
+
+
+```r
+election_2020
+```
+
+```
+## # A tibble: 51 × 5
+##   state      electoal_votes biden trump win       
+##   &lt;chr&gt;               &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;     
+## 1 Alabama                 9     0     9 Republican
+## 2 Alaska                  3     0     3 Republican
+## 3 Arizona                11    11     0 Democrat  
+## 4 Arkansas                6     0     6 Republican
+## 5 California             55    55     0 Democrat  
+## 6 Colorado                9     9     0 Democrat  
+## # … with 45 more rows
+```
+
+---
+
+## Geofacet by state, color by presidential election result
+
+.small[
+.panelset.sideways[
+.panel[.panel-name[Code]
+
+```r
+us_state_vaccinations %&gt;%
+  left_join(election_2020, by = c("location" = "state")) %&gt;%
+  ggplot(aes(x = date, y = people_fully_vaccinated_per_hundred)) +
+* geom_area(aes(fill = win)) +
+  facet_geo(~location) +
+* scale_y_continuous(limits = c(0, 100), breaks = c(0, 50, 100), minor_breaks = c(25, 75)) +
+  scale_x_date(breaks = c(ymd("2021-01-01", "2021-05-01", "2021-09-01")), date_labels = "%b") +
+* scale_fill_manual(values = c("#2D69A1", "#BD3028")) +
+  labs(
+    x = NULL, y = NULL,
+    title = "Covid-19 vaccination rate in the US",
+    subtitle = "Daily number of people fully vaccinated, per hundred",
+    caption = "Source: Our World in Data",
+    fill = "2020 Presidential\nElection"
+  ) +
+  theme(
+    strip.text.x = element_text(size = 7),
+    axis.text = element_text(size = 8),
+    plot.title.position = "plot",
+*   legend.position = c(0.93, 0.15),
+*   legend.text = element_text(size = 9),
+*   legend.title = element_text(size = 11),
+*   legend.background = element_rect(color = "gray", size = 0.5)
+  )
+```
+
+
+
+]
+
+.panel[.panel-name[Plot]
+
+&lt;img src="13-visualize-spatial-II_files/figure-html/unnamed-chunk-29-1.png" width="100%" /&gt;
+
+]
+]
+]
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="https://platform.twitter.com/widgets.js"></script>
+<script>var slideshow = remark.create({
+"slideNumberFormat": "%current%",
+"highlightStyle": "solarized-light",
+"highlightLines": true,
+"ratio": "16:9",
+"countIncrementalSlides": true
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
