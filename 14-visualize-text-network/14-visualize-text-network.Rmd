@@ -142,7 +142,7 @@ class: middle, inverse
 ## 
 
 ```{r echo = FALSE, message = FALSE}
-love_actually <- read_csv(here::here("14-visualize-text", "data/love-actually.csv"))
+love_actually <- read_csv(here::here("14-visualize-text-network", "data/love-actually.csv"))
 ```
 
 .task[
@@ -757,7 +757,7 @@ ggraph(bigram_graph, layout = "fr") +
 ## Main characters
 
 ```{r message = FALSE}
-main_characters <- read_csv(here::here("14-visualize-text", "data/love-actually-cast.csv"))
+main_characters <- read_csv(here::here("14-visualize-text-network", "data/love-actually-cast.csv"))
 ```
 
 .pull-left[
