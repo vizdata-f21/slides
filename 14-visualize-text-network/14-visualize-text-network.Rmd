@@ -101,7 +101,11 @@ class: middle, inverse
 
 ## Announcements
 
-- 
+- Project 2 work starts on Monday
+
+- Reading Quiz 4 due Wednesday
+
+- Guest speaker on Wednesday: Kieran Healy
 
 ---
 
