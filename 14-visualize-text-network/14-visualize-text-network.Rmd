@@ -945,3 +945,11 @@ ggraph(cooccur_graph, layout = "fr") +
   geom_node_text(aes(label = name), hjust = 0.2, vjust = 1)
 ```
 ]
+
+---
+
+## Acknowledgements
+
+- [Analyzing networks of characters in 'Love Actually'](http://varianceexplained.org/r/love-actually-network/) by David Robinson
+
+- [Text Mining with R](https://www.tidytextmining.com/) by Julia Silge and David Robinson
