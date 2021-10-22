@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>animation</title>
+    <meta charset="utf-8" />
+    <meta name="date" content="2021-10-21" />
+    <script src="15-animation_files/header-attrs/header-attrs.js"></script>
+    <link href="15-animation_files/panelset/panelset.css" rel="stylesheet" />
+    <script src="15-animation_files/panelset/panelset.js"></script>
+    <script src="15-animation_files/kePrint/kePrint.js"></script>
+    <link href="15-animation_files/lightable/lightable.css" rel="stylesheet" />
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# animation
+### 2021-10-21
+
+---
+
+
+
+
+
+
+class: middle, inverse
+
+# Welcome
+
+---
+
+## Announcements
+
+- HW 4 due Wednesday
+
+---
+
+## Setup
+
+.midi[
+
+```r
+# load packages
+library(tidyverse)
+library(readxl)
+library(gganimate)
+library(datasauRus)
+library(knitr)
+library(kableExtra)
+library(transformr)
+library(palmerpenguins)
+
+# set default theme for ggplot2
+ggplot2::theme_set(ggplot2::theme_minimal(base_size = 16))
+
+# set default figure parameters for knitr
+knitr::opts_chunk$set(
+  fig.width = 8, fig.asp = 0.618, fig.retina = 3, dpi = 300, out.width = "60%"
+)
+
+# dplyr print min and max
+options(dplyr.print_max = 10, dplyr.print_min = 10)
+```
+]
+
+---
+
+class: middle, inverse
+
+# Animation
+
+---
+
+## Philosophy
+
+- The purpose of interactivity is to display more than can be achieved with persistent plot elements, and to invite the reader to engage with the plot.
+
+- Animation allows more information to be displayed, but developer keeps control
+
+- Beware that it is easy to forget what was just displayed, so keeping some elements persistent, maybe faint, can be useful for the reader
+
+---
+
+## **gganimate**
+
+.pull-left[
+- **gganimate** extends the grammar of graphics as implemented by ggplot2 to include the description of animation
+
+- It provides a range of new grammar classes that can be added to the plot object in order to customize how it should change with time
+]
+.pull-right[
+&lt;img src="images/gganimate.png" width="60%" /&gt;
+]
+
+---
+
+## Animation example
+
+&lt;img src="15-animation_files/figure-html/freedom-race-1.gif" width="80%" /&gt;
+
+---
+
+## How does gganimate work?
+
+- Start with a ggplot2 specification
+
+- Add layers with graphical primitives (geoms)
+
+- Add formatting specification
+
+- Add animation specification
+
+---
+
+## A simple example
+
+.pull-left[
+
+```r
+*ggplot(
+* freedom_ranked %&gt;% filter(country == "Turkey")
+* )
+```
+]
+.pull-right[
+&lt;img src="15-animation_files/figure-html/unnamed-chunk-3-1.png" width="100%" /&gt;
+]
+
+---
+
+## A simple example
+
+.pull-left[
+
+```r
+ggplot(
+  freedom_ranked %&gt;% filter(country == "Turkey"),
+* aes(x = year, y = civil_liberty)
+  )
+```
+]
+.pull-right[
+&lt;img src="15-animation_files/figure-html/unnamed-chunk-4-1.png" width="100%" /&gt;
+]
+
+---
+
+## A simple example
+
+.pull-left[
+
+```r
+ggplot(
+  freedom_ranked %&gt;% filter(country == "Turkey"),
+  aes(x = year, y = civil_liberty)
+  ) +
+* geom_line()
+```
+]
+.pull-right[
+&lt;img src="15-animation_files/figure-html/unnamed-chunk-5-1.png" width="100%" /&gt;
+]
+
+---
+
+## A simple example
+
+.pull-left[
+
+```r
+ggplot(
+  freedom_ranked %&gt;% filter(country == "Turkey"),
+  aes(x = year, y = civil_liberty)
+  ) +
+  geom_line() +
+* labs(
+*   x = "Year", y = "Civil liberty score",
+*   title = "Turkey's civil liberty score"
+*   )
+```
+]
+.pull-right[
+&lt;img src="15-animation_files/figure-html/unnamed-chunk-6-1.png" width="100%" /&gt;
+]
+
+---
+
+## A simple example
+
+.pull-left[
+
+```r
+ggplot(
+  freedom_ranked %&gt;% filter(country == "Turkey"),
+  aes(x = year, y = civil_liberty)
+  ) +
+  geom_line() +
+  labs(
+    x = "Year", y = "Civil liberty score",
+    title = "Turkey's civil liberty score"
+    ) +
+* transition_reveal(year)
+```
+]
+.pull-right[
+&lt;img src="15-animation_files/figure-html/anim-5-1.gif" width="100%" /&gt;
+]
+
+---
+
+
+class: middle, inverse
+
+# Grammar of animation
+
+---
+
+## Grammar of animation
+
+- Transitions: `transition_*()` defines how the data should be spread out and how it relates to itself across time
+
+--
+- Views: `view_*()` defines how the positional scales should change along the animation
+
+--
+- Shadows: `shadow_*()` defines how data from other points in time should be presented in the given point in time
+
+--
+- Entrances/Exits: `enter_*()`/`exit_*()` defines how new data should appear and how old data should disappear during the course of the animation
+
+--
+- Easing: `ease_aes()` defines how different aesthetics should be eased during transitions
+
+---
+
+## Transitions
+
+How the data changes through the animation.
+
+&lt;table class="table" style="font-size: 26px; margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Function &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Description &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; transition_manual &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Build an animation frame by frame (no tweening applied). &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; transition_states &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Transition between frames of a plot (like moving between facets). &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; transition_time &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Like transition_states, except animation pacing respects time. &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; transition_components &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Independent animation of plot elements (by group). &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; transition_reveal &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Gradually extends the data used to reveal more information. &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; transition_layers &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Animate the addition of layers to the plot. Can also remove layers. &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; transition_filter &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Transition between a collection of subsets from the data. &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; transition_events &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Define entrance and exit times of each visual element (row of data). &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+---
+
+## Transitions
+
+.task[
+Which transition was used in the following animations?
+]
+
+.pull-left[
+
+```
+## `geom_smooth()` using method = 'loess' and formula 'y ~ x'
+## `geom_smooth()` using method = 'loess' and formula 'y ~ x'
+```
+
+&lt;img src="15-animation_files/figure-html/transition-layers-1.gif" width="100%" /&gt;
+]
+--
+
+.pull-right[
+`transition_layers()`
+
+New layers are being added (and removed) over the dots.
+]
+
+---
+
+## Views
+
+How the plot window changes through the animation.
+
+&lt;table class="table" style="font-size: 26px; margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Function &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Description &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; view_follow &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Change the view to follow the range of current data. &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; view_step &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Similar to view_follow, except the view is static between transitions. &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; view_step_manual &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Same as view_step, except view ranges are manually defined. &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; view_zoom &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Similar to view_step, but appears smoother by zooming out then in. &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; view_zoom_manual &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Same as view_zoom, except view ranges are manually defined. &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+---
+
+## Views
+
+.task[
+Which view was used in the following animations?
+]
+
+.pull-left[
+
+```r
+mp4_vid("images/ts-zoom.mp4")
+```
+
+<video autoplay>
+        <source src="images/ts-zoom.mp4" type="video/mp4">
+      </video>
+]
+--
+
+.pull-right[
+`view_step_manual()`
+
+The view is changed without modifying the data. You can see the lines are shown without margins.
+]
+
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="https://platform.twitter.com/widgets.js"></script>
+<script>var slideshow = remark.create({
+"slideNumberFormat": "%current%",
+"highlightStyle": "solarized-light",
+"highlightLines": true,
+"ratio": "16:9",
+"countIncrementalSlides": true
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
