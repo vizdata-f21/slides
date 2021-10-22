@@ -112,7 +112,18 @@ class: middle, inverse
 
 ## Announcements
 
-- HW 4 due Wednesday
+- HW 4 due Wednesday (but will accept until Thursday noon without penalty)
+
+- Monday lab: 
+  - Tips for project workflow + organization
+  - Scheduling team meetings
+  - Time to work on proposals and/or HW 4
+
+- https://twitter.com/kjhealy/status/1451264212903288834?s=20
+
+- Webinar opportunity
+
+- Thank you notes + ugly ggplots!
 
 ---
 
@@ -169,7 +180,7 @@ class: middle, inverse
 - It provides a range of new grammar classes that can be added to the plot object in order to customize how it should change with time
 ]
 .pull-right[
-```{r echo = FALSE}
+```{r echo = FALSE, out.width = "40%"}
 knitr::include_graphics("images/gganimate.png")
 ```
 ]
@@ -426,12 +437,12 @@ Which transition was used in the following animations?
 ]
 
 .pull-left[
-```{r transition-layers, warning = FALSE, gganimate = list(nframes = 20), , cache = TRUE, echo = FALSE, out.width = "100%", message = FALSE}
+```{r transition-layers, warning = FALSE, gganimate = list(nframes = 20), cache = TRUE, echo = FALSE, out.width = "100%", message = FALSE}
 penguins %>%
   drop_na() %>%
   ggplot(aes(x = flipper_length_mm, y = body_mass_g)) +
   geom_point() +
-  geom_smooth(color = "grey", se = FALSE) +
+  geom_smooth(color = "grey", se = FALSE, method = 'loess', formula = y ~ x) +
   geom_smooth(aes(color = species)) +
   transition_layers(
     layer_length = 1, transition_length = 2,
@@ -491,10 +502,6 @@ The view is changed without modifying the data. You can see the lines are shown 
 
 ---
 
-```{r echo = FALSE}
-knitr::knit_exit()
-```
-
 ## Views
 
 .task[
@@ -549,7 +556,7 @@ Which shadow was used in the following animations?
 ]
 
 .pull-left[
-```{r shadow-wake, echo = FALSE}
+```{r shadow-wake, echo = FALSE, gganimate = list(nframes = 20)}
 penguins %>%
   drop_na() %>%
   ggplot(aes(x = flipper_length_mm, y = body_mass_g)) +

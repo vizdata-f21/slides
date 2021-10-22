@@ -33,7 +33,18 @@ class: middle, inverse
 
 ## Announcements
 
-- HW 4 due Wednesday
+- HW 4 due Wednesday (but will accept until Thursday noon without penalty)
+
+- Monday lab: 
+  - Tips for project workflow + organization
+  - Scheduling team meetings
+  - Time to work on proposals and/or HW 4
+
+- https://twitter.com/kjhealy/status/1451264212903288834?s=20
+
+- Webinar opportunity
+
+- Thank you notes + ugly ggplots!
 
 ---
 
@@ -91,7 +102,7 @@ class: middle, inverse
 - It provides a range of new grammar classes that can be added to the plot object in order to customize how it should change with time
 ]
 .pull-right[
-&lt;img src="images/gganimate.png" width="60%" /&gt;
+&lt;img src="images/gganimate.png" width="40%" /&gt;
 ]
 
 ---
@@ -291,12 +302,6 @@ Which transition was used in the following animations?
 ]
 
 .pull-left[
-
-```
-## `geom_smooth()` using method = 'loess' and formula 'y ~ x'
-## `geom_smooth()` using method = 'loess' and formula 'y ~ x'
-```
-
 &lt;img src="15-animation_files/figure-html/transition-layers-1.gif" width="100%" /&gt;
 ]
 --
@@ -353,11 +358,6 @@ Which view was used in the following animations?
 ]
 
 .pull-left[
-
-```r
-mp4_vid("images/ts-zoom.mp4")
-```
-
 <video autoplay>
         <source src="images/ts-zoom.mp4" type="video/mp4">
       </video>
@@ -372,38 +372,299 @@ The view is changed without modifying the data. You can see the lines are shown 
 
 ---
 
+## Views
 
+.task[
+Which view was used in the following animations?
+]
 
+.pull-right[
+&lt;img src="15-animation_files/figure-html/view-follow-1.gif" width="60%" /&gt;
+]
 
+--
 
+.pull-left[
+`view_follow()`
 
+Plot axis follows the range of the data.
+]
 
+---
 
+## Shadows
 
+How the history of the animation is shown. Useful to indicate speed of changes.
 
+&lt;table class="table" style="font-size: 26px; margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Function &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Description &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; shadow_mark &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Previous (and/or future) frames leave permananent background marks. &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; shadow_trail &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Similar to shadow_mark, except marks are from tweened data. &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; shadow_wake &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Shows a shadow which diminishes in size and/or opacity over time. &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
 
+---
 
+## Shadows
 
+.task[
+Which shadow was used in the following animations?
+]
 
+.pull-left[
 
+```
+## Warning in seq.default(0, 1, length = params$wake_length + 1): partial argument
+## match of 'length' to 'length.out'
+```
 
+&lt;img src="15-animation_files/figure-html/shadow-wake-1.gif" width="60%" /&gt;
+]
+--
 
+.pull-right[
+`shadow_wake()`
 
+The older tails of the points shrink in size, leaving a "wake" behind it.
+]
 
+--
 
+## Shadows
 
+.task[
+Which shadow was used in the following animations?
+]
 
+.pull-right[
+&lt;img src="15-animation_files/figure-html/shadow-mark-1.gif" width="60%" /&gt;
+]
 
+--
 
+.pull-left[
+`shadow_mark()`
 
+Permanent marks are left by previous points in the animation.
+]
 
+---
 
+## Entrances and exits
 
+How elements of the plot appear and disappear.
 
+&lt;table class="table" style="font-size: 26px; margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Function &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Description &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; enter_appear/exit_disappear &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Poof! Instantly appears or disappears. &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; enter_fade/exit_fade &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Opacity is used to fade in or out the elements. &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; enter_grow/exit_shrink &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Element size will grow from or shrink to zero. &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; enter_recolor/exit_recolor &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Change element colors to blend into the background. &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; enter_fly/exit_fly &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Elements will move from/to a specific x,y position. &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; enter_drift/exit_drift &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Elements will shift relative from/to their x,y position. &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; enter_reset/exit_reset &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Clear all previously added entrace/exits. &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
 
+---
 
+## Animation controls
 
+How data moves from one position to another. 
 
+```r
+p + ease_aes({aesthetic} = {ease})
+p + ease_aes(x = "cubic")
+```
+[![ease examples](resources/ease.png)](https://easings.net/)
+
+.footnote[
+Source: https://easings.net/
+]
+
+---
+
+class: middle, inverse
+
+# Deeper dive
+
+---
+
+## A not-so-simple example, the datasaurus dozen
+
+Pass in the dataset to ggplot
+
+.pull-left[
+
+```r
+*ggplot(datasaurus_dozen)
+```
+]
+.pull-right[
+&lt;img src="15-animation_files/figure-html/unnamed-chunk-9-1.png" width="100%" /&gt;
+]
+
+---
+
+## A not-so-simple example, the datasaurus dozen
+
+For each dataset we have x and y values, in addition we can map dataset to color
+
+.pull-left[
+
+```r
+ggplot(datasaurus_dozen,
+* aes(x, y, color=dataset))
+```
+]
+.pull-right[
+&lt;img src="15-animation_files/figure-html/unnamed-chunk-10-1.png" width="100%" /&gt;
+]
+
+---
+
+## A not-so-simple example, the datasaurus dozen
+
+Trying a simple scatter plot first, but there is too much information
+
+.pull-left[
+
+```r
+ggplot(datasaurus_dozen,
+       aes(x, y, color = dataset)) +
+* geom_point()
+```
+]
+.pull-right[
+&lt;img src="15-animation_files/figure-html/unnamed-chunk-11-1.png" width="100%" /&gt;
+]
+
+---
+
+## A not-so-simple example, the datasaurus dozen
+
+We can use facets to split up by dataset, revealing the different distributions
+
+.pull-left[
+
+```r
+ggplot(datasaurus_dozen,
+       aes(x, y, color = dataset)) +
+  geom_point() +
+* facet_wrap(~dataset)
+```
+]
+.pull-right[
+&lt;img src="15-animation_files/figure-html/unnamed-chunk-12-1.png" width="100%" /&gt;
+]
+
+---
+
+## A not-so-simple example, the datasaurus dozen
+
+We can just as easily turn it into an animation, transitioning between dataset states! 
+
+.pull-left[
+
+```r
+ggplot(datasaurus_dozen,
+       aes(x, y)) +
+  geom_point() +
+* transition_states(dataset, 3, 1) +
+* labs(title = "Dataset: {closest_state}")
+```
+]
+.pull-right[
+&lt;img src="15-animation_files/figure-html/unnamed-chunk-13-1.gif" width="60%" /&gt;
+]
+---
+
+class: middle
+
+# Tips
+
+---
+
+## Animation options
+
+Sometimes you need more frames, sometimes fewer
+
+- Save plot object, and use `animate()` with arguments like 
+  - `nframes`: number of frames to render (default 100)
+  - `fps`: framerate of the animation in frames/sec (default 10)
+  - `duration`: length of the animation in seconds (unset by default)
+  - etc.
+
+--
+- In R Markdown, specify the arguments to `animate()` in the chunk options when using `gganimate`, e.g. `{r, gganimate = list(nframes = 50, fps = 20)}`
+
+--
+- Learn more at https://gganimate.com/reference/animate.html
+
+---
+
+## Considerations in making effective animations
+
+- Pace: speed of animation
+Quick animations may be hard to follow. Slow animations are boring and tedious.
+
+--
+- Perplex: amount of information
+It is easy for animations to be overwhelming and confusing. Multiple simple animations can be easier to digest.
+
+--
+- Purpose: Usefulness of using animation
+Is animation needed? Does it provide additional value?
+
+---
+
+## Acknowledgements
+
+- [Getting your plots to talk back by Di Cook](http://emitanaka.org/datavis-workshop-ssavic/slides/day2-session3.pdf)
+- 
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
