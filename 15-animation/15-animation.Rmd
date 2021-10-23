@@ -383,7 +383,6 @@ ggplot(
 
 ---
 
-
 class: middle, inverse
 
 # Grammar of animation
@@ -488,28 +487,7 @@ Which view was used in the following animations?
 ]
 
 .pull-left[
-```{r echo = FALSE}
-mp4_vid("images/ts-zoom.mp4")
-```
-]
---
-
-.pull-right[
-`view_step_manual()`
-
-The view is changed without modifying the data. You can see the lines are shown without margins.
-]
-
----
-
-## Views
-
-.task[
-Which view was used in the following animations?
-]
-
-.pull-right[
-```{r view-follow, echo = FALSE, gganimate = list(nframes = 20), cache = TRUE}
+```{r view-follow, echo = FALSE, gganimate = list(nframes = 20), cache = TRUE, out.width = "100%"}
 penguins %>%
   drop_na() %>%
   ggplot(aes(x = flipper_length_mm, y = body_mass_g)) +
@@ -524,7 +502,7 @@ penguins %>%
 
 --
 
-.pull-left[
+.pull-right[
 `view_follow()`
 
 Plot axis follows the range of the data.
@@ -556,7 +534,7 @@ Which shadow was used in the following animations?
 ]
 
 .pull-left[
-```{r shadow-wake, echo = FALSE, gganimate = list(nframes = 20)}
+```{r shadow-wake, echo = FALSE, gganimate = list(nframes = 50), warning = FALSE, out.width = "100%"}
 penguins %>%
   drop_na() %>%
   ggplot(aes(x = flipper_length_mm, y = body_mass_g)) +
@@ -576,7 +554,7 @@ penguins %>%
 The older tails of the points shrink in size, leaving a "wake" behind it.
 ]
 
---
+---
 
 ## Shadows
 
@@ -584,8 +562,8 @@ The older tails of the points shrink in size, leaving a "wake" behind it.
 Which shadow was used in the following animations?
 ]
 
-.pull-right[
-```{r shadow-mark, echo = FALSE, gganimate = list(nframes = 20), cache = TRUE}
+.pull-left[
+```{r shadow-mark, echo = FALSE, gganimate = list(nframes = 20), cache = TRUE, out.width = "100%"}
 ggplot(airquality, aes(Day, Temp)) +
   geom_line(color = "red", size = 1) +
   transition_time(Month) +
@@ -595,7 +573,7 @@ ggplot(airquality, aes(Day, Temp)) +
 
 --
 
-.pull-left[
+.pull-right[
 `shadow_mark()`
 
 Permanent marks are left by previous points in the animation.
@@ -632,7 +610,7 @@ How data moves from one position to another.
 p + ease_aes({aesthetic} = {ease})
 p + ease_aes(x = "cubic")
 ```
-[![ease examples](resources/ease.png)](https://easings.net/)
+[![ease examples](images/ease.png)](https://easings.net/)
 
 .footnote[
 Source: https://easings.net/
@@ -730,12 +708,13 @@ ggplot(datasaurus_dozen,
 ```
 ]
 .pull-right[
-```{r ref.label="dino-5", echo=FALSE, cache=TRUE, gganimate = list(nframes = 30), cache = TRUE}
+```{r ref.label="dino-5", echo=FALSE, cache=TRUE, gganimate = list(nframes = 50), cache = TRUE, out.width = "100%"}
 ```
 ]
+
 ---
 
-class: middle
+class: middle, inverse
 
 # Tips
 
@@ -774,7 +753,105 @@ Is animation needed? Does it provide additional value?
 
 ---
 
+class: middle
+
+.large[
+.hand[
+livecoding
+]
+]
+
+(See next slide for code developed during live coding session)
+
+---
+
+## Data wrangling
+
+.midi[
+```{r eval = FALSE}
+freedom <- read_csv(here::here("15-animation", "data/freedom.csv"), na = "-")
+
+freedom_to_plot <- freedom %>%
+  rowwise() %>%
+  mutate(sd = sd(c_across(contains("cl_")), na.rm = TRUE)) %>%
+  ungroup() %>%
+  arrange(desc(sd)) %>%
+  relocate(country, sd) %>%
+  slice_head(n = 15) %>%
+  drop_na()
+
+freedom_ranked <- freedom_to_plot %>%
+  select(country, contains("cl_")) %>%
+  pivot_longer(
+    cols = -country,
+    names_to = "year",
+    values_to = "civil_liberty",
+    names_prefix = "cl_",
+    names_transform = list(year = as.numeric)
+  ) %>%
+  group_by(year) %>%
+  mutate(rank_in_year = rank(civil_liberty, ties.method = "first")) %>%
+  ungroup() %>%
+  mutate(is_turkey = if_else(country == "Turkey", TRUE, FALSE))
+```
+]
+
+---
+
+## Faceted plot
+
+```{r eval = FALSE}
+freedom_faceted_plot <- freedom_ranked %>%
+  ggplot(aes(x = civil_liberty, y = factor(rank_in_year))) +
+  geom_col(aes(fill = is_turkey), show.legend = FALSE) +
+  scale_fill_manual(values = c("gray", "red")) +
+  facet_wrap(~year) +
+  scale_x_continuous(
+    limits = c(-5, 7),
+    breaks = 1:7
+  ) +
+  geom_text(
+    hjust = "right",
+    aes(label = country),
+    x = -1
+  ) +
+  theme(
+    panel.grid.major.y = element_blank(),
+    panel.grid.minor.y = element_blank(),
+    panel.grid.minor.x = element_blank(),
+    axis.text.y = element_blank()
+  ) +
+  labs(x = NULL, y = NULL)
+```
+
+---
+
+## Animated plot
+
+```{r eval = FALSE}
+freedom_bar_race <- freedom_faceted_plot +
+  facet_null() +
+  geom_text(
+    x = 5, y = 1,
+    hjust = "left",
+    aes(label = as.character(year)),
+    size = 10
+  ) +
+  aes(group = country) +
+  transition_time(as.integer(year)) +
+  labs(
+    title = "Civil liberties rating, {frame_time}",
+    subtitle = "1: Highest degree of freedom - 7: Lowest degree of freedom"
+  )
+
+animate(freedom_bar_race, nframes = 30, fps = 2)
+```
+
+---
+
 ## Acknowledgements
 
 - [Getting your plots to talk back by Di Cook](http://emitanaka.org/datavis-workshop-ssavic/slides/day2-session3.pdf)
-- 
+- [gganimate workshop by Mitchell O'Hara-Wild](https://github.com/numbats/gganimate-workshop)
+
+---
