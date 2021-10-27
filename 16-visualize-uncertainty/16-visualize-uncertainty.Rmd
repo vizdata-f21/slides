@@ -22,9 +22,9 @@ library(countdown)
 ```{r xaringan-themer, include = FALSE, warning = FALSE, fig.showtext = FALSE}
 library(xaringanthemer)
 style_duo_accent(
-  primary_color = "#866fa3",
-  secondary_color = "#F1DE67",
-  inverse_header_color = "#464a53",
+  primary_color = "#866fa3", # purple
+  secondary_color = "#F1DE67", # yellow
+  inverse_header_color = "#464a53", # dark gray
   black_color = "#464a53",
   code_highlight_color = "#f1de67",
   header_font_google = google_font("Atkinson Hyperlegible"),
@@ -101,7 +101,14 @@ class: middle, inverse
 
 ## Announcements
 
-- 
+- You can now find thank you cards and ugly ggplots linked from the course website
+
+- Project 1s:
+  - Grades updated, well done on resubmissions!
+  - Request to link to writeups (project website) and slides (not repo, commits, etc.) from the course website -- note: your names will be publicly available
+  - Request will also include question about whether you want to "own" a copy of your Project 1 repo, i.e. make commit history and issues not containing scores
+  - Need team consensus for both
+  - Helpful to highlight your work + show future STA/ISS 313 students what they'll learn in the course
 
 ---
 
@@ -117,6 +124,8 @@ library(cowplot)
 library(emmeans)
 library(broom)
 library(gapminder)
+library(emo)     # install_github("hadley/emo")
+library(ungeviz) # install_github("wilkelab/ungeviz")
 
 # set default theme for ggplot2
 ggplot2::theme_set(ggplot2::theme_minimal(base_size = 16))
@@ -170,7 +179,7 @@ https://commons.wikimedia.org/wiki/File:Disappearing_dots.gif
 
 class: middle
 
-## .hand[Sorry, you lost.]
+## .hand[Sorry, you lost.] `r emo::ji("slightly_smiling_face")`
 
 ---
 
@@ -201,7 +210,7 @@ class: middle
 Possible outcomes from 100 individual games played
 
 .center[
-```{r freq-waffle, fig.width = 4.5, fig.asp = 1, echo = FALSE, dev = "svg", out.width = "45%"}
+```{r freq-waffle, fig.width = 4.5, fig.asp = 1, echo = FALSE, out.width = "45%"}
 g <- expand.grid(x = 1:10, y = 1:10)
 
 set.seed(84520)
@@ -259,7 +268,7 @@ data %>% filter(ratio == .9) %>%
 This type of visualization is called **frequency framing**
 
 .center[
-```{r freq-waffle2, fig.width = 10, fig.asp = 0.45, echo = FALSE, dev = "svg", out.width = "90%"}
+```{r freq-waffle2, fig.width = 10, fig.asp = 0.45, echo = FALSE, out.width = "90%"}
 ggplot(data, aes(x, y, fill = value)) +
   geom_tile(color = "white", size = 1.5) +
   coord_fixed(expand = FALSE, clip = "off") +
@@ -311,8 +320,8 @@ ggplot(data, aes(x, y, fill = value)) +
 ## Key concepts of statistical sampling
 
 .center[
-```{r sampling-schematic1, echo = FALSE, fig.width = 7, fig.asp = 3/4, dev = "svg"}
-fill_color <- "#2A9BB750"
+```{r sampling-schematic1, echo = FALSE, fig.asp = 3/4}
+fill_color <- "#F1DE6780"
 
 set.seed(452061)
 
@@ -401,7 +410,7 @@ p2 <- ggplot(df_sample, aes(x, y)) +
     data = data.frame(x = 1),
     aes(x = mean(df_sample$x), xend = mean(df_sample$x), y = -.2, yend = .2),
     size = 1.5,
-    color = "#D55E00",
+    color = "#866fa3",
     inherit.aes = FALSE
   ) +
   geom_segment( # horizontal bar representing sd
@@ -494,7 +503,7 @@ Figure redrawn from [Claus O. Wilke. Fundamentals of Data Visualization. O'Reill
 ## Key concepts of statistical sampling
 
 .center[
-```{r sampling-schematic2, echo = FALSE, fig.width = 7, fig.asp = 3/4, dev = "svg"}
+```{r sampling-schematic2, echo = FALSE, fig.asp = 3/4}
 plot_grid(
   p1,
   p2,
@@ -514,7 +523,7 @@ Figure redrawn from [Claus O. Wilke. Fundamentals of Data Visualization. O'Reill
 ## Key concepts of statistical sampling
 
 .center[
-```{r sampling-schematic3, echo = FALSE, fig.width = 7, fig.asp = 3/4, dev = "svg"}
+```{r sampling-schematic3, echo = FALSE, fig.asp = 3/4}
 plot_grid(
   p1,
   p2,
@@ -530,11 +539,63 @@ Figure redrawn from [Claus O. Wilke. Fundamentals of Data Visualization. O'Reill
 
 ---
 
-## Frequency interpretation of a confidence interval
+## Confidence intervals
 
-.center[
-<img src = "https://clauswilke.com/dataviz/visualizing_uncertainty_files/figure-html/ci-frequentist-expl-1.png" width = "500" />
+.task[
+What does "95% confident" mean in the following sentence?
 ]
+
+.panelset[
+.panel[.panel-name[Sentence]
+
+> We are 95% confident that the confidence interval includes the true population mean.
+
+]
+.panel[.panel-name[Discuss]
+<iframe src="https://app.sli.do/event/rxg9buzy" height="100%" width="100%" frameBorder="0" style="min-height: 560px;" title="Slido"></iframe>
+]
+]
+
+---
+
+## Frequentist interpretation of a confidence interval
+
+```{r echo = FALSE, fig.align = "center", warning = FALSE, fig.asp = 1, message = FALSE, out.width = "50%"}
+set.seed(85439)
+df <- tibble(y = rnorm(10000))
+df_cont <- tibble(
+  x = c(seq(-3, 3, by = 0.02), -3)
+) %>%
+  mutate(
+    y = dnorm(x),
+    ny = y/max(y)
+  )
+spl <- sampler(10, 5, seed = 9382)
+ggplot(df, aes(y = y)) +
+  geom_polygon(data = df_cont, aes(1.5*ny + 10.5, x), fill = "#866fa380") +
+  geom_hline(yintercept = 0, linetype = 2, size = 0.5) +
+  geom_point(data = spl, aes(x = .draw), size = 2,
+             shape = 21, fill = "#866fa380") +
+  stat_summary(
+    data = spl, aes(x = .draw, color = ifelse(stat(ymax) < 0 | stat(ymin) > 0, "outside", "inside")),
+    geom = "errorbar", width = 0.2, size = 0.75,
+    position = position_nudge(x = -.15)
+  ) +
+  stat_summary(
+    data = spl, aes(x = .draw, color = ifelse(stat(ymax) < 0 | stat(ymin) > 0, "outside", "inside")),
+    geom = "point", size = 2.5, position = position_nudge(x = -.15)
+  ) +
+  annotate(x = 11.7, y = 1, geom = "text", label = "population", size = 14/.pt, hjust = 0) +
+  annotate(x = 11.1, y = 0.05, geom = "text", label = "mean", size = 12/.pt, hjust = 0) +
+  annotate(x = 10.04, y = -Inf, geom = "text", label = "samples", size = 14/.pt, hjust = 0, vjust = 0) +
+  annotate(x = 7.9, y = 2, geom = "text", label = "CI excludes true mean", size = 12/.pt, hjust = 1, vjust = 1) +
+  annotate(x = 8.87, y = 0.23, geom = "text", label = "CI includes true mean", size = 12/.pt, hjust = 0, vjust = 1) +
+  scale_color_manual(values = c("#F1DE67", "#2A9BB7"), guide = "none") +
+  coord_flip() +
+  scale_x_continuous(breaks = 1:10, labels = as.character(10:1), name = NULL, expand = c(0.02, 0)) +
+  scale_y_continuous(breaks = NULL, name = NULL, limits = c(-3, 3), expand = c(0, 0)) +
+  theme(axis.text.y = element_text(vjust = 0.5))
+```
 
 ???
 
@@ -547,23 +608,29 @@ Figure from [Claus O. Wilke. Fundamentals of Data Visualization. O'Reilly, 2019.
 
 ```{r message = FALSE}
 everest <- read_csv(here::here("16-visualize-uncertainty", "data/everest.csv"))
+```
 
+.small[
+```{r}
 everest
 ```
+]
 
 ---
 
 ## Example: Highest point reached on Everest in 2019
 
+Includes only climbers and expedition members who **did not** summit
+
 .center[
-```{r everest-highest-point, echo = FALSE, fig.width = 8, fig.asp = 0.5, dev = "svg", out.width = "70%"}
+```{r everest-highest-point, echo = FALSE, fig.width = 8, fig.asp = 0.5, out.width = "70%"}
 everest_2019 <- everest %>%
   filter(!is.na(highpoint_metres) & success == FALSE) %>%
   filter(year == 2019)
 
 # color for individual small data points
 #point_color <- darken("#009E73", .3)
-point_color <- darken("#2A9BB750", .5)
+point_color <- darken("#F1DE67", .5)
 
 # model fit
 fit <- lm(highpoint_metres ~ 1, data = everest_2019)
@@ -618,7 +685,7 @@ ggplot(CI_df, aes(estimate, type)) +
     aes(xmin = conf.low, xmax = conf.high),
     height = 0.2, na.rm = TRUE
   ) +
-  geom_point(size = 2, color = "#D55E00") +
+  geom_point(size = 2, color = "#866fa3") +
   geom_text(
     aes(label_x, label = label),
     hjust = 0, nudge_y = 0.01, na.rm = TRUE,
@@ -660,8 +727,6 @@ ggplot(CI_df, aes(estimate, type)) +
 ```
 ]
 
-Includes only climbers and expedition members who **did not** summit
-
 ---
 
 ## Marginal effects example: Height reached on Everest
@@ -674,7 +739,7 @@ a male climber who climbed with oxygen, summited, and survived
 --
 
 .center[
-```{r everest_margins, echo = FALSE, fig.width = 8, fig.asp = 0.5, dev = "svg", out.width = "70%"}
+```{r everest_margins, echo = FALSE, fig.width = 8, fig.asp = 0.5, out.width = "70%"}
 library(margins)
 
 everest_data <- everest %>%
@@ -738,7 +803,7 @@ ggplot(evrst_gg) +
 Other visualization options: half-eye
 
 .center[
-```{r everest_margins2, echo = FALSE, fig.width = 8, fig.asp = 0.5, dev = "svg", out.width = "70%"}
+```{r everest_margins2, echo = FALSE, fig.width = 8, fig.asp = 0.5, out.width = "70%"}
 library(ggdist)
 library(distributional)
 
@@ -770,7 +835,7 @@ ggplot(evrst_gg) +
 Other visualization options: gradient interval
 
 .center[
-```{r everest_margins3, echo = FALSE, fig.width = 8, fig.asp = 0.5, dev = "svg", out.width = "70%"}
+```{r everest_margins3, echo = FALSE, fig.width = 8, fig.asp = 0.5, out.width = "70%"}
 library(ggdist)
 library(distributional) # for dist_normal()
 
@@ -801,7 +866,7 @@ ggplot(evrst_gg) +
 Other visualization options: quantile dotplot
 
 .center[
-```{r everest_margins4, echo = FALSE, fig.width = 8, fig.asp = 0.5, dev = "svg", out.width = "70%"}
+```{r everest_margins4, echo = FALSE, fig.width = 8, fig.asp = 0.5, out.width = "70%"}
 library(ggdist)
 library(distributional) # for dist_normal()
 
@@ -833,7 +898,7 @@ ggplot(evrst_gg) +
 Other visualization options: quantile dotplot
 
 .center[
-```{r everest_margins5, echo = FALSE, fig.width = 8, fig.asp = 0.5, dev = "svg", out.width = "70%"}
+```{r everest_margins5, echo = FALSE, fig.width = 8, fig.asp = 0.5, out.width = "70%"}
 library(ggdist)
 library(distributional) # for dist_normal()
 
@@ -866,7 +931,7 @@ ggplot(evrst_gg) +
 Other visualization options: quantile dotplot
 
 .center[
-```{r everest_margins6, echo = FALSE, fig.width = 8, fig.asp = 0.5, dev = "svg", out.width = "70%"}
+```{r everest_margins6, echo = FALSE, fig.width = 8, fig.asp = 0.5, out.width = "70%"}
 library(ggdist)
 library(distributional) # for dist_normal()
 
@@ -895,14 +960,10 @@ ggplot(evrst_gg) +
 
 ## Making a plot with error bars in R
 
---
-
-.small-font[
 Example: Relationship between life expectancy and GDP per capita
-]
 
 .center[
-```{r gapminder-regressions, echo = FALSE, message = FALSE, fig.width = 7, fig.asp = 0.65, dev = "svg", out.width = "70%"}
+```{r gapminder-regressions, echo = FALSE, message = FALSE, fig.width = 7, fig.asp = 0.65, out.width = "70%"}
 gapminder %>%
   filter(
     continent != "Oceania",
@@ -929,12 +990,10 @@ gapminder %>%
 
 ## Making a plot with error bars in R
 
-.small-font[
 Example: Relationship between life expectancy and GDP per capita
-]
 
 .pull-left[
-```{r gapminder-regressions2, echo = FALSE, message = FALSE, fig.width = 7, fig.asp = 0.65, dev = "svg", out.width = "100%"}
+```{r gapminder-regressions2, echo = FALSE, message = FALSE, fig.width = 7, fig.asp = 0.65, out.width = "100%"}
 gapminder %>%
   filter(
     continent != "Oceania",
@@ -959,7 +1018,7 @@ gapminder %>%
 
 .pull-right[
 <br>
-```{r gapminder-summary, echo = FALSE, message = FALSE, fig.width = 7, fig.asp = 0.5, dev = "svg", out.width = "100%"}
+```{r gapminder-summary, echo = FALSE, message = FALSE, fig.width = 7, fig.asp = 0.5, out.width = "100%"}
 gapminder %>%
   nest(data = -c(continent, year)) %>%
   mutate(
@@ -988,7 +1047,7 @@ gapminder %>%
     name = "regression slope"
   ) +
   scale_color_manual(
-    values = c(Africa = "#009E73", Americas = "#0072B2", Asia = "#D55E00", Europe = "#F0E442")
+    values = c(Africa = "#009E73", Americas = "#0072B2", Asia = "#866fa3", Europe = "#F0E442")
   ) +
   theme_minimal_grid(16, rel_small = 1) +
   theme(legend.position = "top")
@@ -998,9 +1057,19 @@ gapminder %>%
 
 ---
 
+## Gapminder
+
+See [gapminder.org](https://www.gapminder.org/) for fantastic visualizations and up-to-date data
+
+```{r}
+gapminder
+```
+
+---
+
 ## Making a plot with error bars in R
 
-.tiny-font[
+.small[
 ```{r}
 lm_data <- gapminder %>%
   nest(data = -c(continent, year))
@@ -1013,7 +1082,7 @@ lm_data
 
 ## Making a plot with error bars in R
 
-.tiny-font[
+.small[
 ```{r}
 lm_data <- gapminder %>%
   nest(data = -c(continent, year)) %>%
@@ -1029,7 +1098,7 @@ lm_data
 
 ## Making a plot with error bars in R
 
-.tiny-font[
+.small[
 ```{r}
 lm_data <- gapminder %>%
   nest(data = -c(continent, year)) %>%
@@ -1046,7 +1115,7 @@ lm_data
 
 ## Making a plot with error bars in R
 
-.tiny-font[
+.small[
 ```{r}
 lm_data <- gapminder %>%
   nest(data = -c(continent, year)) %>%
@@ -1064,7 +1133,7 @@ lm_data
 
 ## Making a plot with error bars in R
 
-.tiny-font[
+.small[
 ```{r}
 lm_data <- gapminder %>%
   nest(data = -c(continent, year)) %>%
@@ -1084,7 +1153,7 @@ lm_data
 
 ## Making a plot with error bars in R
 
-.tiny-font[
+.small[
 ```{r}
 lm_data <- gapminder %>%
   nest(data = -c(continent, year)) %>%
@@ -1105,7 +1174,7 @@ lm_data
 
 ## Making a plot with error bars in R
 
-.tiny-font.pull-left[
+.small.pull-left[
 ```{r gapminder-model, eval = FALSE}
 ggplot(lm_data) +
   aes(
@@ -1125,7 +1194,7 @@ ggplot(lm_data) +
 ]
 
 .pull-right[
-```{r gapminder-model-out, ref.label = "gapminder-model", echo = FALSE, fig.width = 6, fig.asp = 0.618, dev = "svg", out.width = "100%"}
+```{r gapminder-model-out, ref.label = "gapminder-model", echo = FALSE, fig.width = 6, fig.asp = 0.618, out.width = "100%"}
 ```
 ]
 
@@ -1135,7 +1204,7 @@ Figure and code idea from [Kieran Healy. Data Visualization: A practical introdu
 
 ---
 
-## Half-eyes, gradient intervals, etc
+## Half-eyes, gradient intervals, etc.
 
 --
 
@@ -1143,7 +1212,7 @@ The **ggdist** package provides many different visualizations of uncertainty
 
 --
 
-.tiny-font.pull-left[
+.small.pull-left[
 ```{r gapminder-halfeye, eval = FALSE}
 library(ggdist)
 library(distributional) # for dist_normal()
@@ -1165,17 +1234,17 @@ lm_data %>%
 ]
 
 .pull-right[
-```{r gapminder-halfeye-out, ref.label = "gapminder-halfeye", echo = FALSE, fig.width = 6, fig.asp = 0.618, dev = "svg", out.width = "100%"}
+```{r gapminder-halfeye-out, ref.label = "gapminder-halfeye", echo = FALSE, fig.width = 6, fig.asp = 0.618, out.width = "100%"}
 ```
 ]
 
 ---
 
-## Half-eyes, gradient intervals, etc
+## Half-eyes, gradient intervals, etc.
 
 The **ggdist** package provides many different visualizations of uncertainty
 
-.tiny-font.pull-left[
+.small.pull-left[
 ```{r gapminder-gradinterval, eval = FALSE}
 library(ggdist)
 library(distributional) # for dist_normal()
@@ -1198,17 +1267,17 @@ lm_data %>%
 ]
 
 .pull-right[
-```{r gapminder-gradinterval-out, ref.label = "gapminder-gradinterval", echo = FALSE, fig.width = 6, fig.asp = 0.618, dev = "svg", out.width = "100%"}
+```{r gapminder-gradinterval-out, ref.label = "gapminder-gradinterval", echo = FALSE, fig.width = 6, fig.asp = 0.618, out.width = "100%"}
 ```
 ]
 
 ---
 
-## Half-eyes, gradient intervals, etc
+## Half-eyes, gradient intervals, etc.
 
 The **ggdist** package provides many different visualizations of uncertainty
 
-.tiny-font.pull-left[
+.small.pull-left[
 ```{r gapminder-quantiledots, eval = FALSE}
 library(ggdist)
 library(distributional) # for dist_normal()
@@ -1232,17 +1301,17 @@ lm_data %>%
 ]
 
 .pull-right[
-```{r gapminder-quantiledots-out, ref.label = "gapminder-quantiledots", echo = FALSE, fig.width = 6, fig.asp = 0.618, dev = "svg", out.width = "100%"}
+```{r gapminder-quantiledots-out, ref.label = "gapminder-quantiledots", echo = FALSE, fig.width = 6, fig.asp = 0.618, out.width = "100%"}
 ```
 ]
 
 ---
 
-## Half-eyes, gradient intervals, etc
+## Half-eyes, gradient intervals, etc.
 
 The **ggdist** package provides many different visualizations of uncertainty
 
-.tiny-font.pull-left[
+.small.pull-left[
 ```{r gapminder-quantiledots2, eval = FALSE}
 library(ggdist)
 library(distributional) # for dist_normal()
@@ -1266,7 +1335,7 @@ lm_data %>%
 ]
 
 .pull-right[
-```{r gapminder-quantiledots2-out, ref.label = "gapminder-quantiledots2", echo = FALSE, fig.width = 6, fig.asp = 0.618, dev = "svg", out.width = "100%"}
+```{r gapminder-quantiledots2-out, ref.label = "gapminder-quantiledots2", echo = FALSE, fig.width = 6, fig.asp = 0.618, out.width = "100%"}
 ```
 ]
 

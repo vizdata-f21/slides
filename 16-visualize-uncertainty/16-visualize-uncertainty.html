@@ -31,7 +31,14 @@ class: middle, inverse
 
 ## Announcements
 
-- 
+- You can now find thank you cards and ugly ggplots linked from the course website
+
+- Project 1s:
+  - Grades updated, well done on resubmissions!
+  - Request to link to writeups (project website) and slides (not repo, commits, etc.) from the course website -- note: your names will be publicly available
+  - Request will also include question about whether you want to "own" a copy of your Project 1 repo, i.e. make commit history and issues not containing scores
+  - Need team consensus for both
+  - Helpful to highlight your work + show future STA/ISS 313 students what they'll learn in the course
 
 ---
 
@@ -48,6 +55,8 @@ library(cowplot)
 library(emmeans)
 library(broom)
 library(gapminder)
+library(emo)     # install_github("hadley/emo")
+library(ungeviz) # install_github("wilkelab/ungeviz")
 
 # set default theme for ggplot2
 ggplot2::theme_set(ggplot2::theme_minimal(base_size = 16))
@@ -101,7 +110,7 @@ https://commons.wikimedia.org/wiki/File:Disappearing_dots.gif
 
 class: middle
 
-## .hand[Sorry, you lost.]
+## .hand[Sorry, you lost.] 🙂
 
 ---
 
@@ -132,7 +141,7 @@ class: middle
 Possible outcomes from 100 individual games played
 
 .center[
-&lt;img src="16-visualize-uncertainty_files/figure-html/freq-waffle-1.svg" width="45%" /&gt;
+&lt;img src="16-visualize-uncertainty_files/figure-html/freq-waffle-1.png" width="45%" /&gt;
 ]
 
 ---
@@ -142,7 +151,7 @@ Possible outcomes from 100 individual games played
 This type of visualization is called **frequency framing**
 
 .center[
-&lt;img src="16-visualize-uncertainty_files/figure-html/freq-waffle2-1.svg" width="90%" /&gt;
+&lt;img src="16-visualize-uncertainty_files/figure-html/freq-waffle2-1.png" width="90%" /&gt;
 ]
 
 
@@ -167,7 +176,7 @@ This type of visualization is called **frequency framing**
 ## Key concepts of statistical sampling
 
 .center[
-&lt;img src="16-visualize-uncertainty_files/figure-html/sampling-schematic1-1.svg" width="60%" /&gt;
+&lt;img src="16-visualize-uncertainty_files/figure-html/sampling-schematic1-1.png" width="60%" /&gt;
 ]
 
 ???
@@ -179,7 +188,7 @@ Figure redrawn from [Claus O. Wilke. Fundamentals of Data Visualization. O'Reill
 ## Key concepts of statistical sampling
 
 .center[
-&lt;img src="16-visualize-uncertainty_files/figure-html/sampling-schematic2-1.svg" width="60%" /&gt;
+&lt;img src="16-visualize-uncertainty_files/figure-html/sampling-schematic2-1.png" width="60%" /&gt;
 ]
 
 
@@ -192,7 +201,7 @@ Figure redrawn from [Claus O. Wilke. Fundamentals of Data Visualization. O'Reill
 ## Key concepts of statistical sampling
 
 .center[
-&lt;img src="16-visualize-uncertainty_files/figure-html/sampling-schematic3-1.svg" width="60%" /&gt;
+&lt;img src="16-visualize-uncertainty_files/figure-html/sampling-schematic3-1.png" width="60%" /&gt;
 ]
 
 ???
@@ -201,11 +210,28 @@ Figure redrawn from [Claus O. Wilke. Fundamentals of Data Visualization. O'Reill
 
 ---
 
-## Frequency interpretation of a confidence interval
+## Confidence intervals
 
-.center[
-&lt;img src = "https://clauswilke.com/dataviz/visualizing_uncertainty_files/figure-html/ci-frequentist-expl-1.png" width = "500" /&gt;
+.task[
+What does "95% confident" mean in the following sentence?
 ]
+
+.panelset[
+.panel[.panel-name[Sentence]
+
+&gt; We are 95% confident that the confidence interval includes the true population mean.
+
+]
+.panel[.panel-name[Discuss]
+&lt;iframe src="https://app.sli.do/event/rxg9buzy" height="100%" width="100%" frameBorder="0" style="min-height: 560px;" title="Slido"&gt;&lt;/iframe&gt;
+]
+]
+
+---
+
+## Frequentist interpretation of a confidence interval
+
+&lt;img src="16-visualize-uncertainty_files/figure-html/unnamed-chunk-2-1.png" width="50%" style="display: block; margin: auto;" /&gt;
 
 ???
 
@@ -219,7 +245,11 @@ Figure from [Claus O. Wilke. Fundamentals of Data Visualization. O'Reilly, 2019.
 
 ```r
 everest &lt;- read_csv(here::here("16-visualize-uncertainty", "data/everest.csv"))
+```
 
+.small[
+
+```r
 everest
 ```
 
@@ -243,16 +273,17 @@ everest
 ## #   death_height_metres &lt;dbl&gt;, injured &lt;lgl&gt;, injury_type &lt;chr&gt;,
 ## #   injury_height_metres &lt;dbl&gt;
 ```
+]
 
 ---
 
 ## Example: Highest point reached on Everest in 2019
 
-.center[
-&lt;img src="16-visualize-uncertainty_files/figure-html/everest-highest-point-1.svg" width="70%" /&gt;
-]
-
 Includes only climbers and expedition members who **did not** summit
+
+.center[
+&lt;img src="16-visualize-uncertainty_files/figure-html/everest-highest-point-1.png" width="70%" /&gt;
+]
 
 ---
 
@@ -266,7 +297,7 @@ a male climber who climbed with oxygen, summited, and survived
 --
 
 .center[
-&lt;img src="16-visualize-uncertainty_files/figure-html/everest_margins-1.svg" width="70%" /&gt;
+&lt;img src="16-visualize-uncertainty_files/figure-html/everest_margins-1.png" width="70%" /&gt;
 ]
 
 ---
@@ -276,7 +307,7 @@ a male climber who climbed with oxygen, summited, and survived
 Other visualization options: half-eye
 
 .center[
-&lt;img src="16-visualize-uncertainty_files/figure-html/everest_margins2-1.svg" width="70%" /&gt;
+&lt;img src="16-visualize-uncertainty_files/figure-html/everest_margins2-1.png" width="70%" /&gt;
 ]
 
 
@@ -287,7 +318,7 @@ Other visualization options: half-eye
 Other visualization options: gradient interval
 
 .center[
-&lt;img src="16-visualize-uncertainty_files/figure-html/everest_margins3-1.svg" width="70%" /&gt;
+&lt;img src="16-visualize-uncertainty_files/figure-html/everest_margins3-1.png" width="70%" /&gt;
 ]
 
 ---
@@ -297,7 +328,7 @@ Other visualization options: gradient interval
 Other visualization options: quantile dotplot
 
 .center[
-&lt;img src="16-visualize-uncertainty_files/figure-html/everest_margins4-1.svg" width="70%" /&gt;
+&lt;img src="16-visualize-uncertainty_files/figure-html/everest_margins4-1.png" width="70%" /&gt;
 ]
 
 ---
@@ -307,7 +338,7 @@ Other visualization options: quantile dotplot
 Other visualization options: quantile dotplot
 
 .center[
-&lt;img src="16-visualize-uncertainty_files/figure-html/everest_margins5-1.svg" width="70%" /&gt;
+&lt;img src="16-visualize-uncertainty_files/figure-html/everest_margins5-1.png" width="70%" /&gt;
 ]
 
 
@@ -318,46 +349,68 @@ Other visualization options: quantile dotplot
 Other visualization options: quantile dotplot
 
 .center[
-&lt;img src="16-visualize-uncertainty_files/figure-html/everest_margins6-1.svg" width="70%" /&gt;
+&lt;img src="16-visualize-uncertainty_files/figure-html/everest_margins6-1.png" width="70%" /&gt;
 ]
 
 ---
 
 ## Making a plot with error bars in R
 
---
-
-.small-font[
 Example: Relationship between life expectancy and GDP per capita
-]
 
 .center[
-&lt;img src="16-visualize-uncertainty_files/figure-html/gapminder-regressions-1.svg" width="70%" /&gt;
+&lt;img src="16-visualize-uncertainty_files/figure-html/gapminder-regressions-1.png" width="70%" /&gt;
 ]
 
 ---
 
 ## Making a plot with error bars in R
 
-.small-font[
 Example: Relationship between life expectancy and GDP per capita
-]
 
 .pull-left[
-&lt;img src="16-visualize-uncertainty_files/figure-html/gapminder-regressions2-1.svg" width="100%" /&gt;
+&lt;img src="16-visualize-uncertainty_files/figure-html/gapminder-regressions2-1.png" width="100%" /&gt;
 ]
 
 .pull-right[
 &lt;br&gt;
-&lt;img src="16-visualize-uncertainty_files/figure-html/gapminder-summary-1.svg" width="100%" /&gt;
+&lt;img src="16-visualize-uncertainty_files/figure-html/gapminder-summary-1.png" width="100%" /&gt;
 
 ]
 
 ---
 
+## Gapminder
+
+See [gapminder.org](https://www.gapminder.org/) for fantastic visualizations and up-to-date data
+
+
+```r
+gapminder
+```
+
+```
+## # A tibble: 1,704 × 6
+##    country     continent  year lifeExp      pop gdpPercap
+##    &lt;fct&gt;       &lt;fct&gt;     &lt;int&gt;   &lt;dbl&gt;    &lt;int&gt;     &lt;dbl&gt;
+##  1 Afghanistan Asia       1952    28.8  8425333      779.
+##  2 Afghanistan Asia       1957    30.3  9240934      821.
+##  3 Afghanistan Asia       1962    32.0 10267083      853.
+##  4 Afghanistan Asia       1967    34.0 11537966      836.
+##  5 Afghanistan Asia       1972    36.1 13079460      740.
+##  6 Afghanistan Asia       1977    38.4 14880372      786.
+##  7 Afghanistan Asia       1982    39.9 12881816      978.
+##  8 Afghanistan Asia       1987    40.8 13867957      852.
+##  9 Afghanistan Asia       1992    41.7 16317921      649.
+## 10 Afghanistan Asia       1997    41.8 22227415      635.
+## # … with 1,694 more rows
+```
+
+---
+
 ## Making a plot with error bars in R
 
-.tiny-font[
+.small[
 
 ```r
 lm_data &lt;- gapminder %&gt;%
@@ -388,7 +441,7 @@ lm_data
 
 ## Making a plot with error bars in R
 
-.tiny-font[
+.small[
 
 ```r
 lm_data &lt;- gapminder %&gt;%
@@ -422,7 +475,7 @@ lm_data
 
 ## Making a plot with error bars in R
 
-.tiny-font[
+.small[
 
 ```r
 lm_data &lt;- gapminder %&gt;%
@@ -457,7 +510,7 @@ lm_data
 
 ## Making a plot with error bars in R
 
-.tiny-font[
+.small[
 
 ```r
 lm_data &lt;- gapminder %&gt;%
@@ -493,7 +546,7 @@ lm_data
 
 ## Making a plot with error bars in R
 
-.tiny-font[
+.small[
 
 ```r
 lm_data &lt;- gapminder %&gt;%
@@ -531,7 +584,7 @@ lm_data
 
 ## Making a plot with error bars in R
 
-.tiny-font[
+.small[
 
 ```r
 lm_data &lt;- gapminder %&gt;%
@@ -570,7 +623,7 @@ lm_data
 
 ## Making a plot with error bars in R
 
-.tiny-font.pull-left[
+.small.pull-left[
 
 ```r
 ggplot(lm_data) +
@@ -591,7 +644,7 @@ ggplot(lm_data) +
 ]
 
 .pull-right[
-&lt;img src="16-visualize-uncertainty_files/figure-html/gapminder-model-out-1.svg" width="100%" /&gt;
+&lt;img src="16-visualize-uncertainty_files/figure-html/gapminder-model-out-1.png" width="100%" /&gt;
 ]
 
 ???
@@ -600,7 +653,7 @@ Figure and code idea from [Kieran Healy. Data Visualization: A practical introdu
 
 ---
 
-## Half-eyes, gradient intervals, etc
+## Half-eyes, gradient intervals, etc.
 
 --
 
@@ -608,7 +661,7 @@ The **ggdist** package provides many different visualizations of uncertainty
 
 --
 
-.tiny-font.pull-left[
+.small.pull-left[
 
 ```r
 library(ggdist)
@@ -631,16 +684,16 @@ lm_data %&gt;%
 ]
 
 .pull-right[
-&lt;img src="16-visualize-uncertainty_files/figure-html/gapminder-halfeye-out-1.svg" width="100%" /&gt;
+&lt;img src="16-visualize-uncertainty_files/figure-html/gapminder-halfeye-out-1.png" width="100%" /&gt;
 ]
 
 ---
 
-## Half-eyes, gradient intervals, etc
+## Half-eyes, gradient intervals, etc.
 
 The **ggdist** package provides many different visualizations of uncertainty
 
-.tiny-font.pull-left[
+.small.pull-left[
 
 ```r
 library(ggdist)
@@ -664,16 +717,16 @@ lm_data %&gt;%
 ]
 
 .pull-right[
-&lt;img src="16-visualize-uncertainty_files/figure-html/gapminder-gradinterval-out-1.svg" width="100%" /&gt;
+&lt;img src="16-visualize-uncertainty_files/figure-html/gapminder-gradinterval-out-1.png" width="100%" /&gt;
 ]
 
 ---
 
-## Half-eyes, gradient intervals, etc
+## Half-eyes, gradient intervals, etc.
 
 The **ggdist** package provides many different visualizations of uncertainty
 
-.tiny-font.pull-left[
+.small.pull-left[
 
 ```r
 library(ggdist)
@@ -698,16 +751,16 @@ lm_data %&gt;%
 ]
 
 .pull-right[
-&lt;img src="16-visualize-uncertainty_files/figure-html/gapminder-quantiledots-out-1.svg" width="100%" /&gt;
+&lt;img src="16-visualize-uncertainty_files/figure-html/gapminder-quantiledots-out-1.png" width="100%" /&gt;
 ]
 
 ---
 
-## Half-eyes, gradient intervals, etc
+## Half-eyes, gradient intervals, etc.
 
 The **ggdist** package provides many different visualizations of uncertainty
 
-.tiny-font.pull-left[
+.small.pull-left[
 
 ```r
 library(ggdist)
@@ -732,7 +785,7 @@ lm_data %&gt;%
 ]
 
 .pull-right[
-&lt;img src="16-visualize-uncertainty_files/figure-html/gapminder-quantiledots2-out-1.svg" width="100%" /&gt;
+&lt;img src="16-visualize-uncertainty_files/figure-html/gapminder-quantiledots2-out-1.png" width="100%" /&gt;
 ]
 
 
