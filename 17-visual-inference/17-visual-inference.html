@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>visual inference</title>
+    <meta charset="utf-8" />
+    <meta name="date" content="2021-10-29" />
+    <script src="17-visual-inference_files/header-attrs/header-attrs.js"></script>
+    <link href="17-visual-inference_files/panelset/panelset.css" rel="stylesheet" />
+    <script src="17-visual-inference_files/panelset/panelset.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# visual inference
+### 2021-10-29
+
+---
+
+
+
+
+
+
+class: middle, inverse
+
+# Welcome
+
+---
+
+## Setup
+
+.midi[
+
+```r
+# load packages
+library(tidyverse)
+library(tidymodels)
+library(patchwork)
+library(nullabor)
+library(skimr)
+
+# set default theme for ggplot2
+ggplot2::theme_set(ggplot2::theme_minimal(base_size = 16))
+update_geom_defaults("point", list(size = 2)) # 2 for full width, 2.5 for half width
+
+# set default figure parameters for knitr
+knitr::opts_chunk$set(
+  fig.width = 8, fig.asp = 0.618, fig.retina = 3, dpi = 300, out.width = "60%"
+)
+
+# dplyr print min and max
+options(dplyr.print_max = 10, dplyr.print_min = 10)
+```
+]
+
+---
+
+class: middle, inverse
+
+# Now you see me, now you don't
+
+---
+
+.task[
+One of the pictures is a photograph of a painting by Piet Mondrian while the other is a photograph of a drawing made by an IBM 7094 digital computer. Which of the two do you think was done by the computer?
+]
+
+&lt;img src="images/mondrian-computer.png" width="75%" style="display: block; margin: auto;" /&gt;
+
+.small[
+A. M. Noll, "Human or machine: A subjective comparison of
+piet mondrian's "composition with lines" (1917) and a computer-
+generated picture," The Psychological Record, vol. 16, pp. 1–10,
+1966.
+]
+
+---
+
+## Aside: Who is Piet Mondrian?
+
+&lt;img src="images/mondrian-composition-red-blue-yellow.jpg" width="50%" style="display: block; margin: auto;" /&gt;
+
+---
+
+.task[
+What is **apophenia**?
+]
+
+--
+
+.pull-left[
+The tendency to perceive a connection or meaningful pattern between unrelated or random things 
+]
+.pull-right[
+&lt;img src="images/cloud-witch.jpg" width="80%" /&gt;
+]
+
+---
+
+## Visualization, statistical inference, visual inference
+
+- **Visualization** provides tools to uncover new relationships, tools of curiosity, and much of visualization research focuses on making the chance of finding relationships as high as possible
+
+--
+- **Statistical inference** provides tools to check whether a relationship really exists (tools of skepticism) and most statistics research focuses on making sure to minimize the chance of finding a relationship that does not exist
+  - Testing: *Is there a difference?*
+  - Estimation: *How big is the difference?*
+
+--
+- **Visual inference** bridges these two conflicting drives to provide
+a tool for skepticism that can be applied in a curiosity-driven context
+  - Testing: *Is what we see really there, i.e., is what we see in a plot of the sample an accurate reflection of the entire population?*
+
+---
+
+## Hypothesis testing as a court trial
+
+- **Null hypothesis**, `\(H_0\)`: Defendant is innocent
+
+- **Alternative hypothesis**, `\(H_A\)`: Defendant is guilty
+
+--
+
+- **Present the evidence:** Collect data
+
+--
+
+- **Judge the evidence:** "Could these data plausibly have happened by chance if the null hypothesis were true?"
+    * Yes: Fail to reject `\(H_0\)`
+    * No: Reject `\(H_0\)`
+    
+---
+
+## Hypothesis testing framework
+
+- Start with a null hypothesis, `\(H_0\)`, that represents the status quo
+
+- Set an alternative hypothesis, `\(H_A\)`, that represents the research question, i.e. what we’re testing for
+
+- Conduct a hypothesis test under the assumption that the null hypothesis is true and calculate a **p-value** (probability of observed or more extreme outcome given that the null hypothesis is true)
+    - if the test results suggest that the data do not provide convincing evidence for the alternative hypothesis, stick with the null hypothesis
+    - if they do, then reject the null hypothesis in favor of the alternative
+
+---
+
+## Potential errors
+
+- Type 1 error (false negative): Acquit / reject `\(H_0\)` when you shouldn't
+
+- Type 2 error (false positive): Falsely convict an innocent / fail to reject `\(H_0\)` when you shouldn't
+
+- Costs of these errors vary based on the severity of the consequences
+
+---
+
+## Statistical vs. visual inference
+
+.pull-left[
+Statistical
+
+- Test statistic
+- p-value compared to significance level
+]
+.pull-right[
+Visual
+
+- Plot of the data
+- Humans' picking an "innocent" out of a series of **null plot**s
+]
+
+---
+
+class: middle, inverse
+
+# Visual inference with a lineup
+
+---
+
+## The lineup protocol
+
+- Plot of the real data is randomly embedded amongst a set of null plots
+
+- Matrix of plots is known as a **lineup**
+
+- Null plots are generated by a method consistent with the null hypothesis
+
+- The lineup is shown to an observer. If the observer can pick the real data as different from the others, this puts weight on the statistical significance of the structure in the plot.
+
+- The `lineup()` function from the [**nullabor**](http://dicook.github.io/nullabor/) package returns a set of generated null datasets and the real data embedded randomly among these null datasets
+
+---
+
+## Using `nullabor::lineup()`
+
+- Generating null plots:
+  - Option 1: Provide a method of generation and let the `lineup()` function generate them
+  - Option 2: Generating the null datasets yourself and pass them to the `lineup()` function
+
+- Position of the real dataset is hidden by default
+  - Decrypt to find out which plot is the real dataset
+
+---
+
+## Will the real `mtcars` please stand up?
+
+.panelset.sideways[
+.panel[.panel-name[Plot]
+&lt;img src="17-visual-inference_files/figure-html/unnamed-chunk-5-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+.panel[.panel-name[Vote]
+
+&lt;iframe src="https://app.sli.do/event/rxg9buzy" height="100%" width="100%" frameBorder="0" style="min-height: 560px;" title="Slido"&gt;&lt;/iframe&gt;
+
+]
+]
+
+---
+
+## The making of the lineup I
+
+Step 1. Permute the data
+
+
+```r
+set.seed(20211029)
+mtcars_permuted_lineup &lt;- lineup(null_permute("mpg"), mtcars)
+```
+
+```
+## decrypt("sD0f gCdC En JP2EdEPn 8j")
+```
+
+---
+
+## The making of the lineup II
+
+Step 2. Peek at the permuted data
+
+.panelset[
+.panel[.panel-name[Permuted data]
+
+```r
+head(mtcars_permuted_lineup)
+```
+
+```
+##       mpg cyl disp  hp drat    wt  qsec vs am gear carb .sample
+## ...1 10.4   6  160 110 3.90 2.620 16.46  0  1    4    4       1
+## ...2 21.4   6  160 110 3.90 2.875 17.02  0  1    4    4       1
+## ...3 14.7   4  108  93 3.85 2.320 18.61  1  1    4    1       1
+## ...4 15.5   6  258 110 3.08 3.215 19.44  1  0    3    1       1
+## ...5 30.4   8  360 175 3.15 3.440 17.02  0  0    3    2       1
+## ...6 15.0   6  225 105 2.76 3.460 20.22  1  0    3    1       1
+```
+]
+.panel[.panel-name[Permutations]
+`n = 20` by default
+.small[
+
+```r
+mtcars_permuted_lineup %&gt;%
+  count(.sample)
+```
+
+```
+##    .sample  n
+## 1        1 32
+## 2        2 32
+## 3        3 32
+## 4        4 32
+## 5        5 32
+## 6        6 32
+## 7        7 32
+## 8        8 32
+## 9        9 32
+## 10      10 32
+## 11      11 32
+## 12      12 32
+## 13      13 32
+## 14      14 32
+## 15      15 32
+## 16      16 32
+## 17      17 32
+## 18      18 32
+## 19      19 32
+## 20      20 32
+```
+]
+]
+]
+
+---
+
+## The making of the lineup III
+
+Step 3. Plot the permutations
+
+.panelset.sideways[
+.panel[.panel-name[Code]
+
+```r
+ggplot(data = mtcars_permuted_lineup, aes(x = mpg, y = wt)) +
+  geom_point() +
+  facet_wrap(~ .sample)
+```
+
+
+
+]
+
+.panel[.panel-name[Plot]
+
+&lt;img src="17-visual-inference_files/figure-html/unnamed-chunk-9-1.png" width="100%" /&gt;
+
+]
+]
+
+---
+
+## Decrypt the lineup
+
+
+```r
+decrypt("sD0f gCdC En JP2EdEPn 8j")
+```
+
+```
+## [1] "True data in position  16"
+```
+
+---
+
+class: middle, inverse
+
+# Visual inference with a Rorschach
+
+---
+
+## The Rorschach protocol
+
+- The **Rorschach** protocol is used to calibrate the eyes for variation due to sampling
+
+--
+- Plots generated corresponds to the null datasets, data that is consistent with a null hypothesis
+
+--
+- `rorschach()` function returns a set of null plots which are shown to observers to calibrate their eyes with variation
+
+---
+
+## Using `nullabor::rorschach()`
+
+- Generating null plots: Provide a `method` of generation and let the `rorschach()` function generate them
+
+- Provide the `true` data set
+
+- Set `n`, total number of samples to generate (`n = 20` by default)
+
+- Set `p`, probability of including true data with null data (`p = 0` by default)
+
+---
+
+## Train your eyes to spot the real `mtcars`
+
+.panelset.sideways[
+.panel[.panel-name[Plot]
+&lt;img src="17-visual-inference_files/figure-html/unnamed-chunk-11-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+.panel[.panel-name[Vote]
+
+&lt;iframe src="https://app.sli.do/event/rxg9buzy" height="100%" width="100%" frameBorder="0" style="min-height: 560px;" title="Slido"&gt;&lt;/iframe&gt;
+
+]
+]
+
+---
+
+## The making of the rorschach I
+
+Step 1. Permute the data
+
+
+```r
+set.seed(20211029)
+mtcars_permuted_rorschach &lt;- rorschach(null_permute("mpg"), mtcars)
+```
+
+---
+
+## The making of the rorschach II
+
+Step 2. Peek at the permuted data
+
+.panelset[
+.panel[.panel-name[Permuted data]
+
+```r
+head(mtcars_permuted_rorschach)
+```
+
+```
+##    mpg cyl disp  hp drat    wt  qsec vs am gear carb .sample
+## 1 10.4   6  160 110 3.90 2.620 16.46  0  1    4    4       1
+## 2 21.4   6  160 110 3.90 2.875 17.02  0  1    4    4       1
+## 3 14.7   4  108  93 3.85 2.320 18.61  1  1    4    1       1
+## 4 15.5   6  258 110 3.08 3.215 19.44  1  0    3    1       1
+## 5 30.4   8  360 175 3.15 3.440 17.02  0  0    3    2       1
+## 6 15.0   6  225 105 2.76 3.460 20.22  1  0    3    1       1
+```
+]
+.panel[.panel-name[Permutations]
+`n = 20` by default
+.small[
+
+```r
+mtcars_permuted_rorschach %&gt;%
+  count(.sample)
+```
+
+```
+##    .sample  n
+## 1        1 32
+## 2        2 32
+## 3        3 32
+## 4        4 32
+## 5        5 32
+## 6        6 32
+## 7        7 32
+## 8        8 32
+## 9        9 32
+## 10      10 32
+## 11      11 32
+## 12      12 32
+## 13      13 32
+## 14      14 32
+## 15      15 32
+## 16      16 32
+## 17      17 32
+## 18      18 32
+## 19      19 32
+## 20      20 32
+```
+]
+]
+]
+
+---
+
+## The making of the rorschach III
+
+Step 3. Plot the permutations
+
+.panelset.sideways[
+.panel[.panel-name[Code]
+
+```r
+ggplot(data = mtcars_permuted_rorschach, aes(x = mpg, y = wt)) +
+  geom_point() +
+  facet_wrap(~ .sample)
+```
+
+
+
+]
+
+.panel[.panel-name[Plot]
+
+&lt;img src="17-visual-inference_files/figure-html/unnamed-chunk-15-1.png" width="100%" /&gt;
+
+]
+]
+
+---
+
+## Decrypt the rorschach
+
+- In this particular case there's nothing to decrypt since `p` (probability of including true data with null data) is set to 0
+
+- If `p` is higher than 0, and the true null is included, you get the decryption key
+
+
+```r
+set.seed(12345)
+mtcars_permuted_rorschach &lt;- rorschach(null_permute("mpg"), mtcars, p = 0.5)
+```
+
+```
+## sD0f gCdC En JP2EdEPn 8Y
+```
+
+```r
+decrypt("sD0f gCdC En JP2EdEPn 8Y")
+```
+
+```
+## [1] "True data in position  15"
+```
+
+---
+
+class: middle, inverse
+
+# Generating the null data
+
+---
+
+## Generating the null data
+
+- By permuting a variable (what we've done so far with `mtcars`)
+
+--
+- With a specific distribution
+
+--
+- With null residuals from a model
+
+--
+- With null data outside of **nullabor** (we won't get into this, but see [here](http://dicook.github.io/nullabor/articles/nullabor.html#generate-null-data-outside-of-nullabor) for more)
+
+---
+
+## Generate null data with a specific distribution
+
+- The `null_dist()` function takes as input a variable name of the data and a particular distribution
+
+- This variable in the data is substituted by random generations of the particular distribution
+
+- The different distributions include beta, cauchy, chi-squared, exponential, f, gamma, geometric, log-normal, lognormal, logistic, negative binomial, normal, poisson, t, and weibull
+
+- Parameters of the distributions are estimated from the given data (default) or can be provided as a list
+
+- `null_dist()` returns a function that generates a null data set given the data 
+
+---
+
+## Case study: Heights of adults
+
+.task[
+The following histogram shows the distribution of heights of 507 physically active individuals (`openintro::bdims$hgt`). Do the heights of these individuals follow a normal distribution?
+]
+
+.panelset.sideways[
+.panel[.panel-name[Plot]
+&lt;img src="17-visual-inference_files/figure-html/unnamed-chunk-16-1.png" width="90%" style="display: block; margin: auto;" /&gt;
+]
+.panel[.panel-name[Vote]
+
+&lt;iframe src="https://app.sli.do/event/rxg9buzy" height="100%" width="100%" frameBorder="0" style="min-height: 560px;" title="Slido"&gt;&lt;/iframe&gt;
+
+]
+
+]
+
+---
+
+.task[
+Which of the following is the plot of the real data? (Note: A different binwidth than the previous plot is used.)
+]
+
+.panelset.sideways[
+.panel[.panel-name[Plot]
+&lt;img src="17-visual-inference_files/figure-html/generate-null-dist-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+.panel[.panel-name[Vote]
+
+&lt;iframe src="https://app.sli.do/event/rxg9buzy" height="100%" width="100%" frameBorder="0" style="min-height: 560px;" title="Slido"&gt;&lt;/iframe&gt;
+
+]
+]
+
+---
+
+## Code: Generate null data with a specific distribution
+
+
+```r
+set.seed(20211029)
+
+bdims_permuted_lineup &lt;- lineup(null_dist("hgt", dist = "normal"), n = 10)
+```
+
+```
+## decrypt("sD0f gCdC En JP2EdEPn ZO")
+```
+
+```r
+ggplot(data = bdims_permuted_lineup, aes(x = hgt)) +
+  geom_histogram(binwidth = 4) +
+  facet_wrap(~ .sample, nrow = 2)
+```
+
+--
+
+
+```r
+decrypt("sD0f gCdC En JP2EdEPn ZO")
+```
+
+---
+
+## Generating the null data with residuals from a model
+
+- `null_lm()` takes as input a model specification formula as defined by `lm()` and method for generating null residuals from the model
+
+- Three built in methods for different (and valid) methods to generate null data when fitting a linear model: 
+  - `method = "pboot"`
+  - `method = "boot"`
+  - `method = "rotate"`
+
+- `null_lm()` returns a function which given the data generates a null dataset
+
+---
+
+## Case study: Black cherry trees
+
+Data measures the diameter, height and volume of timber in 31 felled black cherry trees (`datasets::trees`)
+
+.panelset[
+.panel[.panel-name[Summary]
+.small[
+
+```r
+skim(datasets::trees)
+```
+
+```
+## ── Data Summary ────────────────────────
+##                            Values         
+## Name                       datasets::trees
+## Number of rows             31             
+## Number of columns          3              
+## _______________________                   
+## Column type frequency:                    
+##   numeric                  3              
+## ________________________                  
+## Group variables            None           
+## 
+## ── Variable type: numeric ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+##   skim_variable n_missing complete_rate  mean    sd    p0   p25   p50   p75  p100 hist 
+## 1 Girth                 0             1  13.2  3.14   8.3  11.0  12.9  15.2  20.6 ▃▇▃▅▁
+## 2 Height                0             1  76    6.37  63    72    76    80    87   ▃▃▆▇▃
+## 3 Volume                0             1  30.2 16.4   10.2  19.4  24.2  37.3  77   ▇▅▁▂▁
+```
+]
+]
+.panel[.panel-name[Plot]
+&lt;img src="17-visual-inference_files/figure-html/unnamed-chunk-21-1.png" width="80%" /&gt;
+]
+]
+
+---
+
+## Fit the model
+
+
+```r
+trees_fit &lt;- lm(log(Volume) ~ log(Girth) + log(Height), 
+                data = datasets::trees)
+
+tidy(trees_fit)
+```
+
+```
+## # A tibble: 3 × 5
+##   term        estimate std.error statistic  p.value
+##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 (Intercept)    -6.63    0.800      -8.29 5.06e- 9
+## 2 log(Girth)      1.98    0.0750     26.4  2.42e-21
+## 3 log(Height)     1.12    0.204       5.46 7.81e- 6
+```
+
+---
+
+## Augment the model
+
+
+```r
+trees_aug &lt;- as_tibble(datasets::trees) %&gt;%
+  mutate(
+    .resid = residuals(trees_fit),
+    .fitted = fitted(trees_fit)
+  )
+
+trees_aug
+```
+
+```
+## # A tibble: 31 × 5
+##    Girth Height Volume   .resid .fitted
+##    &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt;
+##  1   8.3     70   10.3  0.0219     2.31
+##  2   8.6     65   10.3  0.0343     2.30
+##  3   8.8     63   10.2  0.0138     2.31
+##  4  10.5     72   16.4 -0.0106     2.81
+##  5  10.7     81   18.8 -0.0430     2.98
+##  6  10.8     83   19.7 -0.0420     3.02
+##  7  11       66   15.6 -0.0557     2.80
+##  8  11       75   18.2 -0.0443     2.95
+##  9  11.1     80   22.6  0.0822     3.04
+## 10  11.2     75   19.9  0.00926    2.98
+## # … with 21 more rows
+```
+
+---
+
+## Test
+
+- Hypotheses:
+  - `\(H_0\)`: Errors are `\(NID(0, \sigma^2)\)`
+  - `\(H_A\)`: Errors are not `\(NID(0, \sigma^2)\)`
+
+--
+- Visual statistic: Residuals plot (residuals vs. fitted)
+
+--
+- Null distributions: Generate residuals from random draws from `\(N(0, \hat{sigma}^2)\)` using the **nullabor** package
+
+
+```r
+method &lt;- null_lm(log(Volume) ~ log(Girth) + log(Height),
+                  method = "pboot")
+```
+
+--
+- Compare the visual statistic from the data to the null distributions using a **lineup**
+
+
+```r
+set.seed(2020)
+trees_lineup &lt;- lineup(method, true = trees_aug, n = 10)
+```
+
+```
+## decrypt("sD0f gCdC En JP2EdEPn ZO")
+```
+
+---
+
+## Lineup
+
+.task[
+Which one is the real residuals plot?
+]
+
+.panelset.sideways[
+.panel[.panel-name[Plot]
+&lt;img src="17-visual-inference_files/figure-html/trees-lineup-1.png" width="90%" style="display: block; margin: auto;" /&gt;
+]
+.panel[.panel-name[Vote]
+
+&lt;iframe src="https://app.sli.do/event/rxg9buzy" height="100%" width="100%" frameBorder="0" style="min-height: 560px;" title="Slido"&gt;&lt;/iframe&gt;
+
+]
+
+.panel[.panel-name[Code]
+
+
+```r
+ggplot(trees_lineup, aes(x = .fitted, y = .resid)) +
+  geom_point() +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  facet_wrap(~.sample, nrow = 2) +
+  theme(
+    axis.text = element_blank(), # remove data context
+    axis.title = element_blank() # remove data context
+  )
+```
+
+]
+]
+
+---
+
+## Decrypt
+
+
+```r
+decrypt("sD0f gCdC En JP2EdEPn ZO")
+```
+
+---
+
+class: middle, inverse
+
+# The visual inference test
+
+---
+
+## The visual inference test
+
+- Notation:
+  - `\(n\)`: number of independent participants
+  - `\(X\)`: number of participants who detect the data plot
+  - `\(x\)`: observed value of `\(X\)`
+  - `\(m\)`: number of plots
+  - `\(p\)`: the probability of selecting the data plot
+
+--
+- Hypotheses:
+  - `\(H_0: p = 1 / m\)` - The probability of the data plot being selected is `\(1 / m\)` (same as all other plots)
+  - `\(H_A: p &gt; 1 / m\)` - The probability of the data plot being selected is greater than `\(1 / m\)`
+
+--
+- Under `\(H_0, X \sim B(n, 1/m)\)`. Then, visual inference p-value:
+
+$$ p(X \ge x) = 1 - P(X \le x - 1) = \sum_{k = x}^n {n \choose k} \frac{(m - 1)^k}{m^n} $$
+
+- In R: `\(P(X \le x)\)` = `pbinom(x, n, p)`
+
+---
+
+## Calculating p-values
+
+We did three lineup tests today, where 
+- `\(x\)` is the number of people who spotted the real data and 
+- `\(n\)` is the number of people voting
+
+Let's calculate the p-values
+
+- Spot the real `mtcars` (n = 20)
+
+
+```r
+1 - pbinom(x, n, 1/20)
+```
+
+- Spot the real `bdims::hgt` (n = 10)
+
+
+```r
+1 - pbinom(x, n, 1/10)
+```
+
+- Spot the real residuals of `trees` model (n = 10)
+
+
+```r
+1 - pbinom(x, n, 1/20)
+```
+
+---
+
+class: middle, inverse
+
+# Acknowledgements
+
+---
+
+## Acknowledgements
+
+- [Statistical inference for exploratory data analysis and model diagnostics](https://royalsocietypublishing.org/doi/10.1098/rsta.2009.0120) by Andreas Buja , Dianne Cook , Heike Hofmann , Michael Lawrence , Eun-Kyung Lee , Deborah F. Swayne, and Hadley Wickham
+- [Graphical Inference for Infovis](https://vita.had.co.nz/papers/inference-infovis.pdf) by Hadley Wickham, Dianne Cook, Heike Hofmann, and Andreas Buja
+- [Using computational tools to determine whether what is seen in the data can be assumed to apply more broadly](https://eda.numbat.space/lectures/lecture-11b#2) by Emi Tanaka
+- [Extending beyond the data, what can and cannot be inferred more generally, given the data collection](https://eda.numbat.space/lectures/lecture-12a#2) by Emi Tanaka
+- The [**nullabor**](http://dicook.github.io/nullabor/) package
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="https://platform.twitter.com/widgets.js"></script>
+<script>var slideshow = remark.create({
+"slideNumberFormat": "%current%",
+"highlightStyle": "solarized-light",
+"highlightLines": true,
+"ratio": "16:9",
+"countIncrementalSlides": true
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
