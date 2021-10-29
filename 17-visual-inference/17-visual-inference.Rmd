@@ -563,7 +563,7 @@ ggplot(data = bdims_permuted_lineup, aes(x = hgt)) +
 
 --
 
-```{r cache = TRUE, eval = FALSE}
+```{r cache = TRUE}
 decrypt("sD0f gCdC En JP2EdEPn ZO")
 ```
 
@@ -708,7 +708,7 @@ ggplot(trees_lineup, aes(x = .fitted, y = .resid)) +
 
 ## Decrypt
 
-```{r cache = TRUE, eval = FALSE}
+```{r cache = TRUE}
 decrypt("sD0f gCdC En JP2EdEPn ZO")
 ```
 
@@ -754,19 +754,19 @@ Let's calculate the p-values
 - Spot the real `mtcars` (n = 20)
 
 ```{r eval = FALSE}
-1 - pbinom(x, n, 1/20)
+1 - pbinom(4, 12, 1/20)
 ```
 
 - Spot the real `bdims::hgt` (n = 10)
 
 ```{r eval = FALSE}
-1 - pbinom(x, n, 1/10)
+1 - pbinom(0, 12, 1/10)
 ```
 
 - Spot the real residuals of `trees` model (n = 10)
 
 ```{r eval = FALSE}
-1 - pbinom(x, n, 1/20)
+1 - pbinom(0, 12, 1/20)
 ```
 
 ---
