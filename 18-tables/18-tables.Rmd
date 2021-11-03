@@ -103,6 +103,11 @@ class: middle, inverse
 
 ## Announcements
 
+- Project 2 questions?
+
+- HW 6 plans:
+  - Optional
+  - Due date moved to Monday after Thanksgiving
 
 ---
 
