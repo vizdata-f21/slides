@@ -409,6 +409,9 @@ knitr::include_graphics("images/gt-parts.png")
 
 .task[
 Recreate this table of Bachelor's degrees awarded in 2015.
+
+- Go to `exercise-07` repo and clone it
+- Install the **gt** package: `install.packages("gt")`
 ]
 ]
 .pull-right[
