@@ -133,7 +133,7 @@ library(shiny)
 ui &lt;- fluidPage()
 
 
-server &lt;- function(input, output) {}
+server &lt;- function(input, output, session) {}
 
 
 shinyApp(ui = ui, server = server)
@@ -147,6 +147,51 @@ shinyApp(ui = ui, server = server)
 
 ---
 
+## Data: Ask a manager
+
+Source: Ask a Manager Survey via [TidyTuesday](https://github.com/rfordatascience/tidytuesday/tree/master/data/2021/2021-05-18)
+
+&gt; This data does not reflect the general population; it reflects Ask a Manager readers who self-selected to respond, which is a very different group (as you can see just from the demographic breakdown below, which is very white and very female).
+
+Some findings [here](https://www.askamanager.org/2021/05/some-findings-from-24000-peoples-salaries.html).
+
+
+```r
+manager &lt;- read_csv(here::here("19-interactive-reporting", "data/survey.csv"))
+manager
+```
+
+```
+## # A tibble: 26,232 × 18
+##    timestamp  how_old_are_you industry  job_title additional_cont… annual_salary
+##    &lt;chr&gt;      &lt;chr&gt;           &lt;chr&gt;     &lt;chr&gt;     &lt;chr&gt;                    &lt;dbl&gt;
+##  1 4/27/2021… 25-34           Educatio… Research… &lt;NA&gt;                     55000
+##  2 4/27/2021… 25-34           Computin… Change &amp;… &lt;NA&gt;                     54600
+##  3 4/27/2021… 25-34           Accounti… Marketin… &lt;NA&gt;                     34000
+##  4 4/27/2021… 25-34           Nonprofi… Program … &lt;NA&gt;                     62000
+##  5 4/27/2021… 25-34           Accounti… Accounti… &lt;NA&gt;                     60000
+##  6 4/27/2021… 25-34           Educatio… Scholarl… &lt;NA&gt;                     62000
+##  7 4/27/2021… 25-34           Publishi… Publishi… &lt;NA&gt;                     33000
+##  8 4/27/2021… 25-34           Educatio… Librarian High school, FT          50000
+##  9 4/27/2021… 45-54           Computin… Systems … Data developer/…        112000
+## 10 4/27/2021… 35-44           Accounti… Senior A… &lt;NA&gt;                     45000
+## # … with 26,222 more rows, and 12 more variables: other_monetary_comp &lt;dbl&gt;,
+## #   currency &lt;chr&gt;, currency_other &lt;chr&gt;, additional_context_on_income &lt;chr&gt;,
+## #   country &lt;chr&gt;, state &lt;chr&gt;, city &lt;chr&gt;,
+## #   overall_years_of_professional_experience &lt;chr&gt;,
+## #   years_of_experience_in_field &lt;chr&gt;,
+## #   highest_level_of_education_completed &lt;chr&gt;, gender &lt;chr&gt;, race &lt;chr&gt;
+```
+
+---
+
+class: middle
+
+.large[.hand[livecoding]]
+
+.task[
+Go to the `exercise-08` project and code along in `manager-survey/app.R`.
+]
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>

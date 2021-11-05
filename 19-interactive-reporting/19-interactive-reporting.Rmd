@@ -213,7 +213,7 @@ library(shiny)
 ui <- fluidPage()
 
 
-server <- function(input, output) {}
+server <- function(input, output, session) {}
 
 
 shinyApp(ui = ui, server = server)
@@ -227,3 +227,25 @@ shinyApp(ui = ui, server = server)
 
 ---
 
+## Data: Ask a manager
+
+Source: Ask a Manager Survey via [TidyTuesday](https://github.com/rfordatascience/tidytuesday/tree/master/data/2021/2021-05-18)
+
+> This data does not reflect the general population; it reflects Ask a Manager readers who self-selected to respond, which is a very different group (as you can see just from the demographic breakdown below, which is very white and very female).
+
+Some findings [here](https://www.askamanager.org/2021/05/some-findings-from-24000-peoples-salaries.html).
+
+```{r message = FALSE}
+manager <- read_csv(here::here("19-interactive-reporting", "data/survey.csv"))
+manager
+```
+
+---
+
+class: middle
+
+.large[.hand[livecoding]]
+
+.task[
+Go to the `exercise-08` project and code along in `manager-survey/app.R`.
+]
