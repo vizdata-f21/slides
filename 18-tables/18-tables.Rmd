@@ -46,11 +46,11 @@ style_duo_accent(
     "h3" = list("margin-block-start" = "0.4rem", 
                  "margin-block-end" = "0.4rem"),
     ".tiny" = list("font-size" = "50%"),
-    ".xsmall" = list("font-size" = "72%"),
+    ".xsmall" = list("font-size" = "65%"),
     ".small" = list("font-size" = "80%"),
     ".midi" = list("font-size" = "90%"),
     ".tiny .remark-code" = list("font-size" = "50%"),
-    ".xsmall .remark-code" = list("font-size" = "72%"),
+    ".xsmall .remark-code" = list("font-size" = "65%"),
     ".small .remark-code" = list("font-size" = "80%"),
     ".midi .remark-code" = list("font-size" = "90%"),
     ".large" = list("font-size" = "200%"),
@@ -419,6 +419,16 @@ Recreate this table of Bachelor's degrees awarded in 2015.
 ```
 ]
 
+(See next slide for code developed during live coding session)
+
+---
+
+class: xsmall
+
+```{r ref.label = "degrees-2015-table", eval = FALSE}
+
+```
+
 ---
 
 class: middle, inverse
@@ -549,9 +559,11 @@ BA_degrees_other %>%
 Recreate this table of popular Bachelor's degrees awarded over time.
 ]
 
+(See next slide for code developed during live coding session)
+
 <br>
 
-```{r echo = FALSE}
+```{r sparklines, echo = FALSE}
 plot_spark <- function(df){
   ggplot(df, aes(x = year, y = perc)) +
     geom_line(size = 20) +
@@ -599,11 +611,21 @@ BA_degrees_other %>%
 
 ---
 
+class: xsmall
+
+```{r ref.label = "sparklines", eval = FALSE}
+
+```
+
+---
+
 .large[.hand[your turn]]
 
 .task[
 Add **color** to the previous table.
 ]
+
+(See next slide for code developed during live coding session)
 
 <br>
 
@@ -613,6 +635,14 @@ Add **color** to the previous table.
 
 ```{r echo = FALSE}
 countdown(minutes = 10, top = 0)
+```
+
+---
+
+class: tiny
+
+```{r ref.label = "sparklines-color", eval = FALSE}
+
 ```
 
 ---
