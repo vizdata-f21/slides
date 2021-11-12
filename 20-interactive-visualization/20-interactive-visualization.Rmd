@@ -145,4 +145,4 @@ Go to the `exercise-08` project and code along in `manager-survey/app.R`.
 
 class: middle
 
-The code for the app can be found [here]().
+The code for the app can be found [here](https://github.com/vizdata-f21/slides/blob/main/20-interactive-visualization/manager-survey/app.R).
