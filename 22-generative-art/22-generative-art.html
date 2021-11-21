@@ -506,7 +506,148 @@ class: middle, large
 
 .hand[livecoding...]
 
-(Code developed will be posted here after class)
+(See next few slides for code developed during the livecoding session in class.)
+
+---
+
+## Function: `build_art()`
+
+
+```r
+build_art &lt;- function(points,
+                      angle = pi * (3 - sqrt(5)),
+                      adjustment = 0,
+                      sd = 0.02,
+                      seed) {
+
+  set.seed(seed)
+
+  tibble(
+    i = 1:points,
+    t = (1:points) * angle + adjustment,
+    x = sin(t),
+    y = cos(t)
+  ) %&gt;%
+    mutate(
+      x_shift = rnorm(n = points, sd = sd),
+      y_shift = rnorm(n = points, sd = sd),
+      x = x + x_shift,
+      y = y + y_shift
+    )
+}
+```
+
+---
+
+## Function: `draw_art()`
+
+
+```r
+draw_art &lt;- function(df, shape, alpha = 0.5, ...){
+
+  ggplot(df, aes(x = x * t, y = y * t)) +
+    geom_point(aes(size = t, color = t, fill = t),
+               shape = shape, alpha = alpha, show.legend = FALSE) +
+    coord_equal() +
+    theme_void() +
+    scale_fill_scico(...) +
+    scale_color_scico(...) +
+    facet_wrap(~flower) +
+    theme(strip.text = element_blank())
+}
+```
+
+---
+
+## A grid of flowers
+
+.panelset.sideways[
+.panel[.panel-name[Code]
+
+```r
+map_dfr(.x = round(runif(9, min = 0, max = 1000)),
+         ~build_art(
+           points = 200,
+           angle = 1,
+           sd = 0.05,
+           seed = .x),
+         .id = "flower") %&gt;%
+  draw_art(shape = "square filled", palette = "batlow", alpha = 0.6, direction = -1)
+```
+
+
+
+]
+
+.panel[.panel-name[Plot]
+
+&lt;img src="22-generative-art_files/figure-html/unnamed-chunk-22-1.png" width="70%" /&gt;
+
+]
+]
+
+---
+
+## A grid of flowers, with some changes
+
+.panelset.sideways[
+.panel[.panel-name[Code]
+
+```r
+map_dfr(.x = round(runif(9, min = 0, max = 1000)),
+        ~build_art(
+          points = 200,
+          angle = 1,
+          sd = 0.05,
+          seed = .x),
+        .id = "flower") %&gt;%
+  draw_art(shape = "triangle down filled", palette = "berlin", alpha = 0.6, direction = 1)
+```
+
+
+
+]
+
+.panel[.panel-name[Plot]
+
+&lt;img src="22-generative-art_files/figure-html/unnamed-chunk-23-1.png" width="70%" /&gt;
+
+]
+]
+
+---
+
+## A grid of flowers, with more customization
+
+.panelset.sideways[
+.panel[.panel-name[Code]
+
+```r
+n_flowers = 9
+
+list_of_parameters &lt;- list(
+  points = sample(seq(300, 500, 50), n_flowers, replace = TRUE),
+  angle = sample(c(1, 2, 3), n_flowers, replace = TRUE),
+  sd = sample(c(0.01, 0.02, 0.03), n_flowers, replace = TRUE),
+  seed = round(runif(n_flowers, min = 0, max = 1000))
+)
+
+pmap_dfr(list_of_parameters,
+         build_art,
+  .id = "flower") %&gt;%
+  draw_art(shape = "triangle down filled", palette = "berlin", alpha = 0.6, direction = 1)
+```
+
+
+
+]
+
+.panel[.panel-name[Plot]
+
+&lt;img src="22-generative-art_files/figure-html/unnamed-chunk-24-1.png" width="70%" /&gt;
+
+]
+]
 
 ---
 
