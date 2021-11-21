@@ -136,11 +136,11 @@ class: middle, inverse
 
 --
 - Office hours for the week of Thanksgiving:
-  - Mine: 3-4pm on Monday (virtual)
+  - Mine: 3:30-4:30pm on Monday (virtual)
   - Vittorio: 2-3pm on Monday + 11am-12pm on Tuesday (both virtual)
   
 - Office hours for last week of classes:
-  - Vittorio: 2-3pm on Monday (virtual) + 11am-12pm on Tuesday (in person at Old Chem 203B)
+  - Vittorio: 2-3pm on Monday + 11am-12pm on Tuesday (both in person at Old Chem 203B)
   - Jennifer: 3-4pm on Wednesday and 5-6pm on Thursday (both virtual)
   - Mine: 3-4pm on Tuesday and 3:30-5pm on Thursday (both virtual)
 
