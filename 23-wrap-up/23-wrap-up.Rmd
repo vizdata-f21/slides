@@ -355,6 +355,48 @@ function_text
 
 ---
 
+## Putting it altogether with ggplot2
+
+See the full code at https://github.com/mine-cetinkaya-rundel/saatli-maarif/blob/main/saatli-maarif.R.
+
+---
+
+## Raspberry Pi
+
+.pull-left[
+The Raspberry Pi is a low cost, credit-card sized computer that plugs into a computer monitor or TV, and uses a standard keyboard and mouse.
+]
+.pull-right[
+```{r echo = FALSE, out.width = "80%", fig.align = "center"}
+knitr::include_graphics("images/raspberry-pi.png")
+```
+]
+
+.footnote[
+Image from https://en.wikipedia.org/wiki/Raspberry_Pi
+]
+
+---
+
+## Saatli Maarif Takvimi on Raspberri pi
+
+```{r echo = FALSE, out.width = "65%", fig.align = "center"}
+knitr::include_graphics("images/smt-on-rp.png")
+```
+
+--
+.hand[and the video...]
+
+---
+
+## It takes a ~~village~~ team
+
+- See https://github.com/rundel/saatli_maarif for all the pieces for getting the image on the Raspberry Pi (thanks Colin Rundel!)
+
+- Tools used: R for creating the graphic, Python for communicating with the e-Paper display (reading the output image and writing to the display)
+
+---
+
 class: middle, inverse
 
 # AMA with Thomas Lin Pedersen
