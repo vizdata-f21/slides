@@ -203,7 +203,155 @@ countdown(minutes = 5)
 
 class: middle, inverse
 
-# ...
+# My project: Saatli Maarif Takvimi
+
+---
+
+## Saatli Maarif Takvimi
+
+.pull-left[
+```{r echo = FALSE, out.width = "70%", fig.align = "center"}
+knitr::include_graphics("images/smt.jpeg")
+```
+]
+--
+.pull-right[
+```{r echo = FALSE, out.width = "80%", fig.align = "center"}
+knitr::include_graphics("images/anane.png")
+```
+]
+
+---
+
+## Saatli Maarif Takvimi, reimagined
+
+```{r echo = FALSE, out.width = "30%", fig.align = "center"}
+knitr::include_graphics("images/saatli-maarif.bmp")
+```
+
+---
+
+## Sun and moon
+
+- Use the [**suncalc**](https://github.com/datastorm-open/suncalc) package to calculate sunlight phases (times for sunrise, sunset, dusk, etc.) and lunar phase for the given location and time
+
+- Use the [**gggibbous**](https://github.com/mnbram/gggibbous) package to draw the moon
+
+---
+
+## Sun
+
+```{r}
+lat_durham <- 35.9940
+lon_durham <- -78.8986
+sun_stuff_today <- suncalc::getSunlightTimes(date = Sys.Date(), lat = lat_durham, lon = lon_durham, tz = "EST")
+sun_stuff_today
+
+# sunrise
+format(sun_stuff_today$sunrise, "%H:%M")
+```
+
+---
+
+## Moon phase
+
+```{r}
+moon_stuff_today <- suncalc::getMoonIllumination(date = Sys.Date())
+moon_stuff_today
+moon_ratio <- moon_stuff_today$fraction
+```
+
+---
+
+## Moon chart
+
+```{r message = FALSE}
+library(tidyverse)
+library(gggibbous)
+ggplot() +
+  geom_moon(aes(x = 0.2, y = 0.98, ratio = 1), fill = "black", size = 50) +
+  geom_moon(aes(x = 0.2, y = 0.98, ratio = moon_ratio), size = 50) +
+  theme_void()
+```
+
+---
+
+## Clock face
+
+.xsmall[
+```{r message = FALSE}
+library(lubridate)
+
+draw_clock <- function(tzone = "America/New_York", city = "Durham"){
+
+  # create tibble
+  minutes <- tibble(x = 0:60, y = 1)
+  hours <- filter(minutes, x %% 5 == 0)
+
+  # determine now
+  now <- now(tzone = tzone)
+
+  # find time now
+  min_now <- minute(now)
+
+  if(hour(now) >= 12){
+    hour_now <- (hour(now) - 12)*5 + min_now/60*5
+  } else {
+    hour_now <- hour(now)*5 + min_now/60*5
+  }
+
+  ggplot() +
+    geom_point(data = minutes, aes(x = x, y = y), size = 1) +
+    geom_point(data = hours, aes(x = x, y = y), size = 3, show.legend = FALSE) +
+    geom_point(aes(x = 0, y = 0), size = 3) +
+    coord_polar() +
+    expand_limits(y = c(0, 1)) +
+    theme_void() +
+    theme(
+      axis.ticks = element_blank(),
+      axis.text.y = element_blank(),
+    ) +
+    geom_segment(aes(x = hour_now, xend = hour_now, y = 0, yend = 0.6), size = 1) +
+    geom_segment(aes(x = min_now, xend = min_now, y = 0, yend = 0.9), size = 1) +
+    annotate(geom = "text", x = 30, y = 0.5, label = city, size = 18)
+}
+```
+]
+
+---
+
+## Clocks around the world
+
+```{r out.width = "25%", fig.show = "hold"}
+draw_clock()
+draw_clock(tzone = "Europe/Istanbul", city = "Istanbul")
+draw_clock(tzone = "Europe/Paris", city = "Paris")
+draw_clock(tzone = "America/Los_Angeles", city = "Los Angeles")
+```
+
+---
+
+## Function of the day
+
+Pending improvements: create `funs` based on a given list of packages and all of their functions.
+
+```{r}
+library(glue)
+
+funs <- tribble(
+  ~pkg, ~fun, ~description,
+  "dplyr", "summarise", "Summarise each group to fewer rows",
+  "tidyr", "hoist", "Rectangle a nested list into a tidy tibble",
+  "ggplot2", "geom_spoke", "Line segments parameterised by location, direction and distance"
+)
+
+function_text <- funs %>%
+  slice_sample(n = 1) %>%
+  mutate(text = glue("{pkg}::{fun}()\n{description}")) %>%
+  pull(text)
+
+function_text
+```
 
 ---
 

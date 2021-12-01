@@ -74,7 +74,7 @@ Any questions / things I can clarify about the projects or anything else we have
 - Open at least 1 issue providing feedback on something you like
 - Open at least 1 issue providing a suggestion for improvement
 
-<div class="countdown" id="timer_61a6e236" style="right:0;bottom:0;" data-warnwhen="0">
+<div class="countdown" id="timer_61a78e7f" style="right:0;bottom:0;" data-warnwhen="0">
 <code class="countdown-time"><span class="countdown-digits minutes">05</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>
 
@@ -87,7 +87,7 @@ Any questions / things I can clarify about the projects or anything else we have
 - Open at least 1 issue providing feedback on something you like
 - Open at least 1 issue providing a suggestion for improvement
 
-<div class="countdown" id="timer_61a6e21c" style="right:0;bottom:0;" data-warnwhen="0">
+<div class="countdown" id="timer_61a790a9" style="right:0;bottom:0;" data-warnwhen="0">
 <code class="countdown-time"><span class="countdown-digits minutes">05</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>
 
@@ -99,7 +99,7 @@ Any questions / things I can clarify about the projects or anything else we have
 - Close the issue with positive feedback with a thank you
 - Make a plan for addressing the issue with constructive feedback (or, if minor, handle it now and close with a commit)
 
-<div class="countdown" id="timer_61a6e262" style="right:0;bottom:0;" data-warnwhen="0">
+<div class="countdown" id="timer_61a78fbb" style="right:0;bottom:0;" data-warnwhen="0">
 <code class="countdown-time"><span class="countdown-digits minutes">05</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>
 
@@ -107,7 +107,191 @@ Any questions / things I can clarify about the projects or anything else we have
 
 class: middle, inverse
 
-# ...
+# My project: Saatli Maarif Takvimi
+
+---
+
+## Saatli Maarif Takvimi
+
+.pull-left[
+&lt;img src="images/smt.jpeg" width="70%" style="display: block; margin: auto;" /&gt;
+]
+--
+.pull-right[
+&lt;img src="images/anane.png" width="80%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## Saatli Maarif Takvimi, reimagined
+
+&lt;img src="images/saatli-maarif.bmp" width="30%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Sun and moon
+
+- Use the [**suncalc**](https://github.com/datastorm-open/suncalc) package to calculate sunlight phases (times for sunrise, sunset, dusk, etc.) and lunar phase for the given location and time
+
+- Use the [**gggibbous**](https://github.com/mnbram/gggibbous) package to draw the moon
+
+---
+
+## Sun
+
+
+```r
+lat_durham &lt;- 35.9940
+lon_durham &lt;- -78.8986
+sun_stuff_today &lt;- suncalc::getSunlightTimes(date = Sys.Date(), lat = lat_durham, lon = lon_durham, tz = "EST")
+sun_stuff_today
+```
+
+```
+##         date    lat      lon           solarNoon               nadir
+## 1 2021-12-01 35.994 -78.8986 2021-12-01 12:06:13 2021-12-01 00:06:13
+##               sunrise              sunset          sunriseEnd
+## 1 2021-12-01 07:09:21 2021-12-01 17:03:06 2021-12-01 07:12:19
+##           sunsetStart                dawn                dusk
+## 1 2021-12-01 17:00:08 2021-12-01 06:41:14 2021-12-01 17:31:13
+##          nauticalDawn        nauticalDusk            nightEnd
+## 1 2021-12-01 06:09:33 2021-12-01 18:02:54 2021-12-01 05:38:37
+##                 night       goldenHourEnd          goldenHour
+## 1 2021-12-01 18:33:50 2021-12-01 07:48:14 2021-12-01 16:24:13
+```
+
+```r
+# sunrise
+format(sun_stuff_today$sunrise, "%H:%M")
+```
+
+```
+## [1] "07:09"
+```
+
+---
+
+## Moon phase
+
+
+```r
+moon_stuff_today &lt;- suncalc::getMoonIllumination(date = Sys.Date())
+moon_stuff_today
+```
+
+```
+##         date  fraction     phase    angle
+## 1 2021-12-01 0.1438124 0.8761903 1.993693
+```
+
+```r
+moon_ratio &lt;- moon_stuff_today$fraction
+```
+
+---
+
+## Moon chart
+
+
+```r
+library(tidyverse)
+library(gggibbous)
+ggplot() +
+  geom_moon(aes(x = 0.2, y = 0.98, ratio = 1), fill = "black", size = 50) +
+  geom_moon(aes(x = 0.2, y = 0.98, ratio = moon_ratio), size = 50) +
+  theme_void()
+```
+
+![](23-wrap-up_files/figure-html/unnamed-chunk-9-1.png)&lt;!-- --&gt;
+
+---
+
+## Clock face
+
+.xsmall[
+
+```r
+library(lubridate)
+
+draw_clock &lt;- function(tzone = "America/New_York", city = "Durham"){
+
+  # create tibble
+  minutes &lt;- tibble(x = 0:60, y = 1)
+  hours &lt;- filter(minutes, x %% 5 == 0)
+
+  # determine now
+  now &lt;- now(tzone = tzone)
+
+  # find time now
+  min_now &lt;- minute(now)
+
+  if(hour(now) &gt;= 12){
+    hour_now &lt;- (hour(now) - 12)*5 + min_now/60*5
+  } else {
+    hour_now &lt;- hour(now)*5 + min_now/60*5
+  }
+
+  ggplot() +
+    geom_point(data = minutes, aes(x = x, y = y), size = 1) +
+    geom_point(data = hours, aes(x = x, y = y), size = 3, show.legend = FALSE) +
+    geom_point(aes(x = 0, y = 0), size = 3) +
+    coord_polar() +
+    expand_limits(y = c(0, 1)) +
+    theme_void() +
+    theme(
+      axis.ticks = element_blank(),
+      axis.text.y = element_blank(),
+    ) +
+    geom_segment(aes(x = hour_now, xend = hour_now, y = 0, yend = 0.6), size = 1) +
+    geom_segment(aes(x = min_now, xend = min_now, y = 0, yend = 0.9), size = 1) +
+    annotate(geom = "text", x = 30, y = 0.5, label = city, size = 18)
+}
+```
+]
+
+---
+
+## Clocks around the world
+
+
+```r
+draw_clock()
+draw_clock(tzone = "Europe/Istanbul", city = "Istanbul")
+draw_clock(tzone = "Europe/Paris", city = "Paris")
+draw_clock(tzone = "America/Los_Angeles", city = "Los Angeles")
+```
+
+&lt;img src="23-wrap-up_files/figure-html/unnamed-chunk-11-1.png" width="25%" /&gt;&lt;img src="23-wrap-up_files/figure-html/unnamed-chunk-11-2.png" width="25%" /&gt;&lt;img src="23-wrap-up_files/figure-html/unnamed-chunk-11-3.png" width="25%" /&gt;&lt;img src="23-wrap-up_files/figure-html/unnamed-chunk-11-4.png" width="25%" /&gt;
+
+---
+
+## Function of the day
+
+Pending improvements: create `funs` based on a given list of packages and all of their functions.
+
+
+```r
+library(glue)
+
+funs &lt;- tribble(
+  ~pkg, ~fun, ~description,
+  "dplyr", "summarise", "Summarise each group to fewer rows",
+  "tidyr", "hoist", "Rectangle a nested list into a tidy tibble",
+  "ggplot2", "geom_spoke", "Line segments parameterised by location, direction and distance"
+)
+
+function_text &lt;- funs %&gt;%
+  slice_sample(n = 1) %&gt;%
+  mutate(text = glue("{pkg}::{fun}()\n{description}")) %&gt;%
+  pull(text)
+
+function_text
+```
+
+```
+## dplyr::summarise()
+## Summarise each group to fewer rows
+```
 
 ---
 
